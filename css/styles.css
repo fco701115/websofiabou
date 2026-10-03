@@ -131,7 +131,7 @@ button {
 
 .mobile-search-bar {
   display: none;
-  background: #f9dbf8;
+  background: #efafeaf0;
   padding: 12px 15px;
   align-items: center;
   gap: 10px;
@@ -263,13 +263,13 @@ button {
   font-size: 1.4rem;
   padding: 8px;
   order: -1;
-  background: #f9dbf8;
+  background: #efafeaf0;
   border-radius: 6px;
 }
 
 /* ========== NAVBAR ========== */
 .navbar {
-  background: #f9dbf8;
+  background: #efafeaf0;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -318,7 +318,7 @@ button {
 .mobile-nav .nav-link {
   padding: 14px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: #f9dbf8;
+  background: #efafeaf0;
 }
 
 .mobile-nav .nav-link.active {
@@ -487,7 +487,7 @@ button {
 
 .banner-btn {
   display: inline-block;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #ffffff;
   padding: 12px 30px;
   font-weight: 700;
@@ -551,7 +551,7 @@ button {
 
 .side-banner-btn {
   display: inline-block;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   padding: 8px 18px;
   border-radius: 6px;
@@ -927,7 +927,7 @@ button {
 }
 
 .product-action-btn:hover {
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
 }
 
@@ -996,7 +996,7 @@ button {
   left: 0;
   width: 100%;
   height: 35px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: 0 0 0 0;
@@ -1355,7 +1355,7 @@ button {
   align-items: center;
   padding: 16px 20px;
   border-bottom: 1px solid #eee;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
 }
 
@@ -1590,7 +1590,7 @@ button {
 .checkout-btn {
   width: 100%;
   padding: 12px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -1911,7 +1911,7 @@ button {
 .detail-add-cart {
   width: 100%;
   padding: 12px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -1987,7 +1987,7 @@ button {
 
 .detail-share a:hover,
 .detail-share a.active {
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
 }
 
@@ -2428,7 +2428,7 @@ button {
 .checkout-step-save {
   align-self: flex-start;
   padding: 10px 20px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -2455,7 +2455,7 @@ button {
   justify-content: center;
   gap: 6px;
   padding: 10px 20px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -2936,7 +2936,7 @@ button {
   width: 100%;
   margin-top: 20px;
   padding: 16px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -3189,7 +3189,7 @@ button {
     height: 60px;
     padding: 8px 10px;
     gap: 8px;
-    background: #f9dbf8;
+    background: #efafeaf0;
   }
 
   .header-inner .icon-btn {
@@ -4099,7 +4099,7 @@ button {
   justify-content: space-between;
   align-items: center;
   padding: 12px 15px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   font-weight: 600;
   position: sticky;
@@ -4190,7 +4190,7 @@ button {
 .auth-submit-btn {
   width: 100%;
   padding: 14px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -4660,7 +4660,7 @@ button {
 .bottom-nav-home-icon {
   width: 52px;
   height: 52px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -4749,7 +4749,7 @@ button {
 .admin-login-btn {
   width: 100%;
   padding: 12px;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -4826,7 +4826,7 @@ button {
 }
 
 .admin-user-info i {
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border-radius: 50%;
   width: 32px;
@@ -6556,7 +6556,7 @@ button {
 }
 
 .contact-submit-btn {
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -6594,7 +6594,7 @@ button {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #f9dbf8;
+  background: #efafeaf0;
   color: #fff;
   display: flex;
   align-items: center;
