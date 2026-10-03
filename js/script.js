@@ -3066,7 +3066,7 @@ async function initApp() {
 }
 
 // ========== ADMIN PANEL ==========
-const adminCredentials = { email: 'admin@webapptiens.com', password: 'admin123' };
+const adminCredentials = { email: 'admin@websofiabou.com', password: 'admin123' };
 let adminLoggedIn = false;
 
 function showAdminLogin() {
@@ -3083,7 +3083,7 @@ function handleAdminLogin() {
     showView('admin');
     loadAdminDashboard();
   } else {
-    alert('Credenciales incorrectas. Usa: admin@webapptiens.com / admin123');
+    alert('Credenciales incorrectas. Usa: admin@websofiabou.com / admin123');
   }
 }
 

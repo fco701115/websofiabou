@@ -30,7 +30,7 @@ if (fs.existsSync(envPath)) {
 }
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 
 // Middleware
 app.use(compression());
@@ -80,10 +80,10 @@ app.get(/^\/categoria\/[^/]+\/[^/]+-\d+$/, async (req, res) => {
       images = [p.image];
     }
     const imageUrl = images.length > 0 ? images[0] : '';
-    const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `http://13.140.153.222:3002${imageUrl}`;
+    const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `http://13.140.153.222:3003${imageUrl}`;
     const description = p.description ? p.description.replace(/<[^>]*>/g, '').substring(0, 200) : '';
-    const ogTitle = p.name || 'WebApptiens';
-    const ogUrl = `http://13.140.153.222:3002${req.path}`;
+    const ogTitle = p.name || 'Websofiabou';
+    const ogUrl = `http://13.140.153.222:3003${req.path}`;
 
     const html = require('fs').readFileSync(path.join(__dirname, 'index.html'), 'utf8');
     const secureImageUrl = imageUrl.startsWith('https') ? imageUrl : absoluteImageUrl;
@@ -96,7 +96,7 @@ app.get(/^\/categoria\/[^/]+\/[^/]+-\d+$/, async (req, res) => {
   <meta property="og:image:height" content="750" />
   <meta property="og:url" content="${ogUrl}" />
   <meta property="og:type" content="product" />
-  <meta property="og:site_name" content="WebApptiens" />
+  <meta property="og:site_name" content="Websofiabou" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${ogTitle.replace(/"/g, '&quot;')}" />
   <meta name="twitter:description" content="${description.replace(/"/g, '&quot;')}" />
@@ -132,7 +132,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No se envió archivo' });
   const b64 = req.file.buffer.toString('base64');
   const dataURI = `data:${req.file.mimetype};base64,${b64}`;
-  cloudinary.uploader.upload(dataURI, { folder: 'webapptiens' }, (err, result) => {
+  cloudinary.uploader.upload(dataURI, { folder: 'websofiabou' }, (err, result) => {
     if (err) {
       console.error('Cloudinary upload error:', err);
       return res.status(500).json({ error: 'Error al subir imagen' });
@@ -141,25 +141,138 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   });
 });
 
-// PostgreSQL connection
+// PostgreSQL connection (compatible Dokploy interno / externo)
+const useConnectionString = !!process.env.DATABASE_URL;
 const pool = new Pool(
-  process.env.DATABASE_URL
-    ? { connectionString: process.env.DATABASE_URL }
+  useConnectionString
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        // Dokploy interno (misma red) no necesita SSL.
+        // Si usas la URL EXTERNA de Dokploy, Postgres exige SSL.
+        ssl: /sslmode=require|ssl=true/i.test(process.env.DATABASE_URL)
+          ? { rejectUnauthorized: false }
+          : undefined,
+      }
     : {
-        user: process.env.DB_USER || 'webapptiens',
+        user: process.env.DB_USER || 'websofiabou',
         host: process.env.DB_HOST || 'localhost',
-        database: process.env.DB_NAME || 'webapptiens',
+        database: process.env.DB_NAME || 'websofiabou',
         password: process.env.DB_PASSWORD || '123456',
         port: parseInt(process.env.DB_PORT || '5432'),
       }
+);
+pool.on('error', (err) => console.error('PG pool error:', err.message));
+pool.query('SELECT 1').then(
+  () => console.log('DB OK:', useConnectionString ? 'via DATABASE_URL' : `${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || '5432'}/${process.env.DB_NAME || 'websofiabou'}`),
+  (err) => console.error('DB connection failed:', err.message)
 );
 
 // Simple in-memory cache for GET responses
 const cache = {};
 const CACHE_TTL = 15000; // 15 seconds
 
+// Auto-migrate: crear tablas si no existen y agregar columnas faltantes.
+// Esto cubre el caso donde el volumen pgdata se creó vacío y los scripts
+// de /docker-entrypoint-initdb.d nunca se ejecutaron (solo corren una vez).
+async function ensureSchema() {
+  const ddl = `
+  CREATE TABLE IF NOT EXISTS products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    original_price DECIMAL(10,2),
+    discount INTEGER DEFAULT 0,
+    stock INTEGER DEFAULT 0,
+    rating DECIMAL(2,1) DEFAULT 0,
+    reviews INTEGER DEFAULT 0,
+    category VARCHAR(100) NOT NULL,
+    sizes TEXT DEFAULT '',
+    colors TEXT DEFAULT '',
+    image TEXT,
+    images TEXT,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    image TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(50),
+    address TEXT,
+    address_type VARCHAR(50) DEFAULT 'Casa',
+    address_street TEXT,
+    address_locality TEXT,
+    address_instructions TEXT,
+    address_neighborhood TEXT,
+    address_city TEXT,
+    address_zip TEXT,
+    city VARCHAR(100),
+    zip_code VARCHAR(20),
+    payment_method VARCHAR(50),
+    items JSONB,
+    total DECIMAL(10,2),
+    status VARCHAR(50) DEFAULT 'Pendiente',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS slides (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    subtitle TEXT DEFAULT '',
+    link TEXT DEFAULT '#',
+    image TEXT,
+    button_text VARCHAR(100) DEFAULT 'Ver más',
+    sort_order INTEGER DEFAULT 0,
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS split_banners (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    subtitle TEXT DEFAULT '',
+    link TEXT DEFAULT '#',
+    image TEXT,
+    button_text VARCHAR(100) DEFAULT 'Ver más',
+    position INTEGER DEFAULT 1,
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS reviews (
+    id SERIAL PRIMARY KEY,
+    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+    user_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) DEFAULT '',
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    title VARCHAR(255) DEFAULT '',
+    comment TEXT DEFAULT '',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(50) DEFAULT '',
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  `;
+  try {
+    await pool.query(ddl);
+    console.log('Esquema verificado: tablas products, categories, orders, slides, split_banners, reviews, users OK');
+  } catch (err) {
+    console.error('Error en ensureSchema:', err.message);
+  }
+}
+
 // Auto-migrate: add missing columns to orders table
 async function autoMigrate() {
+  await ensureSchema();
   const columns = [
     ['address_type', "VARCHAR(50) DEFAULT 'Casa'"],
     ['address_street', "TEXT DEFAULT ''"],

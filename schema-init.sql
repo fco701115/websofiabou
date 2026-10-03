@@ -1,4 +1,4 @@
--- ========== WEBAPPTIENS DATABASE SCHEMA ==========
+-- ========== WEBSOFIABOU DATABASE SCHEMA ==========
 
 -- Products table
 CREATE TABLE IF NOT EXISTS products (

@@ -3,39 +3,39 @@ version: '3.8'
 services:
   app:
     build: .
-    container_name: webapptiens
+    container_name: websofiabou
     restart: always
     ports:
-      - "3001:3001"
+      - "3003:3003"
     environment:
       - NODE_ENV=production
-      - PORT=3001
+      - PORT=3003
       - DB_HOST=postgres
-      - DB_NAME=db-webapptiens
+      - DB_NAME=websofiabou
       - DB_USER=postgres
       - DB_PASSWORD=${DB_PASSWORD:-123456}
       - DB_PORT=5432
     depends_on:
       - postgres
     networks:
-      - webapptiens-net
+      - websofiabou-net
 
   postgres:
     image: postgres:16-alpine
-    container_name: webapptiens-db
+    container_name: websofiabou-db
     restart: always
     environment:
-      - POSTGRES_DB=webapptiens
+      - POSTGRES_DB=websofiabou
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${DB_PASSWORD:-123456}
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - webapptiens-net
+      - websofiabou-net
 
 networks:
-  webapptiens-net:
+  websofiabou-net:
     driver: bridge
 
 volumes:

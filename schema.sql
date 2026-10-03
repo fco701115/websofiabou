@@ -1,10 +1,10 @@
--- ========== WEBAPPTIENS DATABASE SCHEMA ==========
+-- ========== WEBSOFIABOU DATABASE SCHEMA ==========
 
 -- Create database
-CREATE DATABASE webapptiens;
+CREATE DATABASE websofiabou;
 
 -- Connect to database
-\c webapptiens;
+\c websofiabou;
 
 -- Products table
 CREATE TABLE products (
