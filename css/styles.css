@@ -1082,7 +1082,7 @@ button {
 .price-current {
   font-size: 1rem;
   font-weight: 700;
-  color: #075ec0;
+  color: #dd3c7f;
 }
 
 .price-original {
@@ -6614,4 +6614,8 @@ button {
   font-size: 0.9rem;
   color: var(--text-light);
   line-height: 1.6;
+}
+
+.fa-truck {
+  color: #dd3c7f;
 }
