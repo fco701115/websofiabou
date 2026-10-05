@@ -642,7 +642,7 @@ button {
 }
 
 .categories-section .section-title {
-  display: none;
+  text-align: left;
 }
 
 .categories-wrapper {
