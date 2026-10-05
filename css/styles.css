@@ -110,8 +110,7 @@ button {
 .search-input {
   flex: 1;
   padding: 10px 16px;
-  border: 2px solid #555;
-  border-right: none;
+  border: none;
   border-radius: var(--radius) 0 0 var(--radius);
   outline: none;
   font-size: 0.9rem;
@@ -119,8 +118,13 @@ button {
 }
 
 .search-btn {
-  padding: 10px 16px;
-  background: #555;
+  width: 80px;
+  height: 41px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222222;
   color: #ffffff;
   font-size: 1rem;
   border-radius: 0 var(--radius) var(--radius) 0;
