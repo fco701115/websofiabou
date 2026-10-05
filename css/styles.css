@@ -61,7 +61,7 @@ button {
 
 /* ========== HEADER ========== */
 .header {
-  background-color: #ffffff;
+  background: #db2f76;
   position: fixed;
   top: 0;
   left: 0;
@@ -70,9 +70,8 @@ button {
 }
 
 .header-inner {
-  max-width: none;
-  width: 100%;
-  margin: 0;
+  max-width: var(--max-width);
+  margin: 0 auto;
   padding: 0 20px;
   height: 75px;
   display: flex;
