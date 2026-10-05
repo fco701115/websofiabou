@@ -536,8 +536,11 @@ button {
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 0;
-  padding: 20px;
+  width: 150px;
+  height: 100.766px;
+  padding: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
   background: none;
   color: #302727;
 }
@@ -639,7 +642,7 @@ button {
 /* ========== CATEGORIES ========== */
 .categories-section {
   max-width: var(--max-width);
-  margin: 50px auto;
+  margin: 30px auto;
   padding: 0 20px;
 }
 
