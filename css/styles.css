@@ -539,19 +539,21 @@ button {
   right: 0;
   padding: 20px;
   background: none;
-  color: #fff;
+  color: #302727;
 }
 
 .side-banner-content h2 {
   font-size: 1.3rem;
   font-weight: 700;
   margin-bottom: 4px;
+  color: #302727;
 }
 
 .side-banner-content p {
   font-size: 0.85rem;
   margin-bottom: 10px;
   opacity: 0.9;
+  color: #302727;
 }
 
 .side-banner-btn {
