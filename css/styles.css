@@ -70,14 +70,15 @@ button {
 }
 
 .header-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
+  max-width: none;
+  width: 100%;
+  margin: 0;
   padding: 0 20px;
   height: 75px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #e9446e;
+  background: #db2f76;
 }
 
 .logo {
