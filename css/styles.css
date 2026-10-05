@@ -681,8 +681,8 @@ button {
   width: 150px;
   height: 150px;
   margin: 0 auto;
-  padding: 0;
-  background: #f4f4f4;
+  padding: 2px;
+  background: #fff;
   border-radius: 50%;
   overflow: hidden;
   display: block;
