@@ -609,7 +609,7 @@ button {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #eaf5fa;
+  background: #e788af73;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -618,7 +618,7 @@ button {
 
 .benefit-icon i {
   font-size: 1.3rem;
-  color: #075ec0;
+  color: #db2f76;
 }
 
 .benefit-text h3 {
@@ -6642,6 +6642,8 @@ button {
   line-height: 1.6;
 }
 
-.fa-truck {
-  color: #dd3c7f;
+.fa-truck,
+.fa-shield-alt,
+.fa-headset {
+  color: #db2f76;
 }
