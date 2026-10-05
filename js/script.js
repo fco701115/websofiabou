@@ -567,8 +567,8 @@ function showAllCategories() {
         <div class="category-card" onclick="navigateToCategory('${cat}')">
           <div class="category-img-wrapper">
             <img src="${img}" alt="${cat}">
+            <span class="category-name">${cat}</span>
           </div>
-          <span class="category-name">${cat}</span>
         </div>
       `;
     }).join('');
@@ -2116,8 +2116,8 @@ function renderCategoriesCarousel() {
       <div class="category-card" onclick="navigateToCategory('${cat}')">
         <div class="category-img-wrapper">
           <img src="${img}" alt="${cat}">
+          <span class="category-name">${cat}</span>
         </div>
-        <span class="category-name">${cat}</span>
       </div>
     `;
   }).join('');
