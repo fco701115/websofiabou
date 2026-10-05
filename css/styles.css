@@ -536,25 +536,21 @@ button {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 120px;
-  height: 70px;
-  padding: 8px;
-  overflow: hidden;
-  box-sizing: border-box;
+  right: 0;
+  padding: 20px;
   background: none;
   color: #302727;
-  font-size: 14px;
 }
 
 .side-banner-content h2 {
-  font-size: 14px;
+  font-size: 1.3rem;
   font-weight: 700;
   margin-bottom: 4px;
   color: #302727;
 }
 
 .side-banner-content p {
-  font-size: 14px;
+  font-size: 0.85rem;
   margin-bottom: 10px;
   opacity: 0.9;
   color: #302727;
