@@ -231,7 +231,7 @@ button {
 }
 
 .icon-btn {
-  color: #555;
+  color: #ffffff;
   font-size: 1.15rem;
   padding: 8px;
   border-radius: 50%;
@@ -242,7 +242,7 @@ button {
 }
 
 .icon-btn:hover {
-  background: rgba(85, 85, 85, 0.1);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .cart-count {
@@ -667,7 +667,7 @@ button {
 
 .category-card {
   flex-shrink: 0;
-  width: 151px;
+  width: 210px;
   text-align: center;
   cursor: pointer;
   transition: transform var(--transition);
@@ -678,37 +678,44 @@ button {
 }
 
 .category-img-wrapper {
-  width: 135px;
-  height: 135px;
+  width: 100%;
+  height: 240px;
   margin: 0 auto;
-  padding: 8px;
-  background: #f9f9f9;
-  border-radius: 50%;
+  padding: 0;
+  background: #f4f4f4;
+  border-radius: 6px;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid transparent;
-  transition: border-color var(--transition);
+  display: block;
+  border: none;
+  transition: box-shadow var(--transition);
 }
 
 .category-card:hover .category-img-wrapper {
-  border-color: #075ec0;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 .category-img-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 6px;
+  transition: transform 300ms ease;
+}
+
+.category-card:hover .category-img-wrapper img {
+  transform: scale(1.05);
 }
 
 .category-name {
   display: block;
-  margin: 8px 0 2px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text);
+  margin: 12px 0 2px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #222;
+  text-align: center;
 }
 
 .carousel-btn {
@@ -2933,8 +2940,8 @@ button {
 }
 
 .categories-grid .category-img-wrapper {
-  width: 120px;
-  height: 120px;
+  width: 100%;
+  height: 200px;
 }
 
 .checkout-submit-btn {
@@ -3472,16 +3479,18 @@ button {
   }
 
   .category-card {
-    width: 110px;
+    width: 160px;
   }
 
   .category-img-wrapper {
-    width: 95px;
-    height: 95px;
+    width: 100%;
+    height: 180px;
   }
 
   .category-name {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   .carousel-btn {
