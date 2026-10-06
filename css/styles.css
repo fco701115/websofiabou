@@ -2032,11 +2032,11 @@ button {
   align-items: center;
   gap: 10px;
   font-size: 0.78rem;
-  color: #dd3c7f;
+  color: #666666;
 }
 
 .info-item i {
-  color: #075ec0;
+  color: #dd3c7f;
   width: 16px;
   text-align: center;
 }
