@@ -3442,7 +3442,11 @@ button {
   }
 
   .side-banner-content h2 {
-    font-size: 1.1rem;
+    font-size: 1rem;
+  }
+
+  .side-banner-content p {
+    font-size: 12px;
   }
 
   .catalog-section {
