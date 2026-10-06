@@ -532,12 +532,16 @@ button {
   transform: scale(1.05);
 }
 
+/* ========== SIDE-BANNER-CONTENT: PC (vista escritorio) ========== */
 .side-banner-content {
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 0;
+  width: 220px;
+  height: 190px;
   padding: 20px;
+  overflow: hidden;
+  box-sizing: border-box;
   background: none;
   color: #302727;
 }
@@ -3421,6 +3425,20 @@ button {
 
   .side-banner {
     height: 200px;
+  }
+
+  /* ========== SIDE-BANNER-CONTENT: MOVIL (vista <=768px) ========== */
+  .side-banner-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 153px;
+    height: 140px;
+    padding: 15px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: none;
+    color: #302727;
   }
 
   .side-banner-content h2 {
