@@ -72,9 +72,9 @@ button {
 }
 
 .header-inner {
-  max-width: none;
-  width: 100%;
-  margin: 0;
+  max-width: var(--max-width);
+  width: auto;
+  margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
   height: 75px;
@@ -142,7 +142,7 @@ button {
   align-items: center;
   background: #f5f5f5;
   border: 1px solid #eee;
-  border-radius: var(--radius);
+  border-radius: 999px;
   overflow: visible;
   margin: 0 auto;
   position: relative;
@@ -152,7 +152,7 @@ button {
   flex: 1;
   padding: 10px 16px;
   border: none;
-  border-radius: var(--radius) 0 0 var(--radius);
+  border-radius: 999px 0 0 999px;
   outline: none;
   font-size: 0.9rem;
   background: transparent;
@@ -165,14 +165,14 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #222222;
+  background: #cb354e;
   color: #ffffff;
   font-size: 1rem;
-  border-radius: 0 var(--radius) var(--radius) 0;
+  border-radius: 0 999px 999px 0;
 }
 
 .search-btn:hover {
-  background: #444;
+  background: #a82a3f;
 }
 
 .mobile-search-bar {
