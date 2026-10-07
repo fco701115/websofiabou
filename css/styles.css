@@ -91,9 +91,8 @@ button {
 }
 
 .logo-img {
-  height: 52px;
-  width: auto;
-  max-width: 220px;
+  width: 163px;
+  height: 58px;
   object-fit: contain;
   background: #fff;
   border-radius: 10px;
@@ -310,11 +309,11 @@ button {
 
 .mobile-menu-btn {
   display: none;
-  color: #333333;
+  color: #ffffff;
   font-size: 1.4rem;
-  padding: 8px;
+  padding: 5px;
   order: -1;
-  background: transparent;
+  background: #dd3c7f;
   border-radius: 6px;
 }
 
