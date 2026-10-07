@@ -1175,6 +1175,7 @@ function showDetail(id) {
           <button class="detail-add-cart" onclick="addToCart(${product.id})">Agregar al carrito</button>
         </div>
         <button class="detail-buy-now" onclick="addToCart(${product.id}); openCheckout(false)">Comprar ahora</button>
+        <button class="detail-whatsapp-btn" onclick="askAboutProduct(${product.id})"><i class="fab fa-whatsapp"></i> Preguntar sobre este producto</button>
 
         <div class="detail-links">
           <a href="#" id="detailWishlistLink" onclick="event.preventDefault(); toggleDetailWishlist(${product.id})"><i class="far fa-heart"></i> Agregar a favoritos</a>
@@ -2215,6 +2216,13 @@ function selectCategoryFromAccordion(category) {
 
 function openWhatsApp() {
   window.open('https://wa.me/2381505103', '_blank');
+}
+
+function askAboutProduct(id) {
+  const product = (typeof products !== 'undefined' ? products : []).find(p => p.id === id);
+  const name = product ? product.name : '';
+  const text = encodeURIComponent('Hola, quiero preguntar sobre este producto: ' + name + ' - ' + window.location.href);
+  window.open('https://wa.me/2381505103?text=' + text, '_blank');
 }
 
 function toggleLoginFromBottom() {
