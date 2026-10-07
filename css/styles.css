@@ -149,7 +149,9 @@ button {
 }
 
 .search-input {
-  flex: 1;
+  width: 438px;
+  height: 41px;
+  box-sizing: border-box;
   padding: 10px 16px;
   border-width: 1px;
   border-style: solid;
