@@ -1838,12 +1838,14 @@ button {
 }
 
 .detail-discount {
+  display: inline-block;
   padding: 3px 8px;
   background: #27ae60;
   color: #fff;
   border-radius: var(--radius);
   font-size: 0.7rem;
   font-weight: 700;
+  text-decoration: none;
 }
 
 .detail-rating {
@@ -2011,7 +2013,7 @@ button {
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: background var(--transition);
-  margin-bottom: 14px;
+  margin-bottom: 9px;
 }
 
 .detail-buy-now:hover {
