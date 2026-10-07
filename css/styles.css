@@ -3286,8 +3286,8 @@ button {
   }
 
   .logo-img {
-    height: 42px;
-    max-width: 170px;
+    width: 140px;
+    height: 43px;
   }
 
   .search-bar {
@@ -3644,8 +3644,8 @@ button {
   }
 
   .logo-img {
-    height: 38px;
-    max-width: 150px;
+    width: 140px;
+    height: 43px;
   }
 
   .icon-btn {
@@ -3712,8 +3712,8 @@ button {
 
 @media (max-width: 480px) {
   .logo-img {
-    height: 36px;
-    max-width: 140px;
+    width: 140px;
+    height: 43px;
   }
 
   .hero-slide {
