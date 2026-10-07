@@ -82,6 +82,42 @@ button {
 
 .logo {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 52px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 10px;
+  padding: 4px 10px;
+  display: block;
+}
+
+.admin-logo-img {
+  height: 42px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+  padding: 3px 8px;
+  display: block;
+}
+
+.footer-logo-img {
+  height: 56px;
+  width: auto;
+  max-width: 230px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 10px;
+  padding: 4px 10px;
+  margin-bottom: 12px;
+  display: block;
 }
 
 .logo-text {
@@ -3240,8 +3276,9 @@ button {
     display: block;
   }
 
-  .logo-text {
-    font-size: 1.2rem;
+  .logo-img {
+    height: 42px;
+    max-width: 170px;
   }
 
   .search-bar {
@@ -3597,8 +3634,9 @@ button {
     padding: 6px 8px;
   }
 
-  .logo-text {
-    font-size: 1.1rem;
+  .logo-img {
+    height: 38px;
+    max-width: 150px;
   }
 
   .icon-btn {
@@ -3664,8 +3702,9 @@ button {
 }
 
 @media (max-width: 480px) {
-  .logo-text {
-    font-size: 1.3rem;
+  .logo-img {
+    height: 36px;
+    max-width: 140px;
   }
 
   .hero-slide {
