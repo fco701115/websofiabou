@@ -151,7 +151,9 @@ button {
 .search-input {
   flex: 1;
   padding: 10px 16px;
-  border: none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #dd3c7f;
   border-radius: 999px 0 0 999px;
   outline: none;
   font-size: 0.9rem;
@@ -165,14 +167,14 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #cb354e;
+  background: #dd3c7f;
   color: #ffffff;
   font-size: 1rem;
   border-radius: 0 999px 999px 0;
 }
 
 .search-btn:hover {
-  background: #a82a3f;
+  background: #cb354e;
 }
 
 .mobile-search-bar {
