@@ -2158,6 +2158,13 @@ function toggleMobileSearch() {
   const bar = document.getElementById('mobileSearchBar');
   if (!bar) return;
   const isActive = bar.classList.toggle('active');
+  const icon = document.querySelector('.search-mobile-btn i');
+  if (icon) {
+    icon.classList.toggle('fa-search', !isActive);
+    icon.classList.toggle('fa-times', isActive);
+  }
+  const btn = document.querySelector('.search-mobile-btn');
+  if (btn) btn.title = isActive ? 'Cerrar búsqueda' : 'Buscar';
   if (isActive) {
     const input = bar.querySelector('.mobile-search-input');
     if (input) setTimeout(() => input.focus(), 100);

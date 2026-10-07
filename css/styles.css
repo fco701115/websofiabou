@@ -3520,6 +3520,11 @@ button {
     text-align: center;
   }
 
+  .footer-logo-img {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .social-icons {
     justify-content: center;
   }
