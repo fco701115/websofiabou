@@ -3142,7 +3142,7 @@ button {
 
 .footer-col ul li i {
   margin-right: 8px;
-  color: #075ec0;
+  color: #dd3c7f;
   width: 16px;
 }
 
@@ -3287,7 +3287,7 @@ button {
 
   .logo-img {
     width: 140px;
-    height: 43px;
+    height: 48px;
   }
 
   .search-bar {
@@ -3650,7 +3650,7 @@ button {
 
   .logo-img {
     width: 140px;
-    height: 43px;
+    height: 48px;
   }
 
   .icon-btn {
@@ -3718,7 +3718,7 @@ button {
 @media (max-width: 480px) {
   .logo-img {
     width: 140px;
-    height: 43px;
+    height: 48px;
   }
 
   .hero-slide {
