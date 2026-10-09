@@ -710,39 +710,49 @@
             <textarea id="productDescription" rows="3" placeholder="Descripción del producto"></textarea>
           </div>
           <div class="admin-input-group">
-            <label>Fotografías (máximo 5)</label>
+            <label>Fotografías (máximo 5) — subí un archivo o pegá un link</label>
             <div class="admin-images-grid" id="adminImagesGrid">
-              <div class="admin-image-slot" onclick="document.getElementById('productImageInput1').click()">
-                <img id="productImagePreview1" src="" style="display: none;">
-                <div class="admin-image-placeholder" id="productImagePlaceholder1">
+              <div class="admin-image-slot" id="productImageSlot1">
+                <img id="productImagePreview1" src="" style="display: none;" onclick="document.getElementById('productImageInput1').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder1" onclick="document.getElementById('productImageInput1').click()">
                   <i class="fas fa-plus"></i>
                 </div>
+                <button type="button" class="admin-image-remove" id="productImageRemove1" style="display: none;" onclick="removeProductImage(1)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
-              <div class="admin-image-slot" onclick="document.getElementById('productImageInput2').click()">
-                <img id="productImagePreview2" src="" style="display: none;">
-                <div class="admin-image-placeholder" id="productImagePlaceholder2">
+              <div class="admin-image-slot" id="productImageSlot2">
+                <img id="productImagePreview2" src="" style="display: none;" onclick="document.getElementById('productImageInput2').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder2" onclick="document.getElementById('productImageInput2').click()">
                   <i class="fas fa-plus"></i>
                 </div>
+                <button type="button" class="admin-image-remove" id="productImageRemove2" style="display: none;" onclick="removeProductImage(2)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
-              <div class="admin-image-slot" onclick="document.getElementById('productImageInput3').click()">
-                <img id="productImagePreview3" src="" style="display: none;">
-                <div class="admin-image-placeholder" id="productImagePlaceholder3">
+              <div class="admin-image-slot" id="productImageSlot3">
+                <img id="productImagePreview3" src="" style="display: none;" onclick="document.getElementById('productImageInput3').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder3" onclick="document.getElementById('productImageInput3').click()">
                   <i class="fas fa-plus"></i>
                 </div>
+                <button type="button" class="admin-image-remove" id="productImageRemove3" style="display: none;" onclick="removeProductImage(3)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
-              <div class="admin-image-slot" onclick="document.getElementById('productImageInput4').click()">
-                <img id="productImagePreview4" src="" style="display: none;">
-                <div class="admin-image-placeholder" id="productImagePlaceholder4">
+              <div class="admin-image-slot" id="productImageSlot4">
+                <img id="productImagePreview4" src="" style="display: none;" onclick="document.getElementById('productImageInput4').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder4" onclick="document.getElementById('productImageInput4').click()">
                   <i class="fas fa-plus"></i>
                 </div>
+                <button type="button" class="admin-image-remove" id="productImageRemove4" style="display: none;" onclick="removeProductImage(4)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
-              <div class="admin-image-slot" onclick="document.getElementById('productImageInput5').click()">
-                <img id="productImagePreview5" src="" style="display: none;">
-                <div class="admin-image-placeholder" id="productImagePlaceholder5">
+              <div class="admin-image-slot" id="productImageSlot5">
+                <img id="productImagePreview5" src="" style="display: none;" onclick="document.getElementById('productImageInput5').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder5" onclick="document.getElementById('productImageInput5').click()">
                   <i class="fas fa-plus"></i>
                 </div>
+                <button type="button" class="admin-image-remove" id="productImageRemove5" style="display: none;" onclick="removeProductImage(5)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
             </div>
+            <div class="admin-image-url-row">
+              <input type="url" id="productImageUrl" placeholder="Pegar link de imagen: https://...">
+              <button type="button" class="admin-image-url-btn" onclick="addProductImageByUrl()"><i class="fas fa-link"></i> Agregar por link</button>
+            </div>
+            <p class="admin-image-url-hint">El link se carga en el primer espacio libre. Click en ✕ para quitar una foto.</p>
             <input type="file" id="productImageInput1" accept="image/*" style="display: none;" onchange="previewProductImage(event, 1)">
             <input type="file" id="productImageInput2" accept="image/*" style="display: none;" onchange="previewProductImage(event, 2)">
             <input type="file" id="productImageInput3" accept="image/*" style="display: none;" onchange="previewProductImage(event, 3)">

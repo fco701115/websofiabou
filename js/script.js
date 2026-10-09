@@ -3411,6 +3411,29 @@ async function loadAdminProducts() {
   `).join('');
 }
 
+function renderProductImageSlot(slot) {
+  const preview = document.getElementById('productImagePreview' + slot);
+  const placeholder = document.getElementById('productImagePlaceholder' + slot);
+  const removeBtn = document.getElementById('productImageRemove' + slot);
+  if (!preview || !placeholder) return;
+  if (productImages[slot]) {
+    const src = productImages[slot] instanceof File
+      ? (preview.src && preview.src.startsWith('blob:') ? preview.src : URL.createObjectURL(productImages[slot]))
+      : productImages[slot];
+    preview.src = src;
+    preview.style.display = 'block';
+    preview.onerror = function () { this.onerror = null; this.src = 'https://placehold.co/200?text=Link+roto'; };
+    placeholder.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'flex';
+  } else {
+    preview.removeAttribute('src');
+    preview.src = '';
+    preview.style.display = 'none';
+    placeholder.style.display = 'flex';
+    if (removeBtn) removeBtn.style.display = 'none';
+  }
+}
+
 function showAddProductModal() {
   document.getElementById('productModalTitle').textContent = 'Agregar Producto';
   document.getElementById('productId').value = '';
@@ -3422,11 +3445,12 @@ function showAddProductModal() {
   document.getElementById('productSizes').value = '';
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
+  const urlInput = document.getElementById('productImageUrl');
+  if (urlInput) urlInput.value = '';
   
   for (let i = 1; i <= 5; i++) {
     productImages[i] = null;
-    document.getElementById('productImagePreview' + i).style.display = 'none';
-    document.getElementById('productImagePlaceholder' + i).style.display = 'flex';
+    renderProductImageSlot(i);
     document.getElementById('productImageInput' + i).value = '';
   }
   
@@ -3462,17 +3486,15 @@ async function editProduct(id) {
   calcDiscount();
   
   const images = product.images || (product.image ? [product.image] : []);
+  const urlInput = document.getElementById('productImageUrl');
+  if (urlInput) urlInput.value = '';
   for (let i = 1; i <= 5; i++) {
     if (images[i - 1]) {
       productImages[i] = images[i - 1];
-      document.getElementById('productImagePreview' + i).src = images[i - 1];
-      document.getElementById('productImagePreview' + i).style.display = 'block';
-      document.getElementById('productImagePlaceholder' + i).style.display = 'none';
     } else {
       productImages[i] = null;
-      document.getElementById('productImagePreview' + i).style.display = 'none';
-      document.getElementById('productImagePlaceholder' + i).style.display = 'flex';
     }
+    renderProductImageSlot(i);
     document.getElementById('productImageInput' + i).value = '';
   }
   
@@ -3499,11 +3521,42 @@ function previewProductImage(event, slot) {
   const file = event.target.files[0];
   if (file) {
     productImages[slot] = file;
-    const url = URL.createObjectURL(file);
-    document.getElementById('productImagePreview' + slot).src = url;
-    document.getElementById('productImagePreview' + slot).style.display = 'block';
-    document.getElementById('productImagePlaceholder' + slot).style.display = 'none';
+    const preview = document.getElementById('productImagePreview' + slot);
+    if (preview) preview.src = URL.createObjectURL(file);
+    renderProductImageSlot(slot);
   }
+}
+
+function removeProductImage(slot) {
+  productImages[slot] = null;
+  const input = document.getElementById('productImageInput' + slot);
+  if (input) input.value = '';
+  renderProductImageSlot(slot);
+}
+
+function addProductImageByUrl() {
+  const urlInput = document.getElementById('productImageUrl');
+  if (!urlInput) return;
+  const url = urlInput.value.trim();
+  if (!url) {
+    alert('Pegá un link de imagen primero (https://...)');
+    return;
+  }
+  if (!/^https?:\/\/.+/i.test(url)) {
+    alert('El link debe empezar con http:// o https://');
+    return;
+  }
+  const freeSlot = [1, 2, 3, 4, 5].find(i => !productImages[i]);
+  if (!freeSlot) {
+    alert('Ya hay 5 imágenes. Quitá una con la ✕ para agregar otra por link.');
+    return;
+  }
+  productImages[freeSlot] = url;
+  const input = document.getElementById('productImageInput' + freeSlot);
+  if (input) input.value = '';
+  renderProductImageSlot(freeSlot);
+  urlInput.value = '';
+  urlInput.focus();
 }
 
 async function saveProduct() {
@@ -3526,9 +3579,13 @@ async function saveProduct() {
         fd.append('file', productImages[i]);
         const res = await fetch('/api/upload', { method: 'POST', body: fd });
         const data = await res.json();
+        if (!data.url) {
+          alert('Error al subir la imagen ' + i);
+          return;
+        }
         images.push(data.url);
-      } else {
-        images.push(productImages[i]);
+      } else if (typeof productImages[i] === 'string' && productImages[i].trim()) {
+        images.push(productImages[i].trim());
       }
     }
   }
