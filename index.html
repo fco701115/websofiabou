@@ -663,17 +663,9 @@
         </div>
         <div class="admin-modal-body">
           <input type="hidden" id="productId">
-          <div class="admin-form-row">
-            <div class="admin-input-group">
-              <label>Nombre *</label>
-              <input type="text" id="productName" placeholder="Nombre del producto">
-            </div>
-            <div class="admin-input-group">
-              <label>Categoría *</label>
-              <select id="productCategory">
-                <option value="">Seleccionar categoría</option>
-              </select>
-            </div>
+          <div class="admin-input-group">
+            <label>Nombre *</label>
+            <input type="text" id="productName" placeholder="Nombre del producto">
           </div>
           <div class="admin-form-row">
             <div class="admin-input-group">
@@ -691,6 +683,12 @@
           </div>
           <div class="admin-form-row">
             <div class="admin-input-group">
+              <label>Categoría *</label>
+              <select id="productCategory">
+                <option value="">Seleccionar categoría</option>
+              </select>
+            </div>
+            <div class="admin-input-group">
               <label>Stock</label>
               <input type="number" id="productStock" placeholder="0" min="0">
             </div>
@@ -704,7 +702,6 @@
                     <input type="checkbox" id="productShowSizes" checked onchange="toggleShowSizes()">
                     <span class="admin-slider"></span>
                   </label>
-                  <span class="admin-switch-text">Mostrar</span>
                 </span>
               </div>
               <input type="text" id="productSizes" placeholder="S, M, L, XL">
@@ -717,7 +714,6 @@
                     <input type="checkbox" id="productShowColors" checked onchange="toggleShowColors()">
                     <span class="admin-slider"></span>
                   </label>
-                  <span class="admin-switch-text">Mostrar</span>
                 </span>
               </div>
               <input type="text" id="productColors" placeholder="Blanco, Negro, Azul">

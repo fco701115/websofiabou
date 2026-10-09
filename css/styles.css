@@ -5605,13 +5605,6 @@ button {
 .admin-switch-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.admin-switch-text {
-  font-size: 11px;
-  color: #888;
-  font-weight: 600;
 }
 
 .admin-switch {
