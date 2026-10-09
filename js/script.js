@@ -90,7 +90,7 @@ const products = [
       "Composición": "100% Poliéster",
       "Talla": "S, M, L, XL",
       "Peso": "0.2 kg",
-      "Origen": "Argentina",
+      "Origen": "Estados Unidos",
       "Cuidado": "Lavar a mano"
     }
   },
@@ -122,7 +122,7 @@ const products = [
       "Composición": "95% Algodón, 5% Elastano",
       "Talla": "S, M, L",
       "Peso": "0.3 kg",
-      "Origen": "Argentina",
+      "Origen": "Estados Unidos",
       "Cuidado": "Lavar a máquina"
     }
   },
@@ -154,7 +154,7 @@ const products = [
       "Composición": "98% Algodón, 2% Elastano",
       "Talla": "28, 30, 32, 34, 36",
       "Peso": "0.7 kg",
-      "Origen": "Argentina",
+      "Origen": "Estados Unidos",
       "Cuidado": "Lavar del revés"
     }
   },
@@ -218,7 +218,7 @@ const products = [
       "Composición": "100% Poliéster",
       "Talla": "S, M, L",
       "Peso": "0.3 kg",
-      "Origen": "Argentina",
+      "Origen": "Estados Unidos",
       "Cuidado": "Lavar a mano"
     }
   },
@@ -250,7 +250,7 @@ const products = [
       "Composición": "100% Algodón",
       "Talla": "S, M, L, XL, XXL",
       "Peso": "0.2 kg",
-      "Origen": "Argentina",
+      "Origen": "Estados Unidos",
       "Cuidado": "Lavar a máquina"
     }
   },
@@ -314,7 +314,7 @@ const products = [
       "Composición": "100% Viscosa",
       "Talla": "S, M, L, XL",
       "Peso": "0.4 kg",
-      "Origen": "Argentina",
+      "Origen": "Estados Unidos",
       "Cuidado": "Lavar a mano"
     }
   },
@@ -346,7 +346,7 @@ const products = [
       "Composición": "65% Poliéster, 35% Viscosa",
       "Talla": "S, M, L",
       "Peso": "0.6 kg",
-      "Origen": "Argentina",
+      "Origen": "Estados Unidos",
       "Cuidado": "Limpiar en seco"
     }
   },
@@ -1208,7 +1208,6 @@ function showDetail(id) {
         <button class="tab-btn" onclick="switchTab('reviews', this); loadProductReviews(${product.id})">Valoraciones (${product.reviews})</button>
       </div>
       <div class="tab-content active" id="tab-desc">
-        <h3>Iconic</h3>
         <p>${product.description}</p>
       </div>
       <div class="tab-content" id="tab-specs">
@@ -1379,7 +1378,7 @@ function openProductById(id) {
         show_sizes: p.show_sizes !== false,
         show_colors: p.show_colors !== false,
         description: p.description,
-        specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Argentina" }
+        specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Estados Unidos" }
       });
     }
     history.pushState({ productId: p.id }, '', getProductUrl(p));
@@ -2958,7 +2957,7 @@ function normalizeProduct(p) {
       "Composición": "Textil",
       "Talla": sizes.join(', '),
       "Peso": "0.3 kg",
-      "Origen": "Argentina"
+      "Origen": "Estados Unidos"
     }
   };
 }
