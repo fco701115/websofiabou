@@ -19,6 +19,8 @@ CREATE TABLE products (
   category VARCHAR(100) NOT NULL,
   sizes TEXT DEFAULT '',
   colors TEXT DEFAULT '',
+  show_sizes BOOLEAN DEFAULT true,
+  show_colors BOOLEAN DEFAULT true,
   image TEXT,
   images JSONB DEFAULT '[]',
   description TEXT,

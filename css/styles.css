@@ -5590,48 +5590,82 @@ button {
   border-color: var(--primary);
 }
 
-.admin-image-url-ok {
-  padding: 8px 12px;
-  background: #1a1a2e;
-  color: #fff;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
+.admin-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.admin-label-row label {
+  margin-bottom: 0;
+}
+
+.admin-switch-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-switch-text {
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+}
+
+.admin-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
   flex-shrink: 0;
 }
 
-.admin-image-url-ok:hover {
-  background: var(--primary);
+.admin-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: none;
 }
 
-.admin-option-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.admin-chip {
-  padding: 6px 12px;
-  border: 1px solid #ddd;
-  border-radius: 999px;
-  background: #f8f8f8;
-  font-size: 12px;
-  font-weight: 600;
-  color: #444;
+.admin-slider {
+  position: absolute;
   cursor: pointer;
-  transition: all 0.15s ease;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 999px;
+  transition: background-color 0.2s ease;
 }
 
-.admin-chip:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+.admin-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
 }
 
-.admin-chip.active {
-  background: #1a1a2e;
-  border-color: #1a1a2e;
-  color: #fff;
+.admin-switch input:checked + .admin-slider {
+  background-color: #1a1a2e;
+}
+
+.admin-switch input:checked + .admin-slider:before {
+  transform: translateX(16px);
+}
+
+.admin-input-group input:disabled {
+  background: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
 }
 
 .admin-sidebar-overlay {

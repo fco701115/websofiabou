@@ -1151,14 +1151,16 @@ function showDetail(id) {
         <ul class="detail-features">${featuresHtml}</ul>
 
         <div class="detail-options">
+          ${product.show_sizes !== false && sizesHtml ? `
           <div class="detail-option-group">
             <label>Talla:</label>
             <div class="size-options">${sizesHtml}</div>
-          </div>
+          </div>` : ''}
+          ${product.show_colors !== false && colorsHtml ? `
           <div class="detail-option-group">
             <label>Color:</label>
             <div class="color-options">${colorsHtml}</div>
-          </div>
+          </div>` : ''}
         </div>
 
         <div class="detail-qty-row">
@@ -1374,6 +1376,8 @@ function openProductById(id) {
         features: ["Tejido de alta calidad", "Diseño moderno y cómodo", "Perfecto para el día a día"],
         sizes: (p.sizes && typeof p.sizes === 'string' && p.sizes.trim()) ? p.sizes.split(',').map(s => s.trim()) : ["S", "M", "L", "XL"],
         colors: (p.colors && typeof p.colors === 'string' && p.colors.trim()) ? p.colors.split(',').map(c => c.trim()) : ["Negro", "Blanco"],
+        show_sizes: p.show_sizes !== false,
+        show_colors: p.show_colors !== false,
         description: p.description,
         specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Argentina" }
       });
@@ -2947,6 +2951,8 @@ function normalizeProduct(p) {
     ],
     sizes: sizes,
     colors: colors,
+    show_sizes: p.show_sizes !== false,
+    show_colors: p.show_colors !== false,
     description: p.description,
     specs: {
       "Composición": "Textil",
@@ -3455,59 +3461,21 @@ function syncProductImageUrlInputs() {
   }
 }
 
-// ========== TALLAS / COLORES: botones de opción ==========
-const PRESET_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Única', '28', '30', '32', '34', '36', '38', '40', '35', '37', '39', '41', '42'];
-const PRESET_COLORS = ['Blanco', 'Negro', 'Gris', 'Azul', 'Celeste', 'Rojo', 'Bordó', 'Rosa', 'Verde', 'Beige', 'Marrón', 'Amarillo', 'Naranja', 'Violeta', 'Dorado', 'Plateado'];
-
-function getInputList(inputId) {
-  const el = document.getElementById(inputId);
-  if (!el) return [];
-  return el.value.split(',').map(s => s.trim()).filter(Boolean);
+// ========== TALLAS / COLORES: switch Mostrar en detalle ==========
+function toggleShowSizes() {
+  const sw = document.getElementById('productShowSizes');
+  const inp = document.getElementById('productSizes');
+  if (inp) inp.disabled = sw ? !sw.checked : false;
 }
 
-function setInputList(inputId, list) {
-  const el = document.getElementById(inputId);
-  if (el) el.value = list.join(', ');
+function toggleShowColors() {
+  const sw = document.getElementById('productShowColors');
+  const inp = document.getElementById('productColors');
+  if (inp) inp.disabled = sw ? !sw.checked : false;
 }
 
-function renderOptionChips() {
-  const sizeBox = document.getElementById('sizeOptions');
-  const colorBox = document.getElementById('colorOptions');
-  const sizes = getInputList('productSizes').map(s => s.toLowerCase());
-  const colors = getInputList('productColors').map(s => s.toLowerCase());
-  if (sizeBox) {
-    sizeBox.innerHTML = PRESET_SIZES.map(s =>
-      `<button type="button" class="admin-chip ${sizes.includes(s.toLowerCase()) ? 'active' : ''}" onclick="toggleSizeOption('${s}')">${s}</button>`
-    ).join('');
-  }
-  if (colorBox) {
-    colorBox.innerHTML = PRESET_COLORS.map(c =>
-      `<button type="button" class="admin-chip ${colors.includes(c.toLowerCase()) ? 'active' : ''}" onclick="toggleColorOption('${c}')">${c}</button>`
-    ).join('');
-  }
-}
-
-function toggleSizeOption(val) {
-  const list = getInputList('productSizes');
-  const idx = list.findIndex(s => s.toLowerCase() === val.toLowerCase());
-  if (idx >= 0) list.splice(idx, 1);
-  else list.push(val);
-  setInputList('productSizes', list);
-  renderOptionChips();
-}
-
-function toggleColorOption(val) {
-  const list = getInputList('productColors');
-  const idx = list.findIndex(s => s.toLowerCase() === val.toLowerCase());
-  if (idx >= 0) list.splice(idx, 1);
-  else list.push(val);
-  setInputList('productColors', list);
-  renderOptionChips();
-}
-
-function syncOptionChips() {
-  renderOptionChips();
-}
+// Stub de compatibilidad (los chips se eliminaron del modal)
+function syncOptionChips() {}
 
 function showAddProductModal() {
   document.getElementById('productModalTitle').textContent = 'Agregar Producto';
@@ -3521,7 +3489,10 @@ function showAddProductModal() {
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
   clearProductImageUrlInputs();
-  renderOptionChips();
+  document.getElementById('productShowSizes').checked = true;
+  document.getElementById('productShowColors').checked = true;
+  toggleShowSizes();
+  toggleShowColors();
   
   for (let i = 1; i <= 5; i++) {
     productImages[i] = null;
@@ -3559,7 +3530,10 @@ async function editProduct(id) {
   document.getElementById('productColors').value = product.colors || '';
   document.getElementById('productDescription').value = product.description || '';
   calcDiscount();
-  renderOptionChips();
+  document.getElementById('productShowSizes').checked = product.show_sizes !== false;
+  document.getElementById('productShowColors').checked = product.show_colors !== false;
+  toggleShowSizes();
+  toggleShowColors();
   
   const images = product.images || (product.image ? [product.image] : []);
   for (let i = 1; i <= 5; i++) {
@@ -3687,6 +3661,8 @@ async function saveProduct() {
   const category = document.getElementById('productCategory').value;
   const sizes = document.getElementById('productSizes').value.trim();
   const colors = document.getElementById('productColors').value.trim();
+  const show_sizes = document.getElementById('productShowSizes') ? document.getElementById('productShowSizes').checked : true;
+  const show_colors = document.getElementById('productShowColors') ? document.getElementById('productShowColors').checked : true;
   const description = document.getElementById('productDescription').value.trim();
 
   if (!applyProductImageUrls()) return;
@@ -3715,7 +3691,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, stock, category, sizes, colors, images, description };
+  const data = { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, images, description };
   
   if (id) {
     await apiPut('/products/' + id, data);
