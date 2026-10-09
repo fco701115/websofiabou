@@ -3434,6 +3434,81 @@ function renderProductImageSlot(slot) {
   }
 }
 
+function clearProductImageUrlInputs() {
+  for (let i = 1; i <= 5; i++) {
+    const inp = document.getElementById('productImageUrl' + i);
+    if (inp) inp.value = '';
+  }
+  const legacy = document.getElementById('productImageUrl');
+  if (legacy) legacy.value = '';
+}
+
+function syncProductImageUrlInputs() {
+  for (let i = 1; i <= 5; i++) {
+    const inp = document.getElementById('productImageUrl' + i);
+    if (!inp) continue;
+    if (typeof productImages[i] === 'string' && productImages[i].trim()) {
+      inp.value = productImages[i].trim();
+    } else {
+      inp.value = '';
+    }
+  }
+}
+
+// ========== TALLAS / COLORES: botones de opción ==========
+const PRESET_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Única', '28', '30', '32', '34', '36', '38', '40', '35', '37', '39', '41', '42'];
+const PRESET_COLORS = ['Blanco', 'Negro', 'Gris', 'Azul', 'Celeste', 'Rojo', 'Bordó', 'Rosa', 'Verde', 'Beige', 'Marrón', 'Amarillo', 'Naranja', 'Violeta', 'Dorado', 'Plateado'];
+
+function getInputList(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return [];
+  return el.value.split(',').map(s => s.trim()).filter(Boolean);
+}
+
+function setInputList(inputId, list) {
+  const el = document.getElementById(inputId);
+  if (el) el.value = list.join(', ');
+}
+
+function renderOptionChips() {
+  const sizeBox = document.getElementById('sizeOptions');
+  const colorBox = document.getElementById('colorOptions');
+  const sizes = getInputList('productSizes').map(s => s.toLowerCase());
+  const colors = getInputList('productColors').map(s => s.toLowerCase());
+  if (sizeBox) {
+    sizeBox.innerHTML = PRESET_SIZES.map(s =>
+      `<button type="button" class="admin-chip ${sizes.includes(s.toLowerCase()) ? 'active' : ''}" onclick="toggleSizeOption('${s}')">${s}</button>`
+    ).join('');
+  }
+  if (colorBox) {
+    colorBox.innerHTML = PRESET_COLORS.map(c =>
+      `<button type="button" class="admin-chip ${colors.includes(c.toLowerCase()) ? 'active' : ''}" onclick="toggleColorOption('${c}')">${c}</button>`
+    ).join('');
+  }
+}
+
+function toggleSizeOption(val) {
+  const list = getInputList('productSizes');
+  const idx = list.findIndex(s => s.toLowerCase() === val.toLowerCase());
+  if (idx >= 0) list.splice(idx, 1);
+  else list.push(val);
+  setInputList('productSizes', list);
+  renderOptionChips();
+}
+
+function toggleColorOption(val) {
+  const list = getInputList('productColors');
+  const idx = list.findIndex(s => s.toLowerCase() === val.toLowerCase());
+  if (idx >= 0) list.splice(idx, 1);
+  else list.push(val);
+  setInputList('productColors', list);
+  renderOptionChips();
+}
+
+function syncOptionChips() {
+  renderOptionChips();
+}
+
 function showAddProductModal() {
   document.getElementById('productModalTitle').textContent = 'Agregar Producto';
   document.getElementById('productId').value = '';
@@ -3445,8 +3520,8 @@ function showAddProductModal() {
   document.getElementById('productSizes').value = '';
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
-  const urlInput = document.getElementById('productImageUrl');
-  if (urlInput) urlInput.value = '';
+  clearProductImageUrlInputs();
+  renderOptionChips();
   
   for (let i = 1; i <= 5; i++) {
     productImages[i] = null;
@@ -3484,10 +3559,9 @@ async function editProduct(id) {
   document.getElementById('productColors').value = product.colors || '';
   document.getElementById('productDescription').value = product.description || '';
   calcDiscount();
+  renderOptionChips();
   
   const images = product.images || (product.image ? [product.image] : []);
-  const urlInput = document.getElementById('productImageUrl');
-  if (urlInput) urlInput.value = '';
   for (let i = 1; i <= 5; i++) {
     if (images[i - 1]) {
       productImages[i] = images[i - 1];
@@ -3497,6 +3571,7 @@ async function editProduct(id) {
     renderProductImageSlot(i);
     document.getElementById('productImageInput' + i).value = '';
   }
+  syncProductImageUrlInputs();
   
   await loadProductCategories(product.category);
   document.getElementById('productModal').style.display = 'flex';
@@ -3524,6 +3599,8 @@ function previewProductImage(event, slot) {
     const preview = document.getElementById('productImagePreview' + slot);
     if (preview) preview.src = URL.createObjectURL(file);
     renderProductImageSlot(slot);
+    const urlInp = document.getElementById('productImageUrl' + slot);
+    if (urlInp) urlInp.value = '';
   }
 }
 
@@ -3531,32 +3608,73 @@ function removeProductImage(slot) {
   productImages[slot] = null;
   const input = document.getElementById('productImageInput' + slot);
   if (input) input.value = '';
+  const urlInp = document.getElementById('productImageUrl' + slot);
+  if (urlInp) urlInp.value = '';
   renderProductImageSlot(slot);
 }
 
-function addProductImageByUrl() {
-  const urlInput = document.getElementById('productImageUrl');
-  if (!urlInput) return;
-  const url = urlInput.value.trim();
+function setProductImageByUrl(slot) {
+  const urlInp = document.getElementById('productImageUrl' + slot);
+  if (!urlInp) return false;
+  const url = urlInp.value.trim();
   if (!url) {
-    alert('Pegá un link de imagen primero (https://...)');
-    return;
+    if (typeof productImages[slot] === 'string') {
+      productImages[slot] = null;
+      renderProductImageSlot(slot);
+    }
+    return true;
   }
   if (!/^https?:\/\/.+/i.test(url)) {
-    alert('El link debe empezar con http:// o https://');
-    return;
+    alert('El link de la foto ' + slot + ' debe empezar con http:// o https://');
+    return false;
   }
-  const freeSlot = [1, 2, 3, 4, 5].find(i => !productImages[i]);
-  if (!freeSlot) {
-    alert('Ya hay 5 imágenes. Quitá una con la ✕ para agregar otra por link.');
-    return;
-  }
-  productImages[freeSlot] = url;
-  const input = document.getElementById('productImageInput' + freeSlot);
+  productImages[slot] = url;
+  const input = document.getElementById('productImageInput' + slot);
   if (input) input.value = '';
-  renderProductImageSlot(freeSlot);
-  urlInput.value = '';
-  urlInput.focus();
+  renderProductImageSlot(slot);
+  return true;
+}
+
+function applyProductImageUrls() {
+  for (let i = 1; i <= 5; i++) {
+    const urlInp = document.getElementById('productImageUrl' + i);
+    if (!urlInp) continue;
+    const url = urlInp.value.trim();
+    if (!url) continue;
+    if (!/^https?:\/\/.+/i.test(url)) {
+      alert('El link de la foto ' + i + ' debe empezar con http:// o https://');
+      return false;
+    }
+    productImages[i] = url;
+    const input = document.getElementById('productImageInput' + i);
+    if (input) input.value = '';
+  }
+  return true;
+}
+
+function addProductImageByUrl() {
+  const legacy = document.getElementById('productImageUrl');
+  if (legacy && legacy.value.trim()) {
+    const url = legacy.value.trim();
+    if (!/^https?:\/\/.+/i.test(url)) {
+      alert('El link debe empezar con http:// o https://');
+      return;
+    }
+    const freeSlot = [1, 2, 3, 4, 5].find(i => !productImages[i]);
+    if (!freeSlot) {
+      alert('Ya hay 5 imágenes. Quitá una con la ✕ para agregar otra por link.');
+      return;
+    }
+    productImages[freeSlot] = url;
+    const input = document.getElementById('productImageInput' + freeSlot);
+    if (input) input.value = '';
+    renderProductImageSlot(freeSlot);
+    syncProductImageUrlInputs();
+    legacy.value = '';
+    return;
+  }
+  if (!applyProductImageUrls()) return;
+  for (let i = 1; i <= 5; i++) renderProductImageSlot(i);
 }
 
 async function saveProduct() {
@@ -3570,6 +3688,8 @@ async function saveProduct() {
   const sizes = document.getElementById('productSizes').value.trim();
   const colors = document.getElementById('productColors').value.trim();
   const description = document.getElementById('productDescription').value.trim();
+
+  if (!applyProductImageUrls()) return;
   
   const images = [];
   for (let i = 1; i <= 5; i++) {
