@@ -5307,6 +5307,11 @@ button {
   padding: 20px;
 }
 
+#productModal .admin-modal-header,
+#productModal .admin-modal-body {
+  padding: 10px;
+}
+
 .admin-modal-footer {
   display: flex;
   justify-content: flex-end;
