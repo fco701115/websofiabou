@@ -500,7 +500,9 @@ function renderProducts(filter = 'Todas') {
   const grid = document.getElementById('productsGrid');
   if (!grid) return;
 
-  const filtered = filter === 'Todas' ? products : products.filter(p => p.category === filter);
+  const filtered = filter === 'Todas' ? [...products] : products.filter(p => p.category === filter);
+  // Último producto subido primero (id mayor = más reciente)
+  filtered.sort((a, b) => b.id - a.id);
 
   if (filtered.length === 0) {
     grid.innerHTML = `
@@ -521,6 +523,8 @@ function renderCategoryProducts(category) {
   if (!grid) return;
 
   const filtered = products.filter(p => p.category === category);
+  // Último producto subido primero (id mayor = más reciente)
+  filtered.sort((a, b) => b.id - a.id);
 
   if (filtered.length === 0) {
     grid.innerHTML = `

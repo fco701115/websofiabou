@@ -331,10 +331,10 @@ app.use('/api', cacheMiddleware);
 
 // ========== PRODUCTS ==========
 
-// GET all products
+// GET all products (más recientes primero: último subido -> primero subido)
 app.get('/api/products', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM products ORDER BY id');
+    const result = await pool.query('SELECT * FROM products ORDER BY id DESC');
     const products = result.rows.map(p => {
       let images = [];
       if (p.images) {
@@ -381,9 +381,9 @@ app.get('/api/products/category/:category', async (req, res) => {
     const { category } = req.params;
     let result;
     if (category === 'Todas') {
-      result = await pool.query('SELECT * FROM products ORDER BY id');
+      result = await pool.query('SELECT * FROM products ORDER BY id DESC');
     } else {
-      result = await pool.query('SELECT * FROM products WHERE category = $1 ORDER BY id', [category]);
+      result = await pool.query('SELECT * FROM products WHERE category = $1 ORDER BY id DESC', [category]);
     }
     res.json(result.rows);
   } catch (err) {
