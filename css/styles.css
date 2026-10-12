@@ -1757,6 +1757,50 @@ button {
   width: 100%;
   height: 600px;
   object-fit: contain;
+  cursor: zoom-in;
+  transition: transform 0.25s ease;
+}
+
+.detail-main-img-wrapper img.zoomed {
+  transform: scale(2);
+  cursor: zoom-out;
+}
+
+/* Ventana de zoom (lupa) en detalle de producto */
+.detail-zoom-lens {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: rgba(200, 9, 89, 0.15);
+  border: 1px solid #c80959;
+  cursor: zoom-in;
+  display: none;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.detail-zoom-window {
+  display: none;
+  width: 420px;
+  height: 600px;
+  flex-shrink: 0;
+  border: 1px solid #e5e5e5;
+  border-radius: var(--radius);
+  background-color: #fff;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  z-index: 5;
+}
+
+.detail-zoom-window.active {
+  display: block;
+}
+
+@media (max-width: 1200px) {
+  .detail-zoom-window,
+  .detail-zoom-lens {
+    display: none !important;
+  }
 }
 
 .gallery-arrow {

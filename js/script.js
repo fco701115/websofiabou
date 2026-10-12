@@ -1130,13 +1130,15 @@ function showDetail(id) {
             </div>
           `).join('')}
         </div>
-        <div class="detail-main-img-wrapper">
+        <div class="detail-main-img-wrapper" id="detailZoomWrap">
           <button class="gallery-arrow gallery-prev" onclick="prevDetailImg()"><i class="fas fa-chevron-left"></i></button>
           <button class="mobile-img-arrow mobile-img-prev" onclick="prevDetailImg()"><i class="fas fa-chevron-left"></i></button>
           <img src="${product.images[0]}" alt="${product.name}" id="detailMainImg">
+          <div class="detail-zoom-lens" id="detailZoomLens"></div>
           <button class="gallery-arrow gallery-next" onclick="nextDetailImg()"><i class="fas fa-chevron-right"></i></button>
           <button class="mobile-img-arrow mobile-img-next" onclick="nextDetailImg()"><i class="fas fa-chevron-right"></i></button>
         </div>
+        <div class="detail-zoom-window" id="detailZoomWindow"></div>
       </div>
 
       <div class="detail-info">
@@ -1231,6 +1233,77 @@ function showDetail(id) {
   `;
 
   showView('detail');
+  initDetailZoom();
+}
+
+// ========== ZOOM EN IMAGEN DE DETALLE (ventana lupa) ==========
+const DETAIL_ZOOM = 2.5;
+
+function initDetailZoom() {
+  const wrap = document.getElementById('detailZoomWrap');
+  const img = document.getElementById('detailMainImg');
+  const lens = document.getElementById('detailZoomLens');
+  const zoomWin = document.getElementById('detailZoomWindow');
+  if (!wrap || !img || !lens || !zoomWin) return;
+  // Solo dispositivos con hover fino (desktop). En táctil se usa tap-to-zoom.
+  if (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const syncZoomBg = () => {
+    zoomWin.style.backgroundImage = `url("${img.src}")`;
+  };
+  syncZoomBg();
+
+  const moveZoom = (e) => {
+    const rect = img.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+      lens.style.display = 'none';
+      zoomWin.classList.remove('active');
+      return;
+    }
+    lens.style.display = 'block';
+    zoomWin.classList.add('active');
+
+    const lensW = lens.offsetWidth || 120;
+    const lensH = lens.offsetHeight || 120;
+    let lensX = x - lensW / 2;
+    let lensY = y - lensH / 2;
+    lensX = Math.max(0, Math.min(lensX, rect.width - lensW));
+    lensY = Math.max(0, Math.min(lensY, rect.height - lensH));
+    // Posicionar la lupa dentro del wrapper (compensa offset de la imagen)
+    lens.style.left = (rect.left - wrap.getBoundingClientRect().left + lensX) + 'px';
+    lens.style.top = (rect.top - wrap.getBoundingClientRect().top + lensY) + 'px';
+
+    const rx = rect.width / img.naturalWidth || 1;
+    const ry = rect.height / img.naturalHeight || 1;
+    const bgW = rect.width * DETAIL_ZOOM;
+    const bgH = rect.height * DETAIL_ZOOM;
+    zoomWin.style.backgroundSize = bgW + 'px ' + bgH + 'px';
+    zoomWin.style.backgroundPosition = `-${lensX * DETAIL_ZOOM}px -${lensY * DETAIL_ZOOM}px`;
+    void rx; void ry;
+  };
+
+  wrap.onmousemove = moveZoom;
+  wrap.onmouseenter = syncZoomBg;
+  wrap.onmouseleave = () => {
+    lens.style.display = 'none';
+    zoomWin.classList.remove('active');
+  };
+  // Tap en móvil: alterna zoom 2x con origen en el punto tocado
+  img.onclick = (e) => {
+    if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const rect = img.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    if (img.classList.contains('zoomed')) {
+      img.classList.remove('zoomed');
+      img.style.transformOrigin = 'center center';
+    } else {
+      img.style.transformOrigin = x + '% ' + y + '%';
+      img.classList.add('zoomed');
+    }
+  };
 }
 
 function copyLink() {
@@ -1511,7 +1584,13 @@ function changeDetailImg(index) {
   const mainImg = document.getElementById('detailMainImg');
   const thumbs = document.querySelectorAll('.detail-thumb');
 
-  if (mainImg) mainImg.src = currentDetailImages[index];
+  if (mainImg) {
+    mainImg.src = currentDetailImages[index];
+    mainImg.classList.remove('zoomed');
+    mainImg.style.transformOrigin = 'center center';
+    const zoomWin = document.getElementById('detailZoomWindow');
+    if (zoomWin) zoomWin.style.backgroundImage = `url("${currentDetailImages[index]}")`;
+  }
   thumbs.forEach((t, i) => t.classList.toggle('active', i === index));
 }
 
