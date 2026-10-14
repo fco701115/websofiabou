@@ -688,7 +688,7 @@ button {
 /* ========== CATEGORIES ========== */
 .categories-section {
   max-width: var(--max-width);
-  margin: 50px auto;
+  margin: 20px auto;
   padding: 0 20px;
 }
 
