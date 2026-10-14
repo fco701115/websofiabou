@@ -599,8 +599,14 @@ function showCategoryPage(category) {
 }
 
 function navigateToCategory(category) {
+  closeCategoriesAccordion();
   history.pushState({ category: category }, '', '/categoria/' + slugify(category));
   showCategoryPage(category);
+}
+
+function closeCategoriesAccordion() {
+  const accordion = document.getElementById('categoriesAccordion');
+  if (accordion) accordion.classList.remove('open');
 }
 
 // ========== RENDER STARS ==========
@@ -2292,7 +2298,7 @@ function renderCategoriesAccordion() {
 function selectCategoryFromAccordion(category) {
   activeCategory = category;
   renderProducts(category);
-  toggleCategoriesAccordion();
+  closeCategoriesAccordion();
   
   const catalogSection = document.getElementById('catalogo');
   if (catalogSection) {
@@ -3535,12 +3541,25 @@ function syncProductImageUrlInputs() {
   for (let i = 1; i <= 5; i++) {
     const inp = document.getElementById('productImageUrl' + i);
     if (!inp) continue;
-    if (typeof productImages[i] === 'string' && productImages[i].trim()) {
-      inp.value = productImages[i].trim();
+    const val = productImages[i];
+    // No volcar data-URIs (base64) gigantes al input: solo se muestran en preview.
+    // El valor sigue en productImages[i] y se conserva al guardar.
+    if (typeof val === 'string' && val.trim() && !(val.startsWith('data:') && val.length > 2000)) {
+      inp.value = val.trim();
     } else {
       inp.value = '';
     }
   }
+}
+
+// Acepta links nuevos https/http y formatos ya guardados en la BD:
+// rutas relativas (/uploads/..., uploads/...), data:image/... (base64 viejo) y blob:.
+function isValidProductImageUrl(url) {
+  if (!url) return false;
+  const u = url.trim();
+  return /^(https?:\/\/|\/\/|\/|data:image\/|blob:)/i.test(u) ||
+    /^[^:\s]+\.(jpg|jpeg|png|gif|webp|avif|svg)(\?.*)?$/i.test(u) ||
+    /^uploads\//i.test(u);
 }
 
 // ========== TALLAS / COLORES: switch Mostrar en detalle ==========
@@ -3611,7 +3630,6 @@ async function editProduct(id) {
   document.getElementById('productSizes').value = product.sizes || '';
   document.getElementById('productColors').value = product.colors || '';
   document.getElementById('productDescription').value = product.description || '';
-  calcDiscount();
   document.getElementById('productShowSizes').checked = product.show_sizes !== false;
   document.getElementById('productShowColors').checked = product.show_colors !== false;
   toggleShowSizes();
@@ -3641,6 +3659,11 @@ async function loadProductCategories(selected) {
     categories.forEach(c => {
       select.innerHTML += `<option value="${c.name}" ${c.name === selected ? 'selected' : ''}>${c.name}</option>`;
     });
+  }
+  // Si la carga falló o la categoría del producto ya no existe en la lista,
+  // conservarla como opción para no bloquear el guardado al editar.
+  if (selected && !Array.from(select.options).some(o => o.value === selected)) {
+    select.innerHTML += `<option value="${selected}" selected>${selected}</option>`;
   }
 }
 
@@ -3674,14 +3697,11 @@ function setProductImageByUrl(slot) {
   if (!urlInp) return false;
   const url = urlInp.value.trim();
   if (!url) {
-    if (typeof productImages[slot] === 'string') {
-      productImages[slot] = null;
-      renderProductImageSlot(slot);
-    }
     return true;
   }
-  if (!/^https?:\/\/.+/i.test(url)) {
-    alert('El link de la foto ' + slot + ' debe empezar con http:// o https://');
+  if (!isValidProductImageUrl(url)) {
+    alert('El link de la foto ' + slot + ' no es válido. Usá https://... o una ruta de imagen válida.');
+    urlInp.focus();
     return false;
   }
   productImages[slot] = url;
@@ -3697,8 +3717,12 @@ function applyProductImageUrls() {
     if (!urlInp) continue;
     const url = urlInp.value.trim();
     if (!url) continue;
-    if (!/^https?:\/\/.+/i.test(url)) {
-      alert('El link de la foto ' + i + ' debe empezar con http:// o https://');
+    // Si el input conserva el valor ya guardado (sincronizado al abrir),
+    // no hay nada que validar ni que pisar.
+    if (typeof productImages[i] === 'string' && productImages[i].trim() === url) continue;
+    if (!isValidProductImageUrl(url)) {
+      alert('El link de la foto ' + i + ' no es válido. Usá https://... o una ruta de imagen válida.');
+      urlInp.focus();
       return false;
     }
     productImages[i] = url;
@@ -3712,8 +3736,8 @@ function addProductImageByUrl() {
   const legacy = document.getElementById('productImageUrl');
   if (legacy && legacy.value.trim()) {
     const url = legacy.value.trim();
-    if (!/^https?:\/\/.+/i.test(url)) {
-      alert('El link debe empezar con http:// o https://');
+    if (!isValidProductImageUrl(url)) {
+      alert('El link no es válido. Usá https://... o una ruta de imagen válida.');
       return;
     }
     const freeSlot = [1, 2, 3, 4, 5].find(i => !productImages[i]);
@@ -3747,42 +3771,53 @@ async function saveProduct() {
   const show_colors = document.getElementById('productShowColors') ? document.getElementById('productShowColors').checked : true;
   const description = document.getElementById('productDescription').value.trim();
 
-  if (!applyProductImageUrls()) return;
-  
-  const images = [];
-  for (let i = 1; i <= 5; i++) {
-    if (productImages[i]) {
-      if (productImages[i] instanceof File) {
-        const fd = new FormData();
-        fd.append('file', productImages[i]);
-        const res = await fetch('/api/upload', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (!data.url) {
-          alert('Error al subir la imagen ' + i);
-          return;
-        }
-        images.push(data.url);
-      } else if (typeof productImages[i] === 'string' && productImages[i].trim()) {
-        images.push(productImages[i].trim());
-      }
-    }
-  }
-  
   if (!name || !price || !category) {
     alert('Nombre, precio y categoría son requeridos');
     return;
   }
 
-  const data = { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, images, description };
-  
-  if (id) {
-    await apiPut('/products/' + id, data);
-  } else {
-    await apiPost('/products', data);
+  if (!applyProductImageUrls()) return;
+
+  const saveBtn = document.querySelector('#productModal .admin-modal-save');
+  if (saveBtn) saveBtn.disabled = true;
+  try {
+    const images = [];
+    for (let i = 1; i <= 5; i++) {
+      if (productImages[i]) {
+        if (productImages[i] instanceof File) {
+          const fd = new FormData();
+          fd.append('file', productImages[i]);
+          const res = await fetch('/api/upload', { method: 'POST', body: fd });
+          const data = await res.json();
+          if (!data.url) {
+            alert('Error al subir la imagen ' + i);
+            return;
+          }
+          images.push(data.url);
+        } else if (typeof productImages[i] === 'string' && productImages[i].trim()) {
+          images.push(productImages[i].trim());
+        }
+      }
+    }
+
+    const data = { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, images, description };
+
+    let result;
+    if (id) {
+      result = await apiPut('/products/' + id, data);
+    } else {
+      result = await apiPost('/products', data);
+    }
+    if (!result || result.error) {
+      alert('No se pudo guardar el producto: ' + ((result && result.error) || 'error de conexión con el servidor'));
+      return;
+    }
+
+    closeProductModal();
+    loadAdminProducts();
+  } finally {
+    if (saveBtn) saveBtn.disabled = false;
   }
-  
-  closeProductModal();
-  loadAdminProducts();
 }
 
 async function deleteProduct(id) {
