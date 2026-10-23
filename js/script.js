@@ -1235,11 +1235,17 @@ function showDetail(id) {
     </div>
 
     <div class="detail-related">
-      <h2>También te puede gustar</h2>
+      <div class="related-header">
+        <h2>También te puede gustar</h2>
+        <div class="related-arrows">
+          <button class="carousel-btn related-prev" id="relatedPrevTop"><i class="fas fa-chevron-left"></i></button>
+          <button class="carousel-btn related-next" id="relatedNextTop"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
       <div class="related-carousel">
-        <button class="carousel-btn carousel-prev" id="relatedPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="carousel-btn carousel-prev related-prev" id="relatedPrev"><i class="fas fa-chevron-left"></i></button>
         <div class="related-grid" id="relatedGrid">${relatedHtml}</div>
-        <button class="carousel-btn carousel-next" id="relatedNext"><i class="fas fa-chevron-right"></i></button>
+        <button class="carousel-btn carousel-next related-next" id="relatedNext"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>
   `;
@@ -2212,9 +2218,10 @@ let relatedDragCleanup = null;
 
 function initRelatedCarousel() {
   const grid = document.getElementById('relatedGrid');
-  const prevBtn = document.getElementById('relatedPrev');
-  const nextBtn = document.getElementById('relatedNext');
-  if (!grid || !prevBtn || !nextBtn) return;
+  // Flechas laterales (escritorio) y flechas junto al título (móvil)
+  const prevBtns = document.querySelectorAll('.detail-related .related-prev');
+  const nextBtns = document.querySelectorAll('.detail-related .related-next');
+  if (!grid || !prevBtns.length || !nextBtns.length) return;
 
   // Limpiar listeners de la visita anterior al detalle (document es global)
   if (typeof relatedDragCleanup === 'function') relatedDragCleanup();
@@ -2223,13 +2230,13 @@ function initRelatedCarousel() {
 
   const updateButtons = () => {
     const canScroll = grid.scrollWidth > grid.clientWidth + 5;
-    prevBtn.style.display = canScroll ? '' : 'none';
-    nextBtn.style.display = canScroll ? '' : 'none';
+    prevBtns.forEach((btn) => { btn.style.display = canScroll ? '' : 'none'; });
+    nextBtns.forEach((btn) => { btn.style.display = canScroll ? '' : 'none'; });
   };
   updateButtons();
 
-  prevBtn.addEventListener('click', () => grid.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }));
-  nextBtn.addEventListener('click', () => grid.scrollBy({ left: scrollAmount(), behavior: 'smooth' }));
+  prevBtns.forEach((btn) => btn.addEventListener('click', () => grid.scrollBy({ left: -scrollAmount(), behavior: 'smooth' })));
+  nextBtns.forEach((btn) => btn.addEventListener('click', () => grid.scrollBy({ left: scrollAmount(), behavior: 'smooth' })));
 
   // Arrastrar las tarjetas con el puntero del ratón
   let isDragging = false;

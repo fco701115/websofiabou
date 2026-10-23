@@ -2406,6 +2406,24 @@ button {
   margin-bottom: 24px;
 }
 
+.related-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.related-header h2 {
+  margin-bottom: 0;
+}
+
+/* Flechas junto al título: solo se ven en móvil (en escritorio van a los lados) */
+.related-arrows {
+  display: none;
+  gap: 8px;
+}
+
 .related-carousel {
   display: flex;
   align-items: center;
@@ -3782,6 +3800,22 @@ button {
   .detail-related .carousel-btn {
     width: 34px;
     height: 34px;
+  }
+
+  /* Flechas junto a la leyenda "También te puede gustar" (solo móvil) */
+  .detail-related .related-header {
+    margin-bottom: 16px;
+  }
+
+  .detail-related .related-arrows {
+    display: flex;
+  }
+
+  .detail-related .related-arrows .carousel-btn {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
   }
 }
 
