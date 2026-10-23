@@ -710,6 +710,19 @@ button {
   scrollbar-width: none;
   padding: 10px 0;
   flex: 1;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.categories-container.dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.categories-container img {
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .categories-container::-webkit-scrollbar {

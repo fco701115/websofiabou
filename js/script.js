@@ -2156,6 +2156,46 @@ function initCarousel() {
   nextBtn.addEventListener('click', () => {
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   });
+
+  // Arrastrar las categorías con el puntero del ratón
+  let isDragging = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+  let moved = false;
+
+  container.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    moved = false;
+    startX = e.pageX;
+    startScrollLeft = container.scrollLeft;
+    container.classList.add('dragging');
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const dx = e.pageX - startX;
+    if (Math.abs(dx) > 3) moved = true;
+    container.scrollLeft = startScrollLeft - dx;
+  });
+
+  const stopDrag = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    container.classList.remove('dragging');
+  };
+
+  document.addEventListener('mouseup', stopDrag);
+  container.addEventListener('mouseleave', stopDrag);
+
+  // Evitar abrir una categoría si se estaba arrastrando
+  container.addEventListener('click', (e) => {
+    if (moved) {
+      e.preventDefault();
+      e.stopPropagation();
+      moved = false;
+    }
+  }, true);
 }
 
 // ========== MOBILE MENU ==========
