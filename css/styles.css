@@ -2406,13 +2406,40 @@ button {
   margin-bottom: 24px;
 }
 
+.related-carousel {
+  display: flex;
+  align-items: center;
+}
+
 .related-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
   gap: 10px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 5px 0;
+  flex: 1;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.related-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.related-grid.dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.related-grid img {
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .detail-related .product-card {
+  flex: 0 0 calc((100% - 40px) / 5); /* 5 tarjetas en una sola fila */
   max-width: 100%;
 }
 
@@ -3288,8 +3315,8 @@ button {
     gap: 30px;
   }
 
-  .related-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .detail-related .product-card {
+    flex: 0 0 calc((100% - 30px) / 4); /* 4 tarjetas visibles */
   }
 }
 
@@ -3412,7 +3439,7 @@ button {
   }
 
   .detail-related .product-card {
-    width: 165px;
+    width: auto;
     height: 295px;
     padding: 10px;
   }
@@ -3747,9 +3774,14 @@ button {
     gap: 8px;
   }
 
-  .related-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  .detail-related .product-card {
+    flex: 0 0 calc((100% - 10px) / 2); /* 2 tarjetas visibles */
+    width: auto;
+  }
+
+  .detail-related .carousel-btn {
+    width: 34px;
+    height: 34px;
   }
 }
 
@@ -3850,9 +3882,11 @@ button {
     max-width: 100%;
   }
 
-  .related-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  .detail-related .product-card {
+    flex: 0 0 calc((100% - 10px) / 2); /* 2 tarjetas visibles */
+    width: auto;
+    height: auto;
+    padding: 8px;
   }
 
   /* ===== CHECKOUT MOBILE ===== */

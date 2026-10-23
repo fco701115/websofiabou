@@ -1080,7 +1080,11 @@ function showDetail(id) {
     ? Object.entries(product.specs).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('')
     : '';
 
-  const related = products.filter(p => p.id !== product.id).slice(0, 5);
+  // Productos de la misma categoría (excluyendo el actual); si no hay, muestra los últimos
+  let related = products.filter(p => p.category === product.category && p.id !== product.id);
+  if (related.length === 0) {
+    related = products.filter(p => p.id !== product.id).slice(0, 5);
+  }
   const relatedHtml = related.map(p => {
     const starsHtml = renderStars(p.rating);
     const origPriceHtml = p.originalPrice
@@ -1232,11 +1236,16 @@ function showDetail(id) {
 
     <div class="detail-related">
       <h2>También te puede gustar</h2>
-      <div class="related-grid">${relatedHtml}</div>
+      <div class="related-carousel">
+        <button class="carousel-btn carousel-prev" id="relatedPrev"><i class="fas fa-chevron-left"></i></button>
+        <div class="related-grid" id="relatedGrid">${relatedHtml}</div>
+        <button class="carousel-btn carousel-next" id="relatedNext"><i class="fas fa-chevron-right"></i></button>
+      </div>
     </div>
   `;
 
   showView('detail');
+  initRelatedCarousel();
 }
 
 function copyLink() {
@@ -2196,6 +2205,78 @@ function initCarousel() {
       moved = false;
     }
   }, true);
+}
+
+// Carrusel "También te puede gustar" (productos de la misma categoría)
+let relatedDragCleanup = null;
+
+function initRelatedCarousel() {
+  const grid = document.getElementById('relatedGrid');
+  const prevBtn = document.getElementById('relatedPrev');
+  const nextBtn = document.getElementById('relatedNext');
+  if (!grid || !prevBtn || !nextBtn) return;
+
+  // Limpiar listeners de la visita anterior al detalle (document es global)
+  if (typeof relatedDragCleanup === 'function') relatedDragCleanup();
+
+  const scrollAmount = () => Math.max(grid.clientWidth * 0.8, 200);
+
+  const updateButtons = () => {
+    const canScroll = grid.scrollWidth > grid.clientWidth + 5;
+    prevBtn.style.display = canScroll ? '' : 'none';
+    nextBtn.style.display = canScroll ? '' : 'none';
+  };
+  updateButtons();
+
+  prevBtn.addEventListener('click', () => grid.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }));
+  nextBtn.addEventListener('click', () => grid.scrollBy({ left: scrollAmount(), behavior: 'smooth' }));
+
+  // Arrastrar las tarjetas con el puntero del ratón
+  let isDragging = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+  let moved = false;
+
+  const onMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const dx = e.pageX - startX;
+    if (Math.abs(dx) > 3) moved = true;
+    grid.scrollLeft = startScrollLeft - dx;
+  };
+
+  const stopDrag = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    grid.classList.remove('dragging');
+  };
+
+  const onDown = (e) => {
+    isDragging = true;
+    moved = false;
+    startX = e.pageX;
+    startScrollLeft = grid.scrollLeft;
+    grid.classList.add('dragging');
+  };
+
+  const onClickCapture = (e) => {
+    if (moved) {
+      e.preventDefault();
+      e.stopPropagation();
+      moved = false;
+    }
+  };
+
+  grid.addEventListener('mousedown', onDown);
+  grid.addEventListener('mouseleave', stopDrag);
+  grid.addEventListener('click', onClickCapture, true);
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', stopDrag);
+
+  relatedDragCleanup = () => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', stopDrag);
+  };
 }
 
 // ========== MOBILE MENU ==========
