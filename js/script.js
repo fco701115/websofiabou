@@ -4281,4 +4281,17 @@ async function deleteSplitBanner(id) {
   });
 })();
 
+// ========== NAV LINK ACTIVO ==========
+// Mueve la clase .active al enlace clickeado y la sincroniza
+// entre el navbar de PC (.navbar-inner) y el menú móvil (.mobile-nav).
+document.addEventListener('click', function (e) {
+  const link = e.target.closest('.nav-link');
+  if (!link) return;
+
+  const label = link.textContent.trim();
+  document.querySelectorAll('.nav-link').forEach(function (l) {
+    l.classList.toggle('active', l.textContent.trim() === label);
+  });
+});
+
 document.addEventListener('DOMContentLoaded', initApp);
