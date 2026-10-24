@@ -473,6 +473,7 @@ function productCardHtml(p) {
       <div class="product-img-wrapper" onclick="navigateToProductId(${p.id})">
         <img src="${mainImage}" alt="${p.name}" loading="lazy">
         ${discountHtml}
+        ${soldBadgeHtml(p)}
         <div class="product-actions">
           <button class="product-action-btn" data-tooltip="Vista Rápida" onclick="event.stopPropagation(); quickView(${p.id})"><i class="fas fa-eye"></i></button>
           <button class="product-action-btn ${isInWishlist(p.id) ? 'wishlist-active' : ''}" data-tooltip="Favoritos" onclick="event.stopPropagation(); toggleWishlistBtn(this, ${p.id})"><i class="${isInWishlist(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
@@ -1100,6 +1101,7 @@ function showDetail(id) {
         <div class="product-img-wrapper" onclick="navigateToProductId(${p.id})">
           <img src="${mainImage}" alt="${p.name}" loading="lazy">
           ${discHtml}
+          ${soldBadgeHtml(p)}
           <div class="product-actions">
             <button class="product-action-btn" data-tooltip="Vista Rápida" onclick="event.stopPropagation(); quickView(${p.id})"><i class="fas fa-eye"></i></button>
             <button class="product-action-btn ${isInWishlist(p.id) ? 'wishlist-active' : ''}" data-tooltip="Favoritos" onclick="event.stopPropagation(); toggleWishlistBtn(this, ${p.id})"><i class="${isInWishlist(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
@@ -1144,6 +1146,7 @@ function showDetail(id) {
           <button class="gallery-arrow gallery-prev" onclick="prevDetailImg()"><i class="fas fa-chevron-left"></i></button>
           <button class="mobile-img-arrow mobile-img-prev" onclick="prevDetailImg()"><i class="fas fa-chevron-left"></i></button>
           <img src="${product.images[0]}" alt="${product.name}" id="detailMainImg">
+          ${soldBadgeHtml(product)}
           <button class="gallery-arrow gallery-next" onclick="nextDetailImg()"><i class="fas fa-chevron-right"></i></button>
           <button class="mobile-img-arrow mobile-img-next" onclick="nextDetailImg()"><i class="fas fa-chevron-right"></i></button>
         </div>
@@ -1402,6 +1405,7 @@ function openProductById(id) {
         colors: (p.colors && typeof p.colors === 'string' && p.colors.trim()) ? p.colors.split(',').map(c => c.trim()) : ["Negro", "Blanco"],
         show_sizes: p.show_sizes !== false,
         show_colors: p.show_colors !== false,
+        sold: p.sold === true || p.sold === 'true' || p.sold === 1,
         description: p.description,
         specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Estados Unidos" }
       });
@@ -2837,6 +2841,7 @@ function initSearch() {
         <div class="product-img-wrapper" onclick="navigateToProductId(${p.id})">
           <img src="${p.image}" alt="${p.name}" loading="lazy">
           ${discountHtml}
+          ${soldBadgeHtml(p)}
           <div class="product-actions">
             <button class="product-action-btn" data-tooltip="Vista Rápida" onclick="event.stopPropagation(); quickView(${p.id})"><i class="fas fa-eye"></i></button>
             <button class="product-action-btn ${isInWishlist(p.id) ? 'wishlist-active' : ''}" data-tooltip="Favoritos" onclick="event.stopPropagation(); toggleWishlistBtn(this, ${p.id})"><i class="${isInWishlist(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
@@ -3083,6 +3088,7 @@ function normalizeProduct(p) {
     category: p.category,
     image: images[0] || p.image,
     images: images,
+    sold: p.sold === true || p.sold === 'true' || p.sold === 1,
     features: [
       "Tejido de alta calidad",
       "Diseño moderno y cómodo",
@@ -3544,7 +3550,7 @@ async function loadAdminProducts() {
     <tr>
       <td>${p.id}</td>
       <td><img src="${Array.isArray(p.images) ? p.images[0] : p.image}" class="product-img" onerror="this.src='https://placehold.co/50'"></td>
-      <td>${p.name}</td>
+      <td>${p.name} ${p.sold ? '<span class="status-badge cancelled">Vendido</span>' : ''}</td>
       <td>${p.category}</td>
       <td>$${p.price}</td>
       <td>${p.stock || 0}</td>
@@ -3560,8 +3566,7 @@ function renderProductImageSlot(slot) {
   const preview = document.getElementById('productImagePreview' + slot);
   const placeholder = document.getElementById('productImagePlaceholder' + slot);
   const removeBtn = document.getElementById('productImageRemove' + slot);
-  if (!preview || !placeholder) return;
-  if (productImages[slot]) {
+  if (!preview || !placeholder) return;  if (productImages[slot]) {
     const src = productImages[slot] instanceof File
       ? (preview.src && preview.src.startsWith('blob:') ? preview.src : URL.createObjectURL(productImages[slot]))
       : productImages[slot];
@@ -3577,6 +3582,7 @@ function renderProductImageSlot(slot) {
     placeholder.style.display = 'flex';
     if (removeBtn) removeBtn.style.display = 'none';
   }
+  toggleSoldBadgePreview();
 }
 
 function clearProductImageUrlInputs() {
@@ -3626,6 +3632,23 @@ function toggleShowColors() {
   if (inp) inp.disabled = sw ? !sw.checked : false;
 }
 
+// ========== Producto vendido: switch del modal + etiqueta "Vendido" ==========
+function toggleSoldBadgePreview() {
+  const sw = document.getElementById('productSold');
+  const badge = document.getElementById('productSoldBadgePreview');
+  if (!badge) return;
+  const hasImage = [1, 2, 3, 4, 5].some(i => !!productImages[i]);
+  badge.style.display = (sw && sw.checked && hasImage) ? 'flex' : 'none';
+}
+
+function isSoldProduct(p) {
+  return !!p && (p.sold === true || p.sold === 'true' || p.sold === 1);
+}
+
+function soldBadgeHtml(p) {
+  return isSoldProduct(p) ? '<div class="sold-badge">Vendido</div>' : '';
+}
+
 // Stub de compatibilidad (los chips se eliminaron del modal)
 function syncOptionChips() {}
 
@@ -3645,12 +3668,15 @@ function showAddProductModal() {
   document.getElementById('productShowColors').checked = true;
   toggleShowSizes();
   toggleShowColors();
+  const soldSwitch = document.getElementById('productSold');
+  if (soldSwitch) soldSwitch.checked = false;
   
   for (let i = 1; i <= 5; i++) {
     productImages[i] = null;
     renderProductImageSlot(i);
     document.getElementById('productImageInput' + i).value = '';
   }
+  toggleSoldBadgePreview();
   
   loadProductCategories();
   document.getElementById('productModal').style.display = 'flex';
@@ -3685,6 +3711,9 @@ async function editProduct(id) {
   document.getElementById('productShowColors').checked = product.show_colors !== false;
   toggleShowSizes();
   toggleShowColors();
+  const soldSwitch = document.getElementById('productSold');
+  if (soldSwitch) soldSwitch.checked = product.sold === true || product.sold === 'true' || product.sold === 1;
+  toggleSoldBadgePreview();
   
   const images = product.images || (product.image ? [product.image] : []);
   for (let i = 1; i <= 5; i++) {
@@ -3820,6 +3849,7 @@ async function saveProduct() {
   const colors = document.getElementById('productColors').value.trim();
   const show_sizes = document.getElementById('productShowSizes') ? document.getElementById('productShowSizes').checked : true;
   const show_colors = document.getElementById('productShowColors') ? document.getElementById('productShowColors').checked : true;
+  const sold = document.getElementById('productSold') ? document.getElementById('productSold').checked : false;
   const description = document.getElementById('productDescription').value.trim();
 
   if (!name || !price || !category) {
@@ -3851,7 +3881,7 @@ async function saveProduct() {
       }
     }
 
-    const data = { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, images, description };
+    const data = { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, images, description };
 
     let result;
     if (id) {

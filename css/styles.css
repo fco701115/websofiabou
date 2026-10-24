@@ -958,6 +958,40 @@ button {
   z-index: 2;
 }
 
+/* Etiqueta "Vendido" sobre la imagen del producto */
+.sold-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #111827;
+  color: #fff;
+  padding: 5px 11px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+}
+
+.detail-main-img-wrapper .sold-badge {
+  top: 16px;
+  right: 16px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+
+.sold-badge-preview {
+  top: 6px;
+  right: 6px;
+  padding: 3px 8px;
+  font-size: 0.65rem;
+  border-radius: 3px;
+}
+
 .wishlist-icon {
   position: absolute;
   top: 12px;
@@ -3503,6 +3537,21 @@ button {
     align-items: center;
     justify-content: center;
     padding: 0;
+  }
+
+  .sold-badge {
+    top: 5px;
+    right: 5px;
+    padding: 3px 7px;
+    font-size: 0.6rem;
+    border-radius: 3px;
+  }
+
+  .detail-main-img-wrapper .sold-badge {
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    font-size: 0.72rem;
   }
 
   .hero-layout {

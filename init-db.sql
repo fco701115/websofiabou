@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS products (
   colors TEXT DEFAULT '',
   show_sizes BOOLEAN DEFAULT true,
   show_colors BOOLEAN DEFAULT true,
+  sold BOOLEAN DEFAULT false,
   image TEXT,
   images TEXT,
   description TEXT,

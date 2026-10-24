@@ -693,6 +693,18 @@
               <input type="number" id="productStock" placeholder="0" min="0">
             </div>
           </div>
+          <div class="admin-input-group">
+            <div class="admin-label-row">
+              <label>Producto vendido</label>
+              <span class="admin-switch-wrap" title="Marcar el producto como vendido: se muestra la etiqueta &quot;Vendido&quot; sobre la foto">
+                <label class="admin-switch">
+                  <input type="checkbox" id="productSold" onchange="toggleSoldBadgePreview()">
+                  <span class="admin-slider"></span>
+                </label>
+              </span>
+            </div>
+            <p class="admin-image-url-hint">Al activarlo aparece una etiqueta <b>“Vendido”</b> sobre la imagen del producto en la tienda.</p>
+          </div>
           <div class="admin-form-row">
             <div class="admin-input-group">
               <div class="admin-label-row">
@@ -731,6 +743,7 @@
                 <div class="admin-image-placeholder" id="productImagePlaceholder1" onclick="document.getElementById('productImageInput1').click()">
                   <i class="fas fa-plus"></i>
                 </div>
+                <div class="sold-badge sold-badge-preview" id="productSoldBadgePreview" style="display: none;">Vendido</div>
                 <button type="button" class="admin-image-remove" id="productImageRemove1" style="display: none;" onclick="removeProductImage(1)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
               <div class="admin-image-slot" id="productImageSlot2">
