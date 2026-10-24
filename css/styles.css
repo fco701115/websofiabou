@@ -3551,9 +3551,13 @@ button {
 
   .hero-side-banners {
     flex-direction: row;
+    gap: 10px;
   }
 
   .side-banner {
+    flex: 0 0 calc(50% - 5px);
+    width: calc(50% - 5px);
+    min-width: 0;
     height: 200px;
   }
 
@@ -3872,9 +3876,13 @@ button {
 
   .hero-side-banners {
     flex-direction: row;
+    gap: 10px;
   }
 
   .side-banner {
+    flex: 0 0 calc(50% - 5px);
+    width: calc(50% - 5px);
+    min-width: 0;
     height: 140px;
   }
 
