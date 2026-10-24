@@ -693,18 +693,6 @@
               <input type="number" id="productStock" placeholder="0" min="0">
             </div>
           </div>
-          <div class="admin-input-group">
-            <div class="admin-label-row">
-              <label>Producto vendido</label>
-              <span class="admin-switch-wrap" title="Marcar el producto como vendido: se muestra la etiqueta &quot;Vendido&quot; sobre la foto">
-                <label class="admin-switch">
-                  <input type="checkbox" id="productSold" onchange="toggleSoldBadgePreview()">
-                  <span class="admin-slider"></span>
-                </label>
-              </span>
-            </div>
-            <p class="admin-image-url-hint">Al activarlo aparece una etiqueta <b>“Vendido”</b> sobre la imagen del producto en la tienda.</p>
-          </div>
           <div class="admin-form-row">
             <div class="admin-input-group">
               <div class="admin-label-row">
@@ -804,6 +792,18 @@
             <input type="file" id="productImageInput3" accept="image/*" style="display: none;" onchange="previewProductImage(event, 3)">
             <input type="file" id="productImageInput4" accept="image/*" style="display: none;" onchange="previewProductImage(event, 4)">
             <input type="file" id="productImageInput5" accept="image/*" style="display: none;" onchange="previewProductImage(event, 5)">
+          </div>
+          <div class="admin-input-group">
+            <div class="admin-label-row">
+              <label>Producto vendido</label>
+              <span class="admin-switch-wrap" title="Marcar el producto como vendido: se muestra la etiqueta &quot;Vendido&quot; sobre la foto">
+                <label class="admin-switch">
+                  <input type="checkbox" id="productSold" onchange="toggleSoldBadgePreview()">
+                  <span class="admin-slider"></span>
+                </label>
+              </span>
+            </div>
+            <p class="admin-image-url-hint">Al activarlo aparece una etiqueta <b>“Vendido”</b> sobre la imagen del producto en la tienda.</p>
           </div>
         </div>
         <div class="admin-modal-footer">
