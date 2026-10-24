@@ -591,6 +591,13 @@ button {
   color: #302727;
 }
 
+/* Texto blanco en el banner lateral izquierdo (superior en móvil) */
+#sideBanner1 .side-banner-content,
+#sideBanner1 .side-banner-content h2,
+#sideBanner1 .side-banner-content p {
+  color: #ffffff;
+}
+
 .side-banner-content h2 {
   font-size: 1.3rem;
   font-weight: 700;
