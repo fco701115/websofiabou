@@ -1053,6 +1053,7 @@ function showDetail(id) {
   currentDetailImages = product.images;
   currentDetailMainIndex = 0;
   detailQty = 1;
+  console.info(`[stock] Producto ${product.id} "${String(product.name || '').slice(0, 40)}": stock=${product.stock} → máximo=${getProductMaxQty(product)}`);
 
   const container = document.getElementById('productDetail');
   if (!container) return;
@@ -3218,7 +3219,6 @@ async function initApp() {
   // Try to load from API first, fallback to local data
   const apiProducts = await apiGet('/products');
   if (apiProducts && apiProducts.length > 0) {
-    const prevStock = currentDetailProduct ? currentDetailProduct.stock : undefined;
     products.length = 0;
     apiProducts.forEach(p => products.push(normalizeProduct(p)));
     localStorage.setItem('cachedProducts', JSON.stringify(products));
@@ -3230,10 +3230,6 @@ async function initApp() {
       showDetail(detailId);
       detailQty = keepQty;
       updateQtyControls();
-      const fresh = products.find(p => p.id === detailId);
-      if (fresh && fresh.stock !== prevStock) {
-        console.info(`[stock] Producto ${detailId}: stock=${fresh.stock}, máximo=${getProductMaxQty(fresh)}`);
-      }
     }
   }
 
