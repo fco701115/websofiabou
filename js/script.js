@@ -1183,9 +1183,9 @@ function showDetail(id) {
         <div class="detail-qty-row">
           <label>Cantidad:</label>
           <div class="qty-selector">
-            <button onclick="changeDetailQty(-1)">-</button>
+            <button type="button" id="detailQtyMinus" onclick="changeDetailQty(-1)" aria-label="Restar cantidad">-</button>
             <span id="detailQty">1</span>
-            <button onclick="changeDetailQty(1)">+</button>
+            <button type="button" id="detailQtyPlus" onclick="changeDetailQty(1)" aria-label="Sumar cantidad">+</button>
           </div>
           <span class="detail-total-price" id="detailTotalPrice">$${product.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
         </div>
@@ -1254,6 +1254,7 @@ function showDetail(id) {
   `;
 
   showView('detail');
+  updateQtyControls();
   initRelatedCarousel();
 }
 
@@ -1406,6 +1407,7 @@ function openProductById(id) {
         show_sizes: p.show_sizes !== false,
         show_colors: p.show_colors !== false,
         sold: p.sold === true || p.sold === 'true' || p.sold === 1,
+        stock: toStock(p.stock),
         description: p.description,
         specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Estados Unidos" }
       });
@@ -1488,10 +1490,35 @@ function handleContactSubmit(e) {
 
 let detailQty = 1;
 
+// Devuelve cuántas unidades se pueden llevar como máximo según el stock del producto.
+// Sin stock definido (o stock 0) la cantidad queda fija en 1.
+function getProductMaxQty(product) {
+  if (!product) return 1;
+  const raw = product.stock;
+  if (raw === null || raw === undefined || raw === '') return 1;
+  const stock = Number(raw);
+  if (!Number.isFinite(stock)) return 1;
+  return Math.max(1, Math.floor(stock));
+}
+
 function changeDetailQty(delta) {
-  detailQty = Math.max(1, detailQty + delta);
-  const el = document.getElementById('detailQty');
-  if (el) el.textContent = detailQty;
+  const max = getProductMaxQty(currentDetailProduct);
+  // Se limita entre 1 y el stock disponible (si el stock es 0 o no existe, queda en 1)
+  detailQty = Math.min(max, Math.max(1, detailQty + delta));
+  updateQtyControls();
+}
+
+// Actualiza botones -, +, la cantidad visible y el total
+function updateQtyControls() {
+  const max = getProductMaxQty(currentDetailProduct);
+  const qtyEl = document.getElementById('detailQty');
+  const minusBtn = document.getElementById('detailQtyMinus');
+  const plusBtn = document.getElementById('detailQtyPlus');
+
+  if (qtyEl) qtyEl.textContent = detailQty;
+  if (minusBtn) minusBtn.disabled = detailQty <= 1;
+  if (plusBtn) plusBtn.disabled = detailQty >= max;
+
   updateDetailTotalPrice();
 }
 
@@ -3055,6 +3082,14 @@ async function loadSplitBanners() {
 }
 
 // ========== CACHE ==========
+// Normaliza el valor de stock de la API a un número entero >= 0 (o null si no está definido)
+function toStock(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const n = Number(value);
+  if (!Number.isFinite(n)) return null;
+  return Math.max(0, Math.floor(n));
+}
+
 function normalizeProduct(p) {
   let images = [];
   if (p.images && Array.isArray(p.images) && p.images.length > 0) {
@@ -3089,6 +3124,7 @@ function normalizeProduct(p) {
     image: images[0] || p.image,
     images: images,
     sold: p.sold === true || p.sold === 'true' || p.sold === 1,
+    stock: toStock(p.stock),
     features: [
       "Tejido de alta calidad",
       "Diseño moderno y cómodo",
