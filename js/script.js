@@ -1490,6 +1490,13 @@ function handleContactSubmit(e) {
 
 let detailQty = 1;
 
+// Devuelve el producto del detalle SIEMPRE desde el array vivo de productos.
+// Evita quedarse con una copia vieja (localStorage / caché) que puede no tener "stock".
+function getDetailProduct() {
+  if (!currentDetailProduct) return null;
+  return products.find(p => p.id === currentDetailProduct.id) || currentDetailProduct;
+}
+
 // Devuelve cuántas unidades se pueden llevar como máximo según el stock del producto.
 // Sin stock definido (o stock 0) la cantidad queda fija en 1.
 function getProductMaxQty(product) {
@@ -1502,7 +1509,7 @@ function getProductMaxQty(product) {
 }
 
 function changeDetailQty(delta) {
-  const max = getProductMaxQty(currentDetailProduct);
+  const max = getProductMaxQty(getDetailProduct());
   // Se limita entre 1 y el stock disponible (si el stock es 0 o no existe, queda en 1)
   detailQty = Math.min(max, Math.max(1, detailQty + delta));
   updateQtyControls();
@@ -1510,10 +1517,13 @@ function changeDetailQty(delta) {
 
 // Actualiza botones -, +, la cantidad visible y el total
 function updateQtyControls() {
-  const max = getProductMaxQty(currentDetailProduct);
+  const max = getProductMaxQty(getDetailProduct());
   const qtyEl = document.getElementById('detailQty');
   const minusBtn = document.getElementById('detailQtyMinus');
   const plusBtn = document.getElementById('detailQtyPlus');
+
+  // Re-valida la cantidad contra el stock vigente
+  detailQty = Math.min(Math.max(1, detailQty || 1), max);
 
   if (qtyEl) qtyEl.textContent = detailQty;
   if (minusBtn) minusBtn.disabled = detailQty <= 1;
@@ -1524,8 +1534,9 @@ function updateQtyControls() {
 
 function updateDetailTotalPrice() {
   const el = document.getElementById('detailTotalPrice');
-  if (!el || !currentDetailProduct) return;
-  const total = currentDetailProduct.price * detailQty;
+  const product = getDetailProduct();
+  if (!el || !product) return;
+  const total = product.price * detailQty;
   el.textContent = `$${total.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 }
 
@@ -3207,9 +3218,23 @@ async function initApp() {
   // Try to load from API first, fallback to local data
   const apiProducts = await apiGet('/products');
   if (apiProducts && apiProducts.length > 0) {
+    const prevStock = currentDetailProduct ? currentDetailProduct.stock : undefined;
     products.length = 0;
     apiProducts.forEach(p => products.push(normalizeProduct(p)));
     localStorage.setItem('cachedProducts', JSON.stringify(products));
+
+    // Si el detalle se abrió con datos de caché (sin stock), se repinta con los datos reales
+    if (currentView === 'detail' && currentDetailProduct) {
+      const detailId = currentDetailProduct.id;
+      const keepQty = detailQty;
+      showDetail(detailId);
+      detailQty = keepQty;
+      updateQtyControls();
+      const fresh = products.find(p => p.id === detailId);
+      if (fresh && fresh.stock !== prevStock) {
+        console.info(`[stock] Producto ${detailId}: stock=${fresh.stock}, máximo=${getProductMaxQty(fresh)}`);
+      }
+    }
   }
 
   const apiCategories = await apiGet('/categories');
