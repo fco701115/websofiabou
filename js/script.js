@@ -1672,6 +1672,21 @@ function updateDeliveryHomeLabel() {
   label.textContent = hasAddress ? 'Agregar otra direccion' : 'Entregar a domicilio';
 }
 
+// Quita la dirección visible del paso 2 (p. ej. al cambiar de usuario en el paso 1)
+function clearCheckoutAddressSelection() {
+  selectedCheckoutAddrData = null;
+  const saved = document.getElementById('checkoutAddressSaved');
+  if (saved) {
+    saved.style.display = 'none';
+    delete saved.dataset.hasAddress;
+  }
+  const changeBtn = document.getElementById('checkoutAddressChangeBtn');
+  if (changeBtn) changeBtn.style.display = 'none';
+  const empty = document.getElementById('checkoutAddressEmpty');
+  if (empty) empty.style.display = 'none';
+  updateDeliveryHomeLabel();
+}
+
 function resetCheckoutDeliveryStep() {
   checkoutDeliveryMethod = null;
   selectedCheckoutAddrData = null;
@@ -1847,11 +1862,11 @@ function toggleCheckoutEdit() {
   } else {
     data.style.display = 'block';
     form.style.display = 'none';
-    if (changeBtn) changeBtn.style.display = currentUser ? 'inline-flex' : 'none';
+    if (changeBtn) changeBtn.style.display = selectedCheckoutAddrData ? 'inline-flex' : 'none';
   }
 }
 
-function saveCheckoutUserData() {
+async function saveCheckoutUserData() {
   const name = document.getElementById('checkoutEditName').value;
   const email = document.getElementById('checkoutEditEmail').value;
   const phone = document.getElementById('checkoutEditPhone').value;
@@ -1859,13 +1874,68 @@ function saveCheckoutUserData() {
     alert('Nombre y email son requeridos');
     return;
   }
-  currentUser = { ...currentUser, name, email, phone };
+
+  const newEmail = email.trim().toLowerCase();
+  const prevId = currentUser && currentUser.id ? currentUser.id : null;
+  const prevEmail = currentUser && currentUser.email ? currentUser.email.trim().toLowerCase() : '';
+  const oldKey = currentUser ? (currentUser.id || currentUser.email || 'guest') : 'guest';
+
+  // ¿El email corresponde a un usuario registrado? (define a quién pertenecen
+  // la dirección y los datos del pedido)
+  let match = null;
+  const users = await apiGet('/users');
+  if (Array.isArray(users)) {
+    match = users.find(u => (u.email || '').trim().toLowerCase() === newEmail) || null;
+  }
+
+  currentUser = { ...(currentUser || {}), name, email, phone };
+
+  const newId = match ? match.id : null;
+  const identityChanged = (prevId || null) !== newId;
+
+  if (match) {
+    currentUser.id = match.id;
+    currentUser.first_name = match.first_name;
+    currentUser.last_name = match.last_name;
+  } else if (Array.isArray(users) && currentUser.id && newEmail !== prevEmail) {
+    // Email cambiado a uno no registrado: no asociar los datos al usuario anterior
+    delete currentUser.id;
+  }
+
+  const newKey = currentUser.id || currentUser.email || 'guest';
+
+  // Mismo email pero antes sin id: conservar las direcciones ya cargadas con ese email
+  if (identityChanged && !prevId && prevEmail && prevEmail === newEmail && oldKey !== newKey) {
+    try {
+      const prevAddresses = JSON.parse(localStorage.getItem('userAddresses_' + oldKey) || '[]');
+      if (prevAddresses.length) {
+        const current = JSON.parse(localStorage.getItem('userAddresses_' + newKey) || '[]');
+        prevAddresses.forEach((a, i) => {
+          const exists = current.some(x => x.id === a.id || (x.address === a.address && x.locality === a.locality));
+          if (!exists) current.push({ ...a, id: a.id || (Date.now() + i) });
+        });
+        localStorage.setItem('userAddresses_' + newKey, JSON.stringify(current));
+      }
+    } catch (e) {}
+  }
+
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
   populateCheckoutUserData();
   document.getElementById('checkoutUserData').style.display = 'block';
   document.getElementById('checkoutEditForm').style.display = 'none';
+
+  if (identityChanged) {
+    // Se cambió de usuario: quitar la dirección visible del usuario anterior,
+    // restaurar la preferencia/dirección del nuevo usuario y sincronizar
+    clearCheckoutAddressSelection();
+    restoreCheckoutStep2();
+    reconcileUserAddresses();
+    loadUserAddresses();
+  }
+
+  // El botón "Cambiar" solo se muestra si hay una dirección realmente seleccionada
   const changeBtn = document.getElementById('checkoutAddressChangeBtn');
-  if (changeBtn) changeBtn.style.display = 'inline-flex';
+  if (changeBtn) changeBtn.style.display = selectedCheckoutAddrData ? 'inline-flex' : 'none';
 }
 
 function showCheckoutAddressForm(keepCurrentAddress = false) {
