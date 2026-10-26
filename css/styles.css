@@ -6233,9 +6233,13 @@ button {
 }
 
 .address-type-btn.active {
-  border-color: #075ec0;
-  background: #c8e1ea;
-  color: #075ec0;
+  border-color: rgb(219, 47, 118);
+  background: rgba(231, 136, 175, 0.45);
+  color: rgb(219, 47, 118);
+}
+
+.address-type-btn.active i {
+  color: rgb(219, 47, 118);
 }
 
 .required {
