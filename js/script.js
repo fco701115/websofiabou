@@ -1643,7 +1643,7 @@ function showCheckout() {
   }
   populateCheckoutUserData();
   renderCheckoutSummary();
-  loadFirstCheckoutAddress();
+  resetCheckoutDeliveryStep();
   showView('checkout');
   if (currentUser) {
     document.getElementById('checkoutUserData').style.display = 'block';
@@ -1658,14 +1658,54 @@ function showCheckout() {
   }
 }
 
-function loadFirstCheckoutAddress() {
-  if (!currentUser) return;
-  const userId = currentUser.id || currentUser.email;
-  const key = 'userAddresses_' + userId;
-  const addresses = JSON.parse(localStorage.getItem(key) || '[]');
+let checkoutDeliveryMethod = null; // 'store' | 'home'
 
-  if (addresses.length > 0) {
-    selectCheckoutAddress(addresses[0].id);
+function resetCheckoutDeliveryStep() {
+  checkoutDeliveryMethod = null;
+  selectedCheckoutAddrData = null;
+  const storeBtn = document.getElementById('deliveryOptionStore');
+  const homeBtn = document.getElementById('deliveryOptionHome');
+  if (storeBtn) storeBtn.classList.remove('active');
+  if (homeBtn) homeBtn.classList.remove('active');
+  const storeInfo = document.getElementById('checkoutStoreInfo');
+  if (storeInfo) storeInfo.style.display = 'none';
+  const empty = document.getElementById('checkoutAddressEmpty');
+  const saved = document.getElementById('checkoutAddressSaved');
+  const changeBtn = document.getElementById('checkoutAddressChangeBtn');
+  if (saved) {
+    saved.style.display = 'none';
+    delete saved.dataset.hasAddress;
+  }
+  if (empty) empty.style.display = 'none';
+  if (changeBtn) changeBtn.style.display = 'none';
+}
+
+function selectDeliveryMethod(method) {
+  checkoutDeliveryMethod = method;
+  const storeBtn = document.getElementById('deliveryOptionStore');
+  const homeBtn = document.getElementById('deliveryOptionHome');
+  const storeInfo = document.getElementById('checkoutStoreInfo');
+  const empty = document.getElementById('checkoutAddressEmpty');
+  const saved = document.getElementById('checkoutAddressSaved');
+  const changeBtn = document.getElementById('checkoutAddressChangeBtn');
+
+  if (method === 'store') {
+    // Recoger en tienda: se marca y se pasa directo al paso 3
+    if (storeBtn) storeBtn.classList.add('active');
+    if (homeBtn) homeBtn.classList.remove('active');
+    if (storeInfo) storeInfo.style.display = 'block';
+    if (saved) {
+      saved.style.display = 'none';
+      delete saved.dataset.hasAddress;
+    }
+    if (empty) empty.style.display = 'none';
+    if (changeBtn) changeBtn.style.display = 'none';
+  } else {
+    // Entregar a domicilio: se marca y se abre la ventana "Nueva dirección"
+    if (homeBtn) homeBtn.classList.add('active');
+    if (storeBtn) storeBtn.classList.remove('active');
+    if (storeInfo) storeInfo.style.display = 'none';
+    showCheckoutAddressForm();
   }
 }
 
@@ -2117,7 +2157,14 @@ async function submitOrder(e) {
     return;
   }
 
-  if (!address || address.textContent === '-') {
+  if (!checkoutDeliveryMethod) {
+    alert('Seleccioná cómo querés recibir tu pedido');
+    return;
+  }
+
+  const isStorePickup = checkoutDeliveryMethod === 'store';
+
+  if (!isStorePickup && (!address || address.textContent === '-')) {
     alert('Agregá una dirección de entrega');
     return;
   }
@@ -2129,8 +2176,11 @@ async function submitOrder(e) {
     customer_name: userName ? userName.textContent : currentUser.name,
     email: userEmail ? userEmail.textContent : currentUser.email,
     phone: userPhone && userPhone.textContent !== 'No especificado' ? userPhone.textContent : '',
-    address: address.textContent + (document.getElementById('checkoutAddressCityText').textContent ? ', ' + document.getElementById('checkoutAddressCityText').textContent : ''),
-    address_type: savedAddr.type || 'Casa',
+    delivery_method: isStorePickup ? 'store_pickup' : 'home_delivery',
+    address: isStorePickup
+      ? 'Recoger en tienda'
+      : address.textContent + (document.getElementById('checkoutAddressCityText').textContent ? ', ' + document.getElementById('checkoutAddressCityText').textContent : ''),
+    address_type: isStorePickup ? 'Tienda' : (savedAddr.type || 'Casa'),
     address_street: savedAddr.address || '',
     address_locality: savedAddr.locality || '',
     address_instructions: savedAddr.instructions || '',

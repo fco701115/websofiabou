@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique Sofia - Ropa y Calzado Americano</title>
   <link rel="icon" type="image/png" href="/Logo-Boutique-Sofia-2.png">
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css?v=2">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -1221,7 +1221,24 @@
               <button class="checkout-step-change" id="checkoutAddressChangeBtn" style="display:none" onclick="showCheckoutAddressModal()">Cambiar</button>
             </div>
             <div class="checkout-step-body" id="checkoutAddressBody">
-              <div id="checkoutAddressEmpty">
+              <!-- Método de entrega: Recoger en tienda / Entregar a domicilio -->
+              <div class="delivery-options">
+                <button type="button" class="delivery-option" id="deliveryOptionStore" onclick="selectDeliveryMethod('store')">
+                  <span class="delivery-option-icon">🏪</span>
+                  <span class="delivery-option-label">Recoger en tienda</span>
+                </button>
+                <button type="button" class="delivery-option" id="deliveryOptionHome" onclick="selectDeliveryMethod('home')">
+                  <span class="delivery-option-icon">🏠</span>
+                  <span class="delivery-option-label">Entregar a domicilio</span>
+                </button>
+              </div>
+              <!-- Info de recolección en tienda -->
+              <div class="checkout-store-info" id="checkoutStoreInfo" style="display:none">
+                <span class="checkout-address-badge"><i class="fas fa-store"></i> Recoger en tienda</span>
+                <p class="checkout-address-main">Retirá tu pedido en nuestra tienda</p>
+                <p class="checkout-address-extra">Te avisaremos cuando tu pedido esté listo para recoger.</p>
+              </div>
+              <div id="checkoutAddressEmpty" style="display:none">
                 <p class="checkout-empty-text">No tienes direcciones guardadas.</p>
                 <button class="checkout-add-btn" onclick="showCheckoutAddressForm()"><i class="fas fa-plus"></i> Agregar dirección</button>
               </div>
@@ -1557,6 +1574,6 @@
     </div>
   </div>
 
-  <script src="/js/script.js?v=3"></script>
+  <script src="/js/script.js?v=4"></script>
 </body>
 </html>
