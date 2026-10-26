@@ -1726,7 +1726,23 @@ function selectDeliveryMethod(method, openAddressModal = true) {
     } else if (saved) {
       saved.style.display = 'none';
     }
-    if (openAddressModal) showCheckoutAddressForm(hasAddress);
+    if (openAddressModal) {
+      // Si ya hay direcciones guardadas, abrir la lista para elegir cualquiera
+      // (y sumar otra con el botón "Nueva dirección"). Si no hay, abrir el
+      // formulario "Agregar direccion de entrega".
+      const userId = currentUser ? currentUser.id || currentUser.email : 'guest';
+      let savedAddresses = [];
+      try {
+        savedAddresses = JSON.parse(localStorage.getItem('userAddresses_' + userId) || '[]');
+      } catch (e) {
+        savedAddresses = [];
+      }
+      if (savedAddresses.length > 0 && currentUser) {
+        showCheckoutAddressModal();
+      } else {
+        showCheckoutAddressForm(hasAddress);
+      }
+    }
     updateDeliveryHomeLabel();
   }
 }
@@ -1779,6 +1795,13 @@ function restoreCheckoutStep2() {
   if (exists) {
     selectDeliveryMethod('home', false);
     selectCheckoutAddress(pref.addressId);
+    return true;
+  }
+
+  // La dirección recordada ya no existe: conservar la última guardada si hay
+  if (addresses.length > 0) {
+    selectDeliveryMethod('home', false);
+    selectCheckoutAddress(addresses[addresses.length - 1].id);
     return true;
   }
 
