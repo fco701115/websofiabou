@@ -1846,11 +1846,22 @@ function saveCheckoutUserData() {
 }
 
 function showCheckoutAddressForm(keepCurrentAddress = false) {
+  // Siempre en modo "nueva dirección": nunca heredar el modo edición
+  const addressModal = document.getElementById('addressModal');
+  delete addressModal.dataset.editId;
+  // Formulario en blanco para agregar otra dirección
+  ['checkoutAddress', 'checkoutAddressInstructions', 'checkoutLocality', 'checkoutNeighborhood', 'checkoutCity', 'checkoutZip']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.querySelectorAll('#addressModal .address-type-btn').forEach(b => b.classList.remove('active'));
+  const firstTypeBtn = document.querySelector('#addressModal .address-type-btn');
+  if (firstTypeBtn) firstTypeBtn.classList.add('active');
+  selectedAddressType = 'Casa';
+
   if (!keepCurrentAddress) {
     document.getElementById('checkoutAddressEmpty').style.display = 'none';
     document.getElementById('checkoutAddressSaved').style.display = 'none';
   }
-  document.getElementById('addressModal').style.display = 'flex';
+  addressModal.style.display = 'flex';
 }
 
 function showCheckoutAddressList() {
@@ -1960,6 +1971,8 @@ function selectCheckoutAddress(id) {
   document.getElementById('checkoutAddressEmpty').style.display = 'none';
   document.getElementById('checkoutAddressChangeBtn').style.display = 'inline-flex';
   updateDeliveryHomeLabel();
+  // Que la dirección elegida quede como la del próximo pedido
+  saveCheckoutStep2Pref();
 }
 
 function cancelCheckoutAddress() {
@@ -2083,6 +2096,9 @@ function saveCheckoutAddress() {
   // Refresh user panel addresses
   loadUserAddresses();
   updateDeliveryHomeLabel();
+  // Conservar la dirección recién agregada como la activa del paso 2
+  // (si no, al reabrir el checkout se restauraría la dirección anterior)
+  saveCheckoutStep2Pref();
   // Conservar la dirección en el servidor (panel admin > Usuarios)
   syncUserAddresses();
 }
