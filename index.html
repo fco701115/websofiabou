@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique Sofia - Ropa y Calzado Americano</title>
   <link rel="icon" type="image/png" href="/Logo-Boutique-Sofia-2.png">
-  <link rel="stylesheet" href="/css/styles.css?v=4">
+  <link rel="stylesheet" href="/css/styles.css?v=5">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -1263,39 +1263,10 @@
             <div class="checkout-step-body">
               <div class="checkout-payment-options">
                 <label class="checkout-payment-option">
-                  <input type="radio" name="paymentMethod" value="card" checked onchange="togglePaymentForm('card')">
-                  <span class="checkout-payment-label">Tarjeta de crédito</span>
-                  <span class="checkout-payment-icons">
-                    <span class="card-icon visa">VISA</span>
-                    <span class="card-icon mc">MC</span>
-                    <span class="card-icon amex">AMEX</span>
-                  </span>
-                </label>
-                <div class="checkout-card-form" id="checkoutCardForm">
-                  <div class="form-group">
-                    <input type="text" id="checkoutCardNumber" placeholder="Número de tarjeta" maxlength="19">
-                  </div>
-                  <div class="form-row">
-                    <div class="form-group">
-                      <input type="text" id="checkoutCardExpiry" placeholder="Fecha de vencimiento (MM / AA)" maxlength="7">
-                    </div>
-                    <div class="form-group">
-                      <input type="text" id="checkoutCardCvv" placeholder="Código de seguridad" maxlength="4">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <input type="text" id="checkoutCardName" placeholder="Nombre del titular">
-                  </div>
-                  <label class="checkout-checkbox-row">
-                    <input type="checkbox" checked> Usar la dirección de envío como dirección de facturación
-                  </label>
-                </div>
-
-                <label class="checkout-payment-option">
-                  <input type="radio" name="paymentMethod" value="transfer" onchange="togglePaymentForm('transfer')">
+                  <input type="radio" name="paymentMethod" value="transfer" checked onchange="togglePaymentForm('transfer')">
                   <span class="checkout-payment-label">Transferencia Bancaria</span>
                 </label>
-                <div class="checkout-transfer-info" id="checkoutTransferInfo" style="display:none">
+                <div class="checkout-transfer-info" id="checkoutTransferInfo">
                   <p>Realiza tu pago mediante transferencia bancaria a la siguiente cuenta:</p>
                   <div class="checkout-transfer-account">
                     <p class="transfer-name">Websofiabou, INC</p>
@@ -1574,6 +1545,6 @@
     </div>
   </div>
 
-  <script src="/js/script.js?v=5"></script>
+  <script src="/js/script.js?v=7"></script>
 </body>
 </html>

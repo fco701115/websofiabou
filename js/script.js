@@ -1644,6 +1644,7 @@ function showCheckout() {
   populateCheckoutUserData();
   renderCheckoutSummary();
   resetCheckoutDeliveryStep();
+  restoreCheckoutStep2();
   showView('checkout');
   if (currentUser) {
     document.getElementById('checkoutUserData').style.display = 'block';
@@ -1680,7 +1681,7 @@ function resetCheckoutDeliveryStep() {
   if (changeBtn) changeBtn.style.display = 'none';
 }
 
-function selectDeliveryMethod(method) {
+function selectDeliveryMethod(method, openAddressModal = true) {
   checkoutDeliveryMethod = method;
   const storeBtn = document.getElementById('deliveryOptionStore');
   const homeBtn = document.getElementById('deliveryOptionHome');
@@ -1705,8 +1706,66 @@ function selectDeliveryMethod(method) {
     if (homeBtn) homeBtn.classList.add('active');
     if (storeBtn) storeBtn.classList.remove('active');
     if (storeInfo) storeInfo.style.display = 'none';
-    showCheckoutAddressForm();
+    if (openAddressModal) showCheckoutAddressForm();
   }
+}
+
+// ========== RECORDAR MÉTODO Y DIRECCIÓN ENTRE PEDIDOS ==========
+function getCheckoutStep2PrefKey() {
+  if (!currentUser) return null;
+  const userId = currentUser.id || currentUser.email;
+  return 'checkoutStep2Pref_' + userId;
+}
+
+function saveCheckoutStep2Pref() {
+  const key = getCheckoutStep2PrefKey();
+  if (!key || !checkoutDeliveryMethod) return;
+  const pref = {
+    method: checkoutDeliveryMethod,
+    addressId: checkoutDeliveryMethod === 'home' && selectedCheckoutAddrData ? selectedCheckoutAddrData.id : null,
+    name: currentUser.name || '',
+    email: currentUser.email || '',
+    savedAt: Date.now()
+  };
+  localStorage.setItem(key, JSON.stringify(pref));
+}
+
+function restoreCheckoutStep2() {
+  const key = getCheckoutStep2PrefKey();
+  if (!key) return false;
+  let pref = null;
+  try {
+    pref = JSON.parse(localStorage.getItem(key) || 'null');
+  } catch (e) {
+    pref = null;
+  }
+  if (!pref || !pref.method) return false;
+
+  // Solo si los datos del usuario son los mismos con el que se hizo el pedido
+  const sameName = (pref.name || '') === (currentUser.name || '');
+  const sameEmail = (pref.email || '') === (currentUser.email || '');
+  if (!sameName || !sameEmail) return false;
+
+  if (pref.method === 'store') {
+    selectDeliveryMethod('store', false);
+    return true;
+  }
+
+  // Domicilio: recuperar la dirección usada si sigue guardada
+  const userId = currentUser.id || currentUser.email;
+  const addresses = JSON.parse(localStorage.getItem('userAddresses_' + userId) || '[]');
+  const exists = pref.addressId && addresses.some(a => a.id === pref.addressId);
+  if (exists) {
+    selectDeliveryMethod('home', false);
+    selectCheckoutAddress(pref.addressId);
+    return true;
+  }
+
+  // Domicilio sin dirección guardada: dejarlo elegido pero sin dirección
+  selectDeliveryMethod('home', false);
+  const empty = document.getElementById('checkoutAddressEmpty');
+  if (empty) empty.style.display = 'block';
+  return true;
 }
 
 function populateCheckoutUserData() {
@@ -2074,12 +2133,8 @@ function deleteUserAddress(id) {
 }
 
 function togglePaymentForm(method) {
-  const cardForm = document.getElementById('checkoutCardForm');
   const transferInfo = document.getElementById('checkoutTransferInfo');
   const cashInfo = document.getElementById('checkoutCashInfo');
-  if (cardForm) {
-    cardForm.style.display = method === 'card' ? 'flex' : 'none';
-  }
   if (transferInfo) {
     transferInfo.style.display = method === 'transfer' ? 'block' : 'none';
   }
@@ -2189,7 +2244,7 @@ async function submitOrder(e) {
     address_zip: savedAddr.zip || '',
     city: '',
     zip_code: '',
-    payment_method: payment ? payment.value : 'card',
+    payment_method: payment ? payment.value : 'transfer',
     items: cart.map(item => ({ id: item.id, name: item.name, price: item.price, qty: item.qty, image: item.image || '' })),
     total: getCartTotal()
   };
@@ -2212,6 +2267,7 @@ async function submitOrder(e) {
     const userOrders = JSON.parse(localStorage.getItem(key) || '[]');
     userOrders.unshift(result);
     localStorage.setItem(key, JSON.stringify(userOrders));
+    saveCheckoutStep2Pref();
     alert('¡Pedido realizado con éxito! ID: ' + result.id);
     showView('home');
   } else {
