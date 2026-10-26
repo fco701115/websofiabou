@@ -264,10 +264,23 @@ async function ensureSchema() {
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
+  CREATE TABLE IF NOT EXISTS user_addresses (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type VARCHAR(50) DEFAULT 'Casa',
+    address TEXT NOT NULL,
+    instructions TEXT DEFAULT '',
+    locality TEXT DEFAULT '',
+    neighborhood TEXT DEFAULT '',
+    city TEXT DEFAULT '',
+    zip VARCHAR(20) DEFAULT '',
+    local_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
   `;
   try {
     await pool.query(ddl);
-    console.log('Esquema verificado: tablas products, categories, orders, slides, split_banners, reviews, users OK');
+    console.log('Esquema verificado: tablas products, categories, orders, slides, split_banners, reviews, users, user_addresses OK');
   } catch (err) {
     console.error('Error en ensureSchema:', err.message);
   }
@@ -824,6 +837,70 @@ app.get('/api/users', async (req, res) => {
   } catch (err) {
     console.error('Error fetching users:', err);
     res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
+});
+
+// GET todas las direcciones de todos los usuarios (panel admin)
+app.get('/api/user-addresses', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM user_addresses ORDER BY user_id, id');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching all user addresses:', err);
+    res.status(500).json({ error: 'Error al obtener direcciones' });
+  }
+});
+
+// GET direcciones de un usuario
+app.get('/api/users/:id/addresses', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    if (isNaN(userId)) return res.status(400).json({ error: 'ID de usuario inválido' });
+    const result = await pool.query('SELECT * FROM user_addresses WHERE user_id = $1 ORDER BY id', [userId]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching user addresses:', err);
+    res.status(500).json({ error: 'Error al obtener direcciones del usuario' });
+  }
+});
+
+// POST sincronizar direcciones de un usuario (reemplaza la lista completa)
+app.post('/api/users/:id/addresses/sync', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    if (isNaN(userId)) return res.status(400).json({ error: 'ID de usuario inválido' });
+    const addresses = Array.isArray(req.body.addresses) ? req.body.addresses : [];
+
+    await pool.query('DELETE FROM user_addresses WHERE user_id = $1', [userId]);
+    for (const a of addresses) {
+      if (!a || !a.address) continue;
+      await pool.query(
+        `INSERT INTO user_addresses (user_id, type, address, instructions, locality, neighborhood, city, zip, local_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [userId, a.type || 'Casa', a.address, a.instructions || '', a.locality || '',
+         a.neighborhood || '', a.city || '', a.zip || '', a.id || null]
+      );
+    }
+
+    const result = await pool.query('SELECT * FROM user_addresses WHERE user_id = $1 ORDER BY id', [userId]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error syncing user addresses:', err);
+    res.status(500).json({ error: 'Error al sincronizar direcciones' });
+  }
+});
+
+// DELETE una dirección guardada de un usuario
+app.delete('/api/users/:id/addresses/:addressId', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    const addressId = parseInt(req.params.addressId, 10);
+    if (isNaN(userId) || isNaN(addressId)) return res.status(400).json({ error: 'IDs inválidos' });
+    await pool.query('DELETE FROM user_addresses WHERE id = $1 AND user_id = $2', [addressId, userId]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error deleting user address:', err);
+    res.status(500).json({ error: 'Error al eliminar dirección' });
   }
 });
 

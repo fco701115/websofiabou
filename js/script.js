@@ -1661,6 +1661,17 @@ function showCheckout() {
 
 let checkoutDeliveryMethod = null; // 'store' | 'home'
 
+// La leyenda del botón de domicilio cambia según si ya hay una dirección cargada
+function updateDeliveryHomeLabel() {
+  const homeBtn = document.getElementById('deliveryOptionHome');
+  if (!homeBtn) return;
+  const label = homeBtn.querySelector('.delivery-option-label');
+  if (!label) return;
+  const saved = document.getElementById('checkoutAddressSaved');
+  const hasAddress = !!(saved && saved.dataset.hasAddress === 'true' && selectedCheckoutAddrData);
+  label.textContent = hasAddress ? 'Agregar otra direccion' : 'Entregar a domicilio';
+}
+
 function resetCheckoutDeliveryStep() {
   checkoutDeliveryMethod = null;
   selectedCheckoutAddrData = null;
@@ -1679,6 +1690,7 @@ function resetCheckoutDeliveryStep() {
   }
   if (empty) empty.style.display = 'none';
   if (changeBtn) changeBtn.style.display = 'none';
+  updateDeliveryHomeLabel();
 }
 
 function selectDeliveryMethod(method, openAddressModal = true) {
@@ -1691,22 +1703,31 @@ function selectDeliveryMethod(method, openAddressModal = true) {
   const changeBtn = document.getElementById('checkoutAddressChangeBtn');
 
   if (method === 'store') {
-    // Recoger en tienda: se marca y se pasa directo al paso 3
+    // Recoger en tienda: se marca y se pasa directo al paso 3.
+    // La dirección cargada se conserva (solo se oculta la tarjeta).
     if (storeBtn) storeBtn.classList.add('active');
     if (homeBtn) homeBtn.classList.remove('active');
     if (storeInfo) storeInfo.style.display = 'block';
-    if (saved) {
-      saved.style.display = 'none';
-      delete saved.dataset.hasAddress;
-    }
+    if (saved) saved.style.display = 'none';
     if (empty) empty.style.display = 'none';
     if (changeBtn) changeBtn.style.display = 'none';
+    updateDeliveryHomeLabel();
   } else {
-    // Entregar a domicilio: se marca y se abre la ventana "Nueva dirección"
+    // Entregar a domicilio
     if (homeBtn) homeBtn.classList.add('active');
     if (storeBtn) storeBtn.classList.remove('active');
     if (storeInfo) storeInfo.style.display = 'none';
-    if (openAddressModal) showCheckoutAddressForm();
+    const hasAddress = !!(saved && saved.dataset.hasAddress === 'true' && selectedCheckoutAddrData);
+    if (hasAddress) {
+      // Ya existe una dirección: se conserva visible y el botón permite agregar otra
+      saved.style.display = 'block';
+      if (empty) empty.style.display = 'none';
+      if (changeBtn) changeBtn.style.display = 'inline-flex';
+    } else if (saved) {
+      saved.style.display = 'none';
+    }
+    if (openAddressModal) showCheckoutAddressForm(hasAddress);
+    updateDeliveryHomeLabel();
   }
 }
 
@@ -1824,9 +1845,11 @@ function saveCheckoutUserData() {
   if (changeBtn) changeBtn.style.display = 'inline-flex';
 }
 
-function showCheckoutAddressForm() {
-  document.getElementById('checkoutAddressEmpty').style.display = 'none';
-  document.getElementById('checkoutAddressSaved').style.display = 'none';
+function showCheckoutAddressForm(keepCurrentAddress = false) {
+  if (!keepCurrentAddress) {
+    document.getElementById('checkoutAddressEmpty').style.display = 'none';
+    document.getElementById('checkoutAddressSaved').style.display = 'none';
+  }
   document.getElementById('addressModal').style.display = 'flex';
 }
 
@@ -1936,6 +1959,7 @@ function selectCheckoutAddress(id) {
   document.getElementById('checkoutAddressSaved').style.display = 'block';
   document.getElementById('checkoutAddressEmpty').style.display = 'none';
   document.getElementById('checkoutAddressChangeBtn').style.display = 'inline-flex';
+  updateDeliveryHomeLabel();
 }
 
 function cancelCheckoutAddress() {
@@ -2058,6 +2082,9 @@ function saveCheckoutAddress() {
 
   // Refresh user panel addresses
   loadUserAddresses();
+  updateDeliveryHomeLabel();
+  // Conservar la dirección en el servidor (panel admin > Usuarios)
+  syncUserAddresses();
 }
 
 function loadUserAddresses() {
@@ -2130,6 +2157,83 @@ function deleteUserAddress(id) {
   addresses = addresses.filter(a => a.id !== id);
   localStorage.setItem(key, JSON.stringify(addresses));
   loadUserAddresses();
+  // Si la dirección eliminada era la seleccionada en el checkout, limpiarla
+  if (selectedCheckoutAddrData && selectedCheckoutAddrData.id === id) {
+    selectedCheckoutAddrData = null;
+    const saved = document.getElementById('checkoutAddressSaved');
+    if (saved) {
+      saved.style.display = 'none';
+      delete saved.dataset.hasAddress;
+    }
+    const empty = document.getElementById('checkoutAddressEmpty');
+    if (empty && checkoutDeliveryMethod === 'home') empty.style.display = 'block';
+    updateDeliveryHomeLabel();
+  }
+  syncUserAddresses();
+}
+
+// ========== DIRECCIONES EN EL SERVIDOR (PANEL ADMIN > USUARIOS) ==========
+function getLocalUserAddresses() {
+  if (!currentUser) return [];
+  const userId = currentUser.id || currentUser.email;
+  try {
+    return JSON.parse(localStorage.getItem('userAddresses_' + userId) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+// Envía la lista de direcciones del usuario al servidor para el panel admin
+async function syncUserAddresses() {
+  if (!currentUser || !currentUser.id) return;
+  try {
+    const addresses = getLocalUserAddresses();
+    await apiPost('/users/' + currentUser.id + '/addresses/sync', { addresses });
+  } catch (e) {
+    console.warn('No se pudieron sincronizar las direcciones:', e);
+  }
+}
+
+// Trae las direcciones guardadas en el servidor (p. ej. hechas en otro
+// dispositivo/navegador), las conserva en este navegador y viceversa
+async function reconcileUserAddresses() {
+  if (!currentUser || !currentUser.id) return;
+  try {
+    const serverAddrs = await apiGet('/users/' + currentUser.id + '/addresses');
+    if (!Array.isArray(serverAddrs) || serverAddrs.length === 0) {
+      return syncUserAddresses();
+    }
+    const userId = currentUser.id || currentUser.email;
+    const key = 'userAddresses_' + userId;
+    const local = JSON.parse(localStorage.getItem(key) || '[]');
+    let changed = false;
+    serverAddrs.forEach((a, i) => {
+      const exists = local.some(x =>
+        (a.local_id && x.id === a.local_id) ||
+        (x.address === a.address && x.locality === a.locality)
+      );
+      if (!exists && a.address) {
+        local.push({
+          id: a.local_id || (Date.now() + i),
+          type: a.type || 'Casa',
+          address: a.address,
+          instructions: a.instructions || '',
+          locality: a.locality || '',
+          neighborhood: a.neighborhood || '',
+          city: a.city || '',
+          zip: a.zip || ''
+        });
+        changed = true;
+      }
+    });
+    if (changed) {
+      localStorage.setItem(key, JSON.stringify(local));
+      loadUserAddresses();
+    }
+    return syncUserAddresses();
+  } catch (e) {
+    console.warn('No se pudieron reconciliar las direcciones:', e);
+  }
 }
 
 function togglePaymentForm(method) {
@@ -2588,6 +2692,7 @@ async function handleLogin() {
   };
 
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  reconcileUserAddresses();
   showView('userPanel');
 }
 
@@ -2628,6 +2733,7 @@ async function handleRegister() {
     phone: result.phone
   };
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  reconcileUserAddresses();
   alert('Cuenta creada exitosamente');
   showView('userPanel');
   document.getElementById('registerName').value = '';
@@ -3651,9 +3757,14 @@ async function updateOrderStatusDirect(id, status) {
 
 async function loadAdminUsers() {
   const users = await apiGet('/users');
+  const allAddresses = await apiGet('/user-addresses');
+  const addrCounts = {};
+  if (Array.isArray(allAddresses)) {
+    allAddresses.forEach(a => { addrCounts[a.user_id] = (addrCounts[a.user_id] || 0) + 1; });
+  }
   const tbody = document.getElementById('adminUsersTable');
   if (!users || users.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="admin-empty-text">No hay usuarios registrados.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="admin-empty-text">No hay usuarios registrados.</td></tr>';
     return;
   }
   tbody.innerHTML = users.map(u => `
@@ -3662,6 +3773,7 @@ async function loadAdminUsers() {
       <td>${u.first_name} ${u.last_name}</td>
       <td>${u.email}</td>
       <td>${u.phone || '-'}</td>
+      <td><span class="status-badge ${addrCounts[u.id] ? 'confirmed' : ''}">${addrCounts[u.id] || 0}</span></td>
       <td><span class="status-badge confirmed">Activo</span></td>
       <td>
         <button class="action-btn" title="Ver" onclick='showUserDetail(${JSON.stringify(u)})'><i class="fas fa-eye"></i></button>
@@ -3670,12 +3782,37 @@ async function loadAdminUsers() {
   `).join('');
 }
 
-function showUserDetail(user) {
+async function showUserDetail(user) {
   document.getElementById('userDetailName').textContent = user.first_name + ' ' + user.last_name;
   document.getElementById('userDetailEmail').textContent = user.email;
   document.getElementById('userDetailPhone').textContent = user.phone || '-';
   document.getElementById('userDetailDate').textContent = user.created_at ? new Date(user.created_at).toLocaleDateString('es-AR') : '-';
   document.getElementById('userDetailModal').style.display = 'flex';
+
+  // Direcciones de entrega guardadas del usuario
+  const addrsEl = document.getElementById('userDetailAddresses');
+  if (!addrsEl) return;
+  addrsEl.innerHTML = '<p class="admin-empty-text">Cargando direcciones...</p>';
+  const addrs = await apiGet('/users/' + user.id + '/addresses');
+  if (!Array.isArray(addrs) || addrs.length === 0) {
+    addrsEl.innerHTML = '<p class="admin-empty-text">Este usuario no tiene direcciones guardadas.</p>';
+    return;
+  }
+  addrsEl.innerHTML = addrs.map(a => {
+    const icon = a.type === 'Casa' ? 'fa-home' : a.type === 'Trabajo' ? 'fa-briefcase' : 'fa-map-marker-alt';
+    const cityParts = [];
+    if (a.neighborhood) cityParts.push(a.neighborhood);
+    if (a.city) cityParts.push(a.city);
+    if (a.zip) cityParts.push('CP ' + a.zip);
+    return `
+      <div class="admin-address-item">
+        <span class="admin-address-badge"><i class="fas ${icon}"></i> ${escapeHtml(a.type || 'Casa')}</span>
+        <p class="admin-address-main">${escapeHtml(a.address)}${a.locality ? ', ' + escapeHtml(a.locality) : ''}</p>
+        ${a.instructions ? '<p class="admin-address-extra">' + escapeHtml(a.instructions) + '</p>' : ''}
+        ${cityParts.length ? '<p class="admin-address-extra">' + cityParts.map(escapeHtml).join(', ') + '</p>' : ''}
+      </div>
+    `;
+  }).join('');
 }
 
 function closeUserDetailModal() {

@@ -2625,7 +2625,7 @@ button {
 .checkout-guest-notice {
   margin: 0 0 16px 0;
   padding: 12px 16px;
-  background: rgba(231, 136, 175, 0.45);
+  background: rgb(231 136 175 / 36%);
   border: 1px solid rgb(219, 47, 118);
   border-radius: var(--radius);
   color: rgb(219, 47, 118);
@@ -6146,6 +6146,65 @@ button {
 
 .admin-user-detail-row span {
   color: #555;
+}
+
+/* Direcciones de entrega del usuario (detalle en panel admin) */
+.admin-user-addresses {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.admin-user-addresses h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.admin-user-addresses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.admin-address-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: #f8f8f8;
+  border: 1px solid #e9e2e2;
+  border-radius: 8px;
+}
+
+.admin-address-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(231, 136, 175, 0.45);
+  color: rgb(219, 47, 118);
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.admin-address-main {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.admin-address-extra {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #777;
 }
 
 /* ========== ADDRESS FORM ========== */
