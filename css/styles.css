@@ -6269,7 +6269,7 @@ button {
 
 .address-btn-save {
   padding: 10px 24px;
-  background: #3b4cc0;
+  background: rgb(221, 60, 127);
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -6280,7 +6280,7 @@ button {
 }
 
 .address-btn-save:hover {
-  background: #2e3da8;
+  background: rgb(191, 50, 110);
 }
 
 @media (max-width: 768px) {
