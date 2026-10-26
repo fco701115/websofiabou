@@ -2625,10 +2625,10 @@ button {
 .checkout-guest-notice {
   margin: 0 0 16px 0;
   padding: 12px 16px;
-  background: #eaf5fa;
-  border: 1px solid #075ec0;
+  background: rgba(231, 136, 175, 0.45);
+  border: 1px solid rgb(219, 47, 118);
   border-radius: var(--radius);
-  color: #075ec0;
+  color: rgb(219, 47, 118);
   font-size: 0.9rem;
   font-weight: 600;
   text-align: center;
@@ -2673,23 +2673,24 @@ button {
   justify-content: center;
   gap: 8px;
   padding: 20px 12px;
-  background: #fff;
-  border: 2px solid var(--border);
+  background: rgba(231, 136, 175, 0.45);
+  border: 2px solid rgb(219, 47, 118);
   border-radius: var(--radius);
+  color: rgb(219, 47, 118);
   cursor: pointer;
   transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
   font-family: inherit;
 }
 
 .delivery-option:hover {
-  border-color: #075ec0;
-  background: #f5faff;
+  border-color: rgb(191, 50, 110);
+  background: rgba(231, 136, 175, 0.65);
 }
 
 .delivery-option.active {
-  border-color: #075ec0;
-  background: #eef6ff;
-  box-shadow: 0 0 0 1px #075ec0;
+  border-color: rgb(219, 47, 118);
+  background: rgba(231, 136, 175, 0.75);
+  box-shadow: 0 0 0 1px rgb(219, 47, 118);
 }
 
 .delivery-option-icon {
@@ -2700,7 +2701,7 @@ button {
 .delivery-option-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text);
+  color: rgb(219, 47, 118);
   text-align: center;
 }
 
@@ -3045,7 +3046,7 @@ button {
   gap: 16px;
   margin-bottom: 20px;
   padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid #dd3c7f;
 }
 
 .checkout-item {
@@ -3213,6 +3214,16 @@ button {
 
 .checkout-submit-btn:hover {
   background: #0650aa;
+}
+
+.checkout-submit-btn:active,
+.checkout-submit-btn.is-confirming {
+  background: rgb(37, 211, 102);
+}
+
+.checkout-submit-btn.is-confirming:disabled {
+  opacity: 1;
+  cursor: wait;
 }
 
 /* ========== EMPTY / LOADING / ERROR STATES ========== */

@@ -2194,6 +2194,13 @@ async function submitOrder(e) {
     total: getCartTotal()
   };
 
+  // Botón verde al presionar "Confirmar pedido", mientras se envía
+  const submitBtn = e.target && e.target.closest ? e.target.closest('.checkout-submit-btn') : null;
+  if (submitBtn) {
+    submitBtn.classList.add('is-confirming');
+    submitBtn.disabled = true;
+  }
+
   const result = await apiPost('/orders', orderData);
 
   if (result && !result.error) {
@@ -2209,6 +2216,11 @@ async function submitOrder(e) {
     showView('home');
   } else {
     alert('Error al realizar el pedido. Intentalo de nuevo.');
+  }
+
+  if (submitBtn) {
+    submitBtn.classList.remove('is-confirming');
+    submitBtn.disabled = false;
   }
 }
 
