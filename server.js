@@ -262,6 +262,7 @@ async function ensureSchema() {
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(50) DEFAULT '',
     password VARCHAR(255) NOT NULL,
+    registration_status VARCHAR(20) DEFAULT 'Activo',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
   CREATE TABLE IF NOT EXISTS user_addresses (
@@ -303,6 +304,9 @@ async function autoMigrate() {
     ['show_colors', 'BOOLEAN DEFAULT true'],
     ['sold', 'BOOLEAN DEFAULT false']
   ];
+  const userColumns = [
+    ['registration_status', "VARCHAR(20) DEFAULT 'Activo'"]
+  ];
   try {
     for (const [col, type] of columns) {
       await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS ${col} ${type}`);
@@ -310,10 +314,13 @@ async function autoMigrate() {
     for (const [col, type] of productColumns) {
       await pool.query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS ${col} ${type}`);
     }
+    for (const [col, type] of userColumns) {
+      await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ${col} ${type}`);
+    }
     // Fix status default
     await pool.query("ALTER TABLE orders ALTER COLUMN status SET DEFAULT 'Pendiente'");
     await pool.query("UPDATE orders SET status = 'Pendiente' WHERE status = 'pending'");
-    console.log('Auto-migración de orders completada');
+    console.log('Auto-migración de orders, products y users completada');
   } catch (err) {
     console.error('Error en auto-migración:', err.message);
   }
@@ -832,7 +839,7 @@ app.delete('/api/reviews/:id', async (req, res) => {
 // GET all users
 app.get('/api/users', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, first_name, last_name, email, phone, created_at FROM users ORDER BY id');
+    const result = await pool.query('SELECT id, first_name, last_name, email, phone, registration_status, created_at FROM users ORDER BY id');
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching users:', err);
@@ -912,17 +919,97 @@ app.post('/api/users', async (req, res) => {
       return res.status(400).json({ error: 'Nombre, apellido, email y contraseña son requeridos' });
     }
     const result = await pool.query(
-      `INSERT INTO users (first_name, last_name, email, phone, password)
-       VALUES ($1, $2, $3, $4, $5) RETURNING id, first_name, last_name, email, phone, created_at`,
+      `INSERT INTO users (first_name, last_name, email, phone, password, registration_status)
+       VALUES ($1, $2, $3, $4, $5, 'Activo')
+       RETURNING id, first_name, last_name, email, phone, registration_status, created_at`,
       [first_name, last_name, email, phone || '', password]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
     if (err.code === '23505') {
+      // ¿Es un invitado ("Sin registro") del checkout? Entonces se da de alta
+      // definitiva: se le pone contraseña y pasa a "Activo".
+      try {
+        const existing = await pool.query(
+          "SELECT id, registration_status FROM users WHERE email = $1",
+          [email]
+        );
+        if (existing.rows.length && existing.rows[0].registration_status !== 'Activo') {
+          const up = await pool.query(
+            `UPDATE users SET first_name = $1, last_name = $2, phone = $3, password = $4, registration_status = 'Activo'
+             WHERE id = $5 RETURNING id, first_name, last_name, email, phone, registration_status, created_at`,
+            [first_name, last_name, phone || '', password, existing.rows[0].id]
+          );
+          return res.status(201).json(up.rows[0]);
+        }
+      } catch (e2) {
+        console.error('Error upgrading guest user:', e2);
+      }
       return res.status(400).json({ error: 'El email ya está registrado' });
     }
     console.error('Error creating user:', err);
     res.status(500).json({ error: 'Error al crear usuario' });
+  }
+});
+
+// POST registrar/completar datos de un usuario SIN registro (paso 1 del checkout).
+// Crea (o actualiza) el usuario con estado "Sin registro" para que aparezca
+// en el panel admin > Usuarios. Si el email ya es un usuario "Activo", lo
+// devuelve tal cual sin degradarlo.
+app.post('/api/users/guest', async (req, res) => {
+  try {
+    const { first_name, last_name, email, phone } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email es requerido' });
+
+    const fn = (first_name || '').trim() || 'Invitado';
+    const ln = (last_name || '').trim() || '-';
+    const ph = (phone || '').trim();
+
+    const existing = await pool.query(
+      'SELECT id, registration_status, first_name, last_name, phone FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (existing.rows.length === 0) {
+      // Contraseña placeholder: los invitados no inician sesión
+      const placeholder = '!guest-' + require('crypto').randomBytes(16).toString('hex');
+      const ins = await pool.query(
+        `INSERT INTO users (first_name, last_name, email, phone, password, registration_status)
+         VALUES ($1, $2, $3, $4, $5, 'Sin registro')
+         RETURNING id, first_name, last_name, email, phone, registration_status, created_at`,
+        [fn, ln, email, ph, placeholder]
+      );
+      return res.status(201).json(ins.rows[0]);
+    }
+
+    const user = existing.rows[0];
+    if (user.registration_status !== 'Activo') {
+      const up = await pool.query(
+        `UPDATE users SET first_name = $1, last_name = $2, phone = $3, registration_status = 'Sin registro'
+         WHERE id = $4 RETURNING id, first_name, last_name, email, phone, registration_status, created_at`,
+        [fn, ln, ph, user.id]
+      );
+      return res.json(up.rows[0]);
+    }
+
+    // Usuario ya registrado: solo completar datos faltantes
+    const up = await pool.query(
+      `UPDATE users SET phone = CASE WHEN phone = '' OR phone IS NULL THEN $1 ELSE phone END
+       WHERE id = $2 RETURNING id, first_name, last_name, email, phone, registration_status, created_at`,
+      [ph, user.id]
+    );
+    res.json(up.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      // Carrera con otro pedido: reintentar como actualización
+      const again = await pool.query(
+        'SELECT id, first_name, last_name, email, phone, registration_status, created_at FROM users WHERE email = $1',
+        [email]
+      );
+      return res.json(again.rows[0]);
+    }
+    console.error('Error saving guest user:', err);
+    res.status(500).json({ error: 'Error al guardar los datos del usuario' });
   }
 });
 
@@ -934,7 +1021,7 @@ app.post('/api/users/login', async (req, res) => {
       return res.status(400).json({ error: 'Email y contraseña son requeridos' });
     }
     const result = await pool.query(
-      'SELECT id, first_name, last_name, email, phone FROM users WHERE email = $1 AND password = $2',
+      'SELECT id, first_name, last_name, email, phone, registration_status FROM users WHERE email = $1 AND password = $2',
       [email, password]
     );
     if (result.rows.length === 0) {

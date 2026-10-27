@@ -2538,15 +2538,22 @@ button {
 
 .checkout-inner {
   display: grid;
+  /* Vista PC: "Datos del pedido" ocupa exactamente el 50% y el
+     "Resumen del pedido" el otro 50% del checkout-section */
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  gap: 0;
   align-items: start;
+  width: 100%;
 }
 
 .checkout-steps {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 0;
+  /* Mitad del espacio entre columnas (sin gap en el grid para que cada
+     columna sea exactamente el 50%) */
+  padding-right: 20px;
 }
 
 .checkout-step {
@@ -2614,6 +2621,7 @@ button {
   font-size: 0.95rem;
   color: var(--text);
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 .checkout-edit-fields {
@@ -3019,7 +3027,11 @@ button {
   margin: 0;
 }
 
-.checkout-summary-wrapper {}
+.checkout-summary-wrapper {
+  min-width: 0;
+  /* La otra mitad del espacio entre columnas */
+  padding-left: 20px;
+}
 
 .checkout-summary {
   background: #fff;
@@ -3448,13 +3460,25 @@ button {
     gap: 30px;
   }
 
+  .detail-related .product-card {
+    flex: 0 0 calc((100% - 30px) / 4); /* 4 tarjetas visibles */
+  }
+}
+
+/* Checkout: en PC/laptop se mantiene 50% / 50%; se apila solo en pantallas chicas */
+@media (max-width: 900px) {
   .checkout-inner {
     grid-template-columns: 1fr;
     gap: 30px;
   }
 
-  .detail-related .product-card {
-    flex: 0 0 calc((100% - 30px) / 4); /* 4 tarjetas visibles */
+  /* Al apilarse no hay dos columnas: quitar el padding interno */
+  .checkout-steps {
+    padding-right: 0;
+  }
+
+  .checkout-summary-wrapper {
+    padding-left: 0;
   }
 }
 
@@ -5513,6 +5537,13 @@ button {
 .status-badge.cancelled {
   background: #f8d7da;
   color: #721c24;
+}
+
+/* Usuario cargado desde el checkout sin crear cuenta */
+.admin-table .status-badge.guest,
+.status-badge.guest {
+  background: rgba(231, 136, 175, 0.45);
+  color: rgb(219, 47, 118);
 }
 
 /* Admin Modal */

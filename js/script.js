@@ -1661,15 +1661,12 @@ function showCheckout() {
 
 let checkoutDeliveryMethod = null; // 'store' | 'home'
 
-// La leyenda del botón de domicilio cambia según si ya hay una dirección cargada
+// La leyenda del botón de domicilio es fija: "Entrega a domicilio"
 function updateDeliveryHomeLabel() {
   const homeBtn = document.getElementById('deliveryOptionHome');
   if (!homeBtn) return;
   const label = homeBtn.querySelector('.delivery-option-label');
-  if (!label) return;
-  const saved = document.getElementById('checkoutAddressSaved');
-  const hasAddress = !!(saved && saved.dataset.hasAddress === 'true' && selectedCheckoutAddrData);
-  label.textContent = hasAddress ? 'Agregar otra direccion' : 'Entregar a domicilio';
+  if (label) label.textContent = 'Entrega a domicilio';
 }
 
 // Quita la dirección visible del paso 2 (p. ej. al cambiar de usuario en el paso 1)
@@ -1890,17 +1887,33 @@ async function saveCheckoutUserData() {
 
   currentUser = { ...(currentUser || {}), name, email, phone };
 
-  const newId = match ? match.id : null;
-  const identityChanged = (prevId || null) !== newId;
-
   if (match) {
+    // Usuario existente (registrado o "Sin registro")
     currentUser.id = match.id;
     currentUser.first_name = match.first_name;
     currentUser.last_name = match.last_name;
-  } else if (Array.isArray(users) && currentUser.id && newEmail !== prevEmail) {
-    // Email cambiado a uno no registrado: no asociar los datos al usuario anterior
-    delete currentUser.id;
+    currentUser.registration_status = match.registration_status || 'Activo';
+  } else {
+    // Email sin usuario en el sistema: se registra en el panel admin > Usuarios
+    // con el estado "Sin registro"
+    const parts = name.trim().split(/\s+/);
+    const saved = await apiPost('/users/guest', {
+      first_name: parts[0] || name.trim(),
+      last_name: parts.slice(1).join(' ') || '-',
+      email: newEmail,
+      phone: phone || ''
+    });
+    if (saved && !saved.error && saved.id) {
+      currentUser.id = saved.id;
+      currentUser.registration_status = saved.registration_status || 'Sin registro';
+    } else if (Array.isArray(users) && currentUser.id && newEmail !== prevEmail) {
+      // Sin conexión al servidor: no asociar los datos al usuario anterior
+      delete currentUser.id;
+    }
   }
+
+  const newId = currentUser.id || null;
+  const identityChanged = (prevId || null) !== newId;
 
   const newKey = currentUser.id || currentUser.email || 'guest';
 
@@ -3873,22 +3886,28 @@ async function loadAdminUsers() {
   }
   const tbody = document.getElementById('adminUsersTable');
   if (!users || users.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="admin-empty-text">No hay usuarios registrados.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="admin-empty-text">No hay usuarios.</td></tr>';
     return;
   }
-  tbody.innerHTML = users.map(u => `
+  tbody.innerHTML = users.map(u => {
+    const isGuest = (u.registration_status || 'Activo') !== 'Activo';
+    const stateBadge = isGuest
+      ? '<span class="status-badge guest">Sin registro</span>'
+      : '<span class="status-badge confirmed">Activo</span>';
+    return `
     <tr>
       <td>${u.id}</td>
       <td>${u.first_name} ${u.last_name}</td>
       <td>${u.email}</td>
       <td>${u.phone || '-'}</td>
       <td><span class="status-badge ${addrCounts[u.id] ? 'confirmed' : ''}">${addrCounts[u.id] || 0}</span></td>
-      <td><span class="status-badge confirmed">Activo</span></td>
+      <td>${stateBadge}</td>
       <td>
         <button class="action-btn" title="Ver" onclick='showUserDetail(${JSON.stringify(u)})'><i class="fas fa-eye"></i></button>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 async function showUserDetail(user) {
@@ -3896,6 +3915,10 @@ async function showUserDetail(user) {
   document.getElementById('userDetailEmail').textContent = user.email;
   document.getElementById('userDetailPhone').textContent = user.phone || '-';
   document.getElementById('userDetailDate').textContent = user.created_at ? new Date(user.created_at).toLocaleDateString('es-AR') : '-';
+  const stateEl = document.getElementById('userDetailStatus');
+  if (stateEl) {
+    stateEl.textContent = (user.registration_status || 'Activo') !== 'Activo' ? 'Sin registro' : 'Activo';
+  }
   document.getElementById('userDetailModal').style.display = 'flex';
 
   // Direcciones de entrega guardadas del usuario
