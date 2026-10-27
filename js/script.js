@@ -1705,6 +1705,27 @@ function resetCheckoutDeliveryStep() {
   updateDeliveryHomeLabel();
 }
 
+// La leyenda e icono de "Pago al recibir" cambian según el método de entrega:
+// - Recoger en tienda → 📦 y pago al despachador en la tienda
+// - Entrega a domicilio → 🚚 (original) y pago al repartidor en la puerta
+function updateCashInfoForDelivery(method) {
+  const box = document.getElementById('checkoutCashInfo');
+  if (!box) return;
+  const icon = box.querySelector('.cash-info-icon');
+  const text = box.querySelector('p');
+  if (method === 'store') {
+    if (icon) icon.innerHTML = '📦';
+    if (text) {
+      text.textContent = 'Realiza tu pago en efectivo o con tarjeta débito/crédito al despachador al momento de recibir tu pedido en nuestra tienda, si tienes una duda mandanos un mensaje.';
+    }
+  } else {
+    if (icon) icon.innerHTML = '<i class="fas fa-truck"></i>';
+    if (text) {
+      text.textContent = 'Realiza tu pago en efectivo o con tarjeta débito/crédito al repartidor al momento de recibir tu pedido en la puerta de tu hogar u oficina.';
+    }
+  }
+}
+
 function selectDeliveryMethod(method, openAddressModal = true) {
   checkoutDeliveryMethod = method;
   const storeBtn = document.getElementById('deliveryOptionStore');
@@ -1713,6 +1734,9 @@ function selectDeliveryMethod(method, openAddressModal = true) {
   const empty = document.getElementById('checkoutAddressEmpty');
   const saved = document.getElementById('checkoutAddressSaved');
   const changeBtn = document.getElementById('checkoutAddressChangeBtn');
+
+  // Ajustar la info de "Pago al recibir" al método elegido
+  updateCashInfoForDelivery(method);
 
   if (method === 'store') {
     // Recoger en tienda: se marca y se pasa directo al paso 3.
