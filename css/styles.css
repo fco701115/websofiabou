@@ -4699,9 +4699,26 @@ button {
   color: #666;
 }
 
-.user-panel-user-info .verified {
-  color: #1a73e8;
+/* Recuadro naranja: usuario sin registro (falta crear contraseña) */
+.user-panel-register-cta {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: #fff3e0;
+  border: 1px solid #fb8c00;
+  border-left: 4px solid #e65100;
+  border-radius: 8px;
+  color: #e65100;
+  font-size: 0.8rem;
   font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+  cursor: pointer;
+}
+
+.user-panel-register-cta:hover {
+  background: #ffe0b2;
 }
 
 .user-panel-panel-btn {

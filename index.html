@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique Sofia - Ropa y Calzado Americano</title>
   <link rel="icon" type="image/png" href="/Logo-Boutique-Sofia-2.png">
-  <link rel="stylesheet" href="/css/styles.css?v=10">
+  <link rel="stylesheet" href="/css/styles.css?v=11">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -197,6 +197,10 @@
             Panel
           </button>
         </div>
+        <!-- Aviso: usuario sin registro (sin contraseña) -->
+        <button type="button" class="user-panel-register-cta" id="userPanelRegisterCta" style="display:none" onclick="startGuestRegistration()">
+          <i class="fas fa-exclamation-circle"></i> Termine su registro para crear su contraseña y pueda acceder a su panel de usuario
+        </button>
         <nav class="user-panel-nav">
           <a href="#" class="user-panel-nav-item panel-control-item active" onclick="showUserSection('panelControl', this); return false"><i class="fas fa-th-large"></i> Panel de control</a>
           <a href="#" class="user-panel-nav-item" onclick="showUserSection('misDatos', this); return false"><i class="fas fa-user"></i> Mis datos</a>
@@ -1556,6 +1560,6 @@
     </div>
   </div>
 
-  <script src="/js/script.js?v=14"></script>
+  <script src="/js/script.js?v=15"></script>
 </body>
 </html>

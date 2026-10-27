@@ -2834,7 +2834,8 @@ async function handleLogin() {
     first_name: result.first_name,
     last_name: result.last_name,
     email: result.email,
-    phone: result.phone
+    phone: result.phone,
+    registration_status: result.registration_status || 'Activo'
   };
 
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -2876,7 +2877,9 @@ async function handleRegister() {
     first_name: result.first_name,
     last_name: result.last_name,
     email: result.email,
-    phone: result.phone
+    phone: result.phone,
+    // El registro completo pasa el usuario a estado "Activo"
+    registration_status: result.registration_status || 'Activo'
   };
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
   reconcileUserAddresses();
@@ -2903,16 +2906,62 @@ function updateUserPanel() {
     document.getElementById('userPanelName').textContent = currentUser.name;
     document.getElementById('userPanelInitial').textContent = currentUser.name.charAt(0).toUpperCase();
     
+    // Leyenda simple de cliente (sin "verificado")
     const badge = document.getElementById('userPanelBadge');
-    if (currentUser.phone) {
-      badge.innerHTML = 'Cliente <span class="verified"><i class="fas fa-check-circle"></i> verificado</span>';
-    } else {
-      badge.textContent = 'Cliente';
-    }
+    if (badge) badge.textContent = 'Cliente';
 
     // Update stat counts
     updateUserPanelStats();
+
+    // Mostrar/ocultar el recuadro naranja de "termine su registro"
+    updateGuestRegisterCta();
   }
+}
+
+// ¿El usuario actual está registrado (con cuenta y contraseña)?
+async function updateGuestRegisterCta() {
+  const cta = document.getElementById('userPanelRegisterCta');
+  if (!cta) return;
+  if (!currentUser || !currentUser.email) {
+    cta.style.display = 'none';
+    return;
+  }
+
+  // Si no se conoce el estado, resolverlo contra el servidor
+  if (!currentUser.registration_status) {
+    const email = currentUser.email.trim().toLowerCase();
+    const users = await apiGet('/users');
+    const match = Array.isArray(users)
+      ? users.find(u => (u.email || '').trim().toLowerCase() === email)
+      : null;
+    currentUser.registration_status = match
+      ? (match.registration_status || 'Activo')
+      : 'Sin registro';
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  }
+
+  const isGuest = currentUser.registration_status !== 'Activo';
+  cta.style.display = isGuest ? 'block' : 'none';
+}
+
+// Recuadro naranja: lleva a "Crear cuenta" con los datos ya precargados
+function startGuestRegistration() {
+  if (!currentUser) return;
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  };
+  // Datos precargados: solo falta ingresar la contraseña
+  setVal('registerName', currentUser.name);
+  setVal('registerEmail', currentUser.email);
+  setVal('registerPhone', currentUser.phone);
+  setVal('registerPassword', '');
+  setVal('registerConfirmPassword', '');
+
+  showView('login');      // abre la ventana de acceso
+  showRegisterView();     // y muestra la pestaña "Crear Cuenta"
+  const passEl = document.getElementById('registerPassword');
+  if (passEl) passEl.focus();
 }
 
 async function updateUserPanelStats() {
