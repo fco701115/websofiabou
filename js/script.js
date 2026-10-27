@@ -2812,6 +2812,20 @@ function showRegisterView() {
   document.getElementById('registerCard').style.display = 'block';
 }
 
+// Muestra/oculta la contraseña en los campos de "Crear cuenta" (icono 👁)
+function togglePasswordField(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const willShow = input.type === 'password';
+  input.type = willShow ? 'text' : 'password';
+  if (btn) {
+    btn.innerHTML = willShow
+      ? '<i class="fas fa-eye-slash"></i>'
+      : '<i class="fas fa-eye"></i>';
+    btn.title = willShow ? 'Ocultar contraseña' : 'Mostrar contraseña';
+  }
+}
+
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique Sofia - Ropa y Calzado Americano</title>
   <link rel="icon" type="image/png" href="/Logo-Boutique-Sofia-2.png">
-  <link rel="stylesheet" href="/css/styles.css?v=11">
+  <link rel="stylesheet" href="/css/styles.css?v=12">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -164,11 +164,21 @@
           </div>
           <div class="auth-input-group">
             <label>Contraseña</label>
-            <input type="password" id="registerPassword" placeholder="••••••••">
+            <div class="password-input-wrap">
+              <input type="password" id="registerPassword" placeholder="••••••••">
+              <button type="button" class="password-toggle" title="Mostrar contraseña" onclick="togglePasswordField('registerPassword', this)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
           </div>
           <div class="auth-input-group">
             <label>Confirmar Contraseña</label>
-            <input type="password" id="registerConfirmPassword" placeholder="••••••••">
+            <div class="password-input-wrap">
+              <input type="password" id="registerConfirmPassword" placeholder="••••••••">
+              <button type="button" class="password-toggle" title="Mostrar contraseña" onclick="togglePasswordField('registerConfirmPassword', this)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
           </div>
           <button class="auth-submit-btn" onclick="handleRegister()">Crear Cuenta</button>
           <div class="auth-links">
@@ -1560,6 +1570,6 @@
     </div>
   </div>
 
-  <script src="/js/script.js?v=15"></script>
+  <script src="/js/script.js?v=16"></script>
 </body>
 </html>

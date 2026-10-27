@@ -4604,6 +4604,36 @@ button {
   border-color: #cb354e;
 }
 
+/* Campo de contraseña con icono ojo para ver/ocultar */
+.password-input-wrap {
+  position: relative;
+  display: block;
+}
+
+.auth-input-group .password-input-wrap input {
+  width: 100%;
+  padding: 14px 44px 14px 14px;
+  box-sizing: border-box;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  color: #999;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.password-toggle:hover {
+  color: #dd3c7f;
+}
+
 .auth-submit-btn {
   width: 100%;
   padding: 14px;
