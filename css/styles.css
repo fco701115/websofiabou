@@ -6216,11 +6216,12 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(231, 136, 175, 0.45);
-  color: rgb(219, 47, 118);
-  padding: 3px 9px;
+  /* Mismo formato que .checkout-address-badge (paso 2 del checkout) */
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 4px 10px;
   border-radius: 20px;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   width: fit-content;
 }
