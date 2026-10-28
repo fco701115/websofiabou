@@ -59,8 +59,13 @@ app.get('/categoria/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Redirect old product URLs (/categoria/<cat>/<slug>-<id>) to the new URL (/<cat>/<slug>-<id>)
+app.get(/^\/categoria\/([^/]+\/[^/]+-\d+)$/, (req, res) => {
+  res.redirect(301, '/' + req.params[0]);
+});
+
 // Serve product pages with Open Graph meta tags for social sharing
-app.get(/^\/categoria\/[^/]+\/[^/]+-\d+$/, async (req, res) => {
+app.get(/^\/[^/]+\/[^/]+-\d+$/, async (req, res) => {
   const segments = req.path.split('-');
   const id = parseInt(segments[segments.length - 1], 10);
   if (isNaN(id)) {
@@ -80,10 +85,11 @@ app.get(/^\/categoria\/[^/]+\/[^/]+-\d+$/, async (req, res) => {
       images = [p.image];
     }
     const imageUrl = images.length > 0 ? images[0] : '';
-    const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `http://13.140.153.222:3003${imageUrl}`;
+    const DOMAIN = 'https://sofiaropaycalzado.com';
+    const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `${DOMAIN}${imageUrl}`;
     const description = p.description ? p.description.replace(/<[^>]*>/g, '').substring(0, 200) : '';
     const ogTitle = p.name || 'Websofiabou';
-    const ogUrl = `http://13.140.153.222:3003${req.path}`;
+    const ogUrl = `${DOMAIN}${req.path}`;
 
     const html = require('fs').readFileSync(path.join(__dirname, 'index.html'), 'utf8');
     const secureImageUrl = imageUrl.startsWith('https') ? imageUrl : absoluteImageUrl;

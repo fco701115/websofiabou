@@ -1374,7 +1374,7 @@ function slugify(text) {
 function getProductUrl(product) {
   const cat = slugify(product.category) || 'productos';
   const name = slugify(product.name) || 'producto';
-  return '/categoria/' + cat + '/' + name + '-' + product.id;
+  return '/' + cat + '/' + name + '-' + product.id;
 }
 
 function navigateToProductId(id) {
@@ -1436,7 +1436,7 @@ function handleRoute() {
     showContact();
     return true;
   }
-  const catMatch = path.match(/^\/categoria\/([^\/]+)\/([^\/]+)-(\d+)\/?$/);
+  const catMatch = path.match(/^\/([^\/]+)\/([^\/]+)-(\d+)\/?$/);
   if (catMatch) {
     const id = parseInt(catMatch[3], 10);
     if (products.length) {
