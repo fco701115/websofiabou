@@ -1481,14 +1481,6 @@ function showContact() {
   showView('contact');
 }
 
-function handleContactSubmit(e) {
-  e.preventDefault();
-  const msg = document.getElementById('contactSuccessMsg');
-  if (msg) msg.style.display = 'block';
-  e.target.reset();
-  setTimeout(() => { if (msg) msg.style.display = 'none'; }, 4000);
-}
-
 let detailQty = 1;
 
 // Devuelve el producto del detalle SIEMPRE desde el array vivo de productos.
