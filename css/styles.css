@@ -2656,7 +2656,7 @@ button {
 }
 
 .checkout-step-save:hover {
-  background: #0650aa;
+  background: #dd186a;
 }
 
 .checkout-empty-text {
@@ -2741,7 +2741,7 @@ button {
 }
 
 .checkout-add-btn:hover {
-  background: #0650aa;
+  background: #dd186a;
 }
 
 .checkout-address-card {
@@ -3240,7 +3240,7 @@ button {
 }
 
 .checkout-submit-btn:hover {
-  background: #0650aa;
+  background: #dd186a;
 }
 
 .checkout-submit-btn:active,
