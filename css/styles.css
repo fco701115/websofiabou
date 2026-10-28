@@ -2944,6 +2944,21 @@ button {
   accent-color: #075ec0;
 }
 
+/* Visibilidad de los paneles controlada por CSS puro (no depende de JS),
+   así el despliegue funciona incluso con una versión vieja de script.js en caché */
+.checkout-transfer-info,
+.checkout-cash-info {
+  display: none !important;
+}
+
+.checkout-payment-options:has(input[value="transfer"]:checked) .checkout-transfer-info {
+  display: block !important;
+}
+
+.checkout-payment-options:has(input[value="cash"]:checked) .checkout-cash-info {
+  display: flex !important;
+}
+
 .checkout-transfer-info {
   padding: 16px 20px;
   border: 1px solid var(--border);
