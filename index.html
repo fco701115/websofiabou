@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,22 +10,25 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <!-- Meta Pixel Code -->
   <script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '1587746516428485');
-  fbq('track', 'PageView');
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+      n.queue = []; t = b.createElement(e); t.async = !0;
+      t.src = v; s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s)
+    }(window, document, 'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1587746516428485');
+    fbq('track', 'PageView');
   </script>
   <noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=1587746516428485&ev=PageView&noscript=1"
-  /></noscript>
+      src="https://www.facebook.com/tr?id=1587746516428485&ev=PageView&noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
 </head>
+
 <body>
 
   <!-- HEADER -->
@@ -40,8 +44,10 @@
         <div class="search-dropdown" id="searchDropdown"></div>
       </div>
       <div class="header-icons">
-        <button class="icon-btn search-mobile-btn" title="Buscar" onclick="toggleMobileSearch()"><i class="fas fa-search"></i></button>
-        <button class="icon-btn login-btn" title="Mi cuenta" onclick="toggleLoginPanel()"><i class="fas fa-user"></i></button>
+        <button class="icon-btn search-mobile-btn" title="Buscar" onclick="toggleMobileSearch()"><i
+            class="fas fa-search"></i></button>
+        <button class="icon-btn login-btn" title="Mi cuenta" onclick="toggleLoginPanel()"><i
+            class="fas fa-user"></i></button>
         <button class="icon-btn wishlist-btn" title="Favoritos" onclick="toggleWishlistPanel()">
           <i class="fas fa-heart"></i>
           <span class="wishlist-count">0</span>
@@ -129,7 +135,8 @@
   </div>
 
   <!-- Compare Modal -->
-  <div id="compareModal" class="compare-modal-overlay" style="display:none" onclick="if(event.target===this) closeCompareModal()">
+  <div id="compareModal" class="compare-modal-overlay" style="display:none"
+    onclick="if(event.target===this) closeCompareModal()">
     <div class="compare-modal-box">
       <div class="compare-modal-head">
         <h2>Comparar Productos</h2>
@@ -183,7 +190,8 @@
             <label>Contraseña</label>
             <div class="password-input-wrap">
               <input type="password" id="registerPassword" placeholder="••••••••">
-              <button type="button" class="password-toggle" title="Mostrar contraseña" onclick="togglePasswordField('registerPassword', this)">
+              <button type="button" class="password-toggle" title="Mostrar contraseña"
+                onclick="togglePasswordField('registerPassword', this)">
                 <i class="fas fa-eye"></i>
               </button>
             </div>
@@ -192,7 +200,8 @@
             <label>Confirmar Contraseña</label>
             <div class="password-input-wrap">
               <input type="password" id="registerConfirmPassword" placeholder="••••••••">
-              <button type="button" class="password-toggle" title="Mostrar contraseña" onclick="togglePasswordField('registerConfirmPassword', this)">
+              <button type="button" class="password-toggle" title="Mostrar contraseña"
+                onclick="togglePasswordField('registerConfirmPassword', this)">
                 <i class="fas fa-eye"></i>
               </button>
             </div>
@@ -219,22 +228,32 @@
             <h3 id="userPanelName">Federico lopez</h3>
             <p id="userPanelBadge">Cliente</p>
           </div>
-          <button class="user-panel-panel-btn" onclick="showUserSection('panelControl', document.querySelector('.panel-control-item')); return false">
+          <button class="user-panel-panel-btn"
+            onclick="showUserSection('panelControl', document.querySelector('.panel-control-item')); return false">
             <i class="fas fa-th-large"></i>
             Panel
           </button>
         </div>
         <!-- Aviso: usuario sin registro (sin contraseña) -->
-        <button type="button" class="user-panel-register-cta" id="userPanelRegisterCta" style="display:none" onclick="startGuestRegistration()">
-          <i class="fas fa-exclamation-circle"></i> Termine su registro para crear su contraseña y pueda acceder a su panel de usuario
+        <button type="button" class="user-panel-register-cta" id="userPanelRegisterCta" style="display:none"
+          onclick="startGuestRegistration()">
+          <i class="fas fa-exclamation-circle"></i> Termine su registro para crear su contraseña y pueda acceder a su
+          panel de usuario
         </button>
         <nav class="user-panel-nav">
-          <a href="#" class="user-panel-nav-item panel-control-item active" onclick="showUserSection('panelControl', this); return false"><i class="fas fa-th-large"></i> Panel de control</a>
-          <a href="#" class="user-panel-nav-item" onclick="showUserSection('misDatos', this); return false"><i class="fas fa-user"></i> Mis datos</a>
-          <a href="#" class="user-panel-nav-item" onclick="showUserSection('misPedidos', this); return false"><i class="fas fa-box"></i> Mis pedidos</a>
-          <a href="#" class="user-panel-nav-item" onclick="showUserSection('direcciones', this); return false"><i class="fas fa-map-marker-alt"></i> Direcciones</a>
-          <a href="#" class="user-panel-nav-item" onclick="showUserSection('favoritos', this); return false"><i class="fas fa-heart"></i> Favoritos</a>
-          <a href="#" class="user-panel-nav-item logout" onclick="handleLogout(); return false"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+          <a href="#" class="user-panel-nav-item panel-control-item active"
+            onclick="showUserSection('panelControl', this); return false"><i class="fas fa-th-large"></i> Panel de
+            control</a>
+          <a href="#" class="user-panel-nav-item" onclick="showUserSection('misDatos', this); return false"><i
+              class="fas fa-user"></i> Mis datos</a>
+          <a href="#" class="user-panel-nav-item" onclick="showUserSection('misPedidos', this); return false"><i
+              class="fas fa-box"></i> Mis pedidos</a>
+          <a href="#" class="user-panel-nav-item" onclick="showUserSection('direcciones', this); return false"><i
+              class="fas fa-map-marker-alt"></i> Direcciones</a>
+          <a href="#" class="user-panel-nav-item" onclick="showUserSection('favoritos', this); return false"><i
+              class="fas fa-heart"></i> Favoritos</a>
+          <a href="#" class="user-panel-nav-item logout" onclick="handleLogout(); return false"><i
+              class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
         </nav>
       </div>
 
@@ -243,19 +262,22 @@
         <!-- Panel de Control -->
         <div class="user-panel-section" id="panelControl">
           <h2>Panel de control</h2>
-          
+
           <div class="user-panel-stats">
-            <div class="user-panel-stat-card" style="cursor:pointer" onclick="showUserSection('misPedidos', document.querySelector('.user-panel-nav-item[onclick*=misPedidos]'))">
+            <div class="user-panel-stat-card" style="cursor:pointer"
+              onclick="showUserSection('misPedidos', document.querySelector('.user-panel-nav-item[onclick*=misPedidos]'))">
               <div class="stat-icon"><i class="fas fa-box"></i></div>
               <span class="stat-number" id="userStatOrders">0</span>
               <span class="stat-label">Pedidos</span>
             </div>
-            <div class="user-panel-stat-card" style="cursor:pointer" onclick="showUserSection('direcciones', document.querySelector('.user-panel-nav-item[onclick*=direcciones]'))">
+            <div class="user-panel-stat-card" style="cursor:pointer"
+              onclick="showUserSection('direcciones', document.querySelector('.user-panel-nav-item[onclick*=direcciones]'))">
               <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
               <span class="stat-number" id="userStatAddresses">0</span>
               <span class="stat-label">Direcciones</span>
             </div>
-            <div class="user-panel-stat-card" style="cursor:pointer" onclick="showUserSection('favoritos', document.querySelector('.user-panel-nav-item[onclick*=favoritos]'))">
+            <div class="user-panel-stat-card" style="cursor:pointer"
+              onclick="showUserSection('favoritos', document.querySelector('.user-panel-nav-item[onclick*=favoritos]'))">
               <div class="stat-icon"><i class="fas fa-heart"></i></div>
               <span class="stat-number" id="userStatWishlist">0</span>
               <span class="stat-label">Favoritos</span>
@@ -307,7 +329,8 @@
         <div class="user-panel-section" id="direcciones" style="display: none;">
           <div class="user-panel-section-header">
             <h2>Direcciones</h2>
-            <button class="user-panel-add-btn" onclick="showCheckoutAddressForm()"><i class="fas fa-plus"></i> Añadir</button>
+            <button class="user-panel-add-btn" onclick="showCheckoutAddressForm()"><i class="fas fa-plus"></i>
+              Añadir</button>
           </div>
           <div id="userAddressesList">
             <div class="empty-state">
@@ -442,28 +465,32 @@
         <div class="admin-section" id="adminDashboard">
           <h2>Dashboard</h2>
           <div class="admin-stats">
-            <div class="admin-stat-card" style="cursor:pointer" onclick="showAdminSection('products', document.querySelector('.admin-nav-item[onclick*=products]'))">
+            <div class="admin-stat-card" style="cursor:pointer"
+              onclick="showAdminSection('products', document.querySelector('.admin-nav-item[onclick*=products]'))">
               <div class="admin-stat-icon products"><i class="fas fa-box"></i></div>
               <div class="admin-stat-info">
                 <h3 id="statProducts">0</h3>
                 <p>Productos</p>
               </div>
             </div>
-            <div class="admin-stat-card" style="cursor:pointer" onclick="showAdminSection('orders', document.querySelector('.admin-nav-item[onclick*=orders]'))">
+            <div class="admin-stat-card" style="cursor:pointer"
+              onclick="showAdminSection('orders', document.querySelector('.admin-nav-item[onclick*=orders]'))">
               <div class="admin-stat-icon orders"><i class="fas fa-shopping-bag"></i></div>
               <div class="admin-stat-info">
                 <h3 id="statOrders">0</h3>
                 <p>Pedidos</p>
               </div>
             </div>
-            <div class="admin-stat-card" style="cursor:pointer" onclick="showAdminSection('users', document.querySelector('.admin-nav-item[onclick*=users]'))">
+            <div class="admin-stat-card" style="cursor:pointer"
+              onclick="showAdminSection('users', document.querySelector('.admin-nav-item[onclick*=users]'))">
               <div class="admin-stat-icon users"><i class="fas fa-users"></i></div>
               <div class="admin-stat-info">
                 <h3 id="statUsers">1</h3>
                 <p>Usuarios</p>
               </div>
             </div>
-            <div class="admin-stat-card" style="cursor:pointer" onclick="showAdminSection('orders', document.querySelector('.admin-nav-item[onclick*=orders]'))">
+            <div class="admin-stat-card" style="cursor:pointer"
+              onclick="showAdminSection('orders', document.querySelector('.admin-nav-item[onclick*=orders]'))">
               <div class="admin-stat-icon revenue"><i class="fas fa-dollar-sign"></i></div>
               <div class="admin-stat-info">
                 <h3 id="statRevenue">$0</h3>
@@ -676,7 +703,8 @@
                 <p>Click para subir imagen</p>
               </div>
             </div>
-            <input type="file" id="categoryImageInput" accept="image/*" style="display: none;" onchange="previewCategoryImage(event)">
+            <input type="file" id="categoryImageInput" accept="image/*" style="display: none;"
+              onchange="previewCategoryImage(event)">
           </div>
         </div>
         <div class="admin-modal-footer">
@@ -710,7 +738,8 @@
             </div>
             <div class="admin-input-group">
               <label>Descuento %</label>
-              <input type="number" id="productDiscount" placeholder="0" min="0" max="100" readonly style="background:#f0f0f0;cursor:not-allowed">
+              <input type="number" id="productDiscount" placeholder="0" min="0" max="100" readonly
+                style="background:#f0f0f0;cursor:not-allowed">
             </div>
           </div>
           <div class="admin-form-row">
@@ -759,83 +788,112 @@
             <label>Fotografías (máximo 5) — subí un archivo o pegá un link</label>
             <div class="admin-images-grid" id="adminImagesGrid">
               <div class="admin-image-slot" id="productImageSlot1">
-                <img id="productImagePreview1" src="" style="display: none;" onclick="document.getElementById('productImageInput1').click()">
-                <div class="admin-image-placeholder" id="productImagePlaceholder1" onclick="document.getElementById('productImageInput1').click()">
+                <img id="productImagePreview1" src="" style="display: none;"
+                  onclick="document.getElementById('productImageInput1').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder1"
+                  onclick="document.getElementById('productImageInput1').click()">
                   <i class="fas fa-plus"></i>
                 </div>
-                <div class="sold-badge sold-badge-preview" id="productSoldBadgePreview" style="display: none;">Vendido</div>
-                <button type="button" class="admin-image-remove" id="productImageRemove1" style="display: none;" onclick="removeProductImage(1)" title="Quitar imagen"><i class="fas fa-times"></i></button>
+                <div class="sold-badge sold-badge-preview" id="productSoldBadgePreview" style="display: none;">Vendido
+                </div>
+                <button type="button" class="admin-image-remove" id="productImageRemove1" style="display: none;"
+                  onclick="removeProductImage(1)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
               <div class="admin-image-slot" id="productImageSlot2">
-                <img id="productImagePreview2" src="" style="display: none;" onclick="document.getElementById('productImageInput2').click()">
-                <div class="admin-image-placeholder" id="productImagePlaceholder2" onclick="document.getElementById('productImageInput2').click()">
+                <img id="productImagePreview2" src="" style="display: none;"
+                  onclick="document.getElementById('productImageInput2').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder2"
+                  onclick="document.getElementById('productImageInput2').click()">
                   <i class="fas fa-plus"></i>
                 </div>
-                <button type="button" class="admin-image-remove" id="productImageRemove2" style="display: none;" onclick="removeProductImage(2)" title="Quitar imagen"><i class="fas fa-times"></i></button>
+                <button type="button" class="admin-image-remove" id="productImageRemove2" style="display: none;"
+                  onclick="removeProductImage(2)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
               <div class="admin-image-slot" id="productImageSlot3">
-                <img id="productImagePreview3" src="" style="display: none;" onclick="document.getElementById('productImageInput3').click()">
-                <div class="admin-image-placeholder" id="productImagePlaceholder3" onclick="document.getElementById('productImageInput3').click()">
+                <img id="productImagePreview3" src="" style="display: none;"
+                  onclick="document.getElementById('productImageInput3').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder3"
+                  onclick="document.getElementById('productImageInput3').click()">
                   <i class="fas fa-plus"></i>
                 </div>
-                <button type="button" class="admin-image-remove" id="productImageRemove3" style="display: none;" onclick="removeProductImage(3)" title="Quitar imagen"><i class="fas fa-times"></i></button>
+                <button type="button" class="admin-image-remove" id="productImageRemove3" style="display: none;"
+                  onclick="removeProductImage(3)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
               <div class="admin-image-slot" id="productImageSlot4">
-                <img id="productImagePreview4" src="" style="display: none;" onclick="document.getElementById('productImageInput4').click()">
-                <div class="admin-image-placeholder" id="productImagePlaceholder4" onclick="document.getElementById('productImageInput4').click()">
+                <img id="productImagePreview4" src="" style="display: none;"
+                  onclick="document.getElementById('productImageInput4').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder4"
+                  onclick="document.getElementById('productImageInput4').click()">
                   <i class="fas fa-plus"></i>
                 </div>
-                <button type="button" class="admin-image-remove" id="productImageRemove4" style="display: none;" onclick="removeProductImage(4)" title="Quitar imagen"><i class="fas fa-times"></i></button>
+                <button type="button" class="admin-image-remove" id="productImageRemove4" style="display: none;"
+                  onclick="removeProductImage(4)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
               <div class="admin-image-slot" id="productImageSlot5">
-                <img id="productImagePreview5" src="" style="display: none;" onclick="document.getElementById('productImageInput5').click()">
-                <div class="admin-image-placeholder" id="productImagePlaceholder5" onclick="document.getElementById('productImageInput5').click()">
+                <img id="productImagePreview5" src="" style="display: none;"
+                  onclick="document.getElementById('productImageInput5').click()">
+                <div class="admin-image-placeholder" id="productImagePlaceholder5"
+                  onclick="document.getElementById('productImageInput5').click()">
                   <i class="fas fa-plus"></i>
                 </div>
-                <button type="button" class="admin-image-remove" id="productImageRemove5" style="display: none;" onclick="removeProductImage(5)" title="Quitar imagen"><i class="fas fa-times"></i></button>
+                <button type="button" class="admin-image-remove" id="productImageRemove5" style="display: none;"
+                  onclick="removeProductImage(5)" title="Quitar imagen"><i class="fas fa-times"></i></button>
               </div>
             </div>
             <div class="admin-image-url-list">
               <p class="admin-image-url-title">O pegá links (uno por foto, opcional — hasta 5):</p>
               <div class="admin-image-url-item">
                 <span class="admin-image-url-num">1</span>
-                <input type="text" inputmode="url" id="productImageUrl1" placeholder="https://... link foto 1" onchange="setProductImageByUrl(1)" onpaste="setTimeout(()=>setProductImageByUrl(1),50)">
+                <input type="text" inputmode="url" id="productImageUrl1" placeholder="https://... link foto 1"
+                  onchange="setProductImageByUrl(1)" onpaste="setTimeout(()=>setProductImageByUrl(1),50)">
               </div>
               <div class="admin-image-url-item">
                 <span class="admin-image-url-num">2</span>
-                <input type="text" inputmode="url" id="productImageUrl2" placeholder="https://... link foto 2" onchange="setProductImageByUrl(2)" onpaste="setTimeout(()=>setProductImageByUrl(2),50)">
+                <input type="text" inputmode="url" id="productImageUrl2" placeholder="https://... link foto 2"
+                  onchange="setProductImageByUrl(2)" onpaste="setTimeout(()=>setProductImageByUrl(2),50)">
               </div>
               <div class="admin-image-url-item">
                 <span class="admin-image-url-num">3</span>
-                <input type="text" inputmode="url" id="productImageUrl3" placeholder="https://... link foto 3" onchange="setProductImageByUrl(3)" onpaste="setTimeout(()=>setProductImageByUrl(3),50)">
+                <input type="text" inputmode="url" id="productImageUrl3" placeholder="https://... link foto 3"
+                  onchange="setProductImageByUrl(3)" onpaste="setTimeout(()=>setProductImageByUrl(3),50)">
               </div>
               <div class="admin-image-url-item">
                 <span class="admin-image-url-num">4</span>
-                <input type="text" inputmode="url" id="productImageUrl4" placeholder="https://... link foto 4" onchange="setProductImageByUrl(4)" onpaste="setTimeout(()=>setProductImageByUrl(4),50)">
+                <input type="text" inputmode="url" id="productImageUrl4" placeholder="https://... link foto 4"
+                  onchange="setProductImageByUrl(4)" onpaste="setTimeout(()=>setProductImageByUrl(4),50)">
               </div>
               <div class="admin-image-url-item">
                 <span class="admin-image-url-num">5</span>
-                <input type="text" inputmode="url" id="productImageUrl5" placeholder="https://... link foto 5" onchange="setProductImageByUrl(5)" onpaste="setTimeout(()=>setProductImageByUrl(5),50)">
+                <input type="text" inputmode="url" id="productImageUrl5" placeholder="https://... link foto 5"
+                  onchange="setProductImageByUrl(5)" onpaste="setTimeout(()=>setProductImageByUrl(5),50)">
               </div>
             </div>
-            <p class="admin-image-url-hint">Podés mezclar: click en el casillero para <b>subir archivo</b>, o pegá el <b>link</b> de esa foto (se carga solo). ✕ quita la foto.</p>
-            <input type="file" id="productImageInput1" accept="image/*" style="display: none;" onchange="previewProductImage(event, 1)">
-            <input type="file" id="productImageInput2" accept="image/*" style="display: none;" onchange="previewProductImage(event, 2)">
-            <input type="file" id="productImageInput3" accept="image/*" style="display: none;" onchange="previewProductImage(event, 3)">
-            <input type="file" id="productImageInput4" accept="image/*" style="display: none;" onchange="previewProductImage(event, 4)">
-            <input type="file" id="productImageInput5" accept="image/*" style="display: none;" onchange="previewProductImage(event, 5)">
+            <p class="admin-image-url-hint">Podés mezclar: click en el casillero para <b>subir archivo</b>, o pegá el
+              <b>link</b> de esa foto (se carga solo). ✕ quita la foto.</p>
+            <input type="file" id="productImageInput1" accept="image/*" style="display: none;"
+              onchange="previewProductImage(event, 1)">
+            <input type="file" id="productImageInput2" accept="image/*" style="display: none;"
+              onchange="previewProductImage(event, 2)">
+            <input type="file" id="productImageInput3" accept="image/*" style="display: none;"
+              onchange="previewProductImage(event, 3)">
+            <input type="file" id="productImageInput4" accept="image/*" style="display: none;"
+              onchange="previewProductImage(event, 4)">
+            <input type="file" id="productImageInput5" accept="image/*" style="display: none;"
+              onchange="previewProductImage(event, 5)">
           </div>
           <div class="admin-input-group">
             <div class="admin-label-row">
               <label>Producto vendido</label>
-              <span class="admin-switch-wrap" title="Marcar el producto como vendido: se muestra la etiqueta &quot;Vendido&quot; sobre la foto">
+              <span class="admin-switch-wrap"
+                title="Marcar el producto como vendido: se muestra la etiqueta &quot;Vendido&quot; sobre la foto">
                 <label class="admin-switch">
                   <input type="checkbox" id="productSold" onchange="toggleSoldBadgePreview()">
                   <span class="admin-slider"></span>
                 </label>
               </span>
             </div>
-            <p class="admin-image-url-hint">Al activarlo aparece una etiqueta <b>“Vendido”</b> sobre la imagen del producto en la tienda.</p>
+            <p class="admin-image-url-hint">Al activarlo aparece una etiqueta <b>“Vendido”</b> sobre la imagen del
+              producto en la tienda.</p>
           </div>
         </div>
         <div class="admin-modal-footer">
@@ -894,7 +952,8 @@
                 <p>Click para subir imagen (1920x600 recomendado)</p>
               </div>
             </div>
-            <input type="file" id="slideImageInput" accept="image/*" style="display: none;" onchange="previewSlideImage(event)">
+            <input type="file" id="slideImageInput" accept="image/*" style="display: none;"
+              onchange="previewSlideImage(event)">
           </div>
         </div>
         <div class="admin-modal-footer">
@@ -953,7 +1012,8 @@
                 <p>Click para subir imagen (800x400 recomendado)</p>
               </div>
             </div>
-            <input type="file" id="splitBannerImageInput" accept="image/*" style="display: none;" onchange="previewSplitBannerImage(event)">
+            <input type="file" id="splitBannerImageInput" accept="image/*" style="display: none;"
+              onchange="previewSplitBannerImage(event)">
           </div>
         </div>
         <div class="admin-modal-footer">
@@ -969,8 +1029,10 @@
         <div class="admin-modal-header">
           <h3>Pedido <span id="orderDetailId">#</span></h3>
           <div class="order-detail-header-actions">
-            <button class="order-detail-action-btn" title="Imprimir" onclick="printOrderDetail()"><i class="fas fa-print"></i></button>
-            <button class="order-detail-action-btn" title="Compartir" onclick="shareOrderDetail()"><i class="fas fa-share-alt"></i></button>
+            <button class="order-detail-action-btn" title="Imprimir" onclick="printOrderDetail()"><i
+                class="fas fa-print"></i></button>
+            <button class="order-detail-action-btn" title="Compartir" onclick="shareOrderDetail()"><i
+                class="fas fa-share-alt"></i></button>
             <button class="admin-modal-close" onclick="closeOrderDetailModal()">&times;</button>
           </div>
         </div>
@@ -982,7 +1044,8 @@
             </div>
             <div class="order-detail-top-item">
               <label>Estado</label>
-              <select id="orderDetailStatus" class="order-status-select" onchange="updateOrderStatus(); updateStatusColor(this)">
+              <select id="orderDetailStatus" class="order-status-select"
+                onchange="updateOrderStatus(); updateStatusColor(this)">
                 <option value="Pendiente" style="background:#fff8e1;color:#f57f17">Pendiente</option>
                 <option value="Enviado" style="background:#e3f2fd;color:#1565c0">Enviado</option>
                 <option value="Completado" style="background:#e8f5e9;color:#2e7d32">Completado</option>
@@ -1139,7 +1202,8 @@
           </div>
           <div class="benefit-text">
             <h3>Garantía de Devolución</h3>
-            <p>Si no estás satisfecho con tu compra, devolvé el producto en un plazo de 30 días y te devolvemos el dinero completo.</p>
+            <p>Si no estás satisfecho con tu compra, devolvé el producto en un plazo de 24 hrs. y te devolvemos el
+              dinero completo.</p>
           </div>
         </div>
         <div class="benefit-item">
@@ -1148,7 +1212,8 @@
           </div>
           <div class="benefit-text">
             <h3>Soporte 24/7</h3>
-            <p>Nuestro equipo de atención al cliente está disponible las 24 horas del día, los 7 días de la semana para ayudarte.</p>
+            <p>Nuestro equipo de atención al cliente está disponible las 24 horas del día, los 7 días de la semana para
+              ayudarte.</p>
           </div>
         </div>
       </div>
@@ -1190,8 +1255,11 @@
         <div class="where-layout">
           <div class="where-card">
             <img src="/Logo-Boutique-Sofia-2.png" alt="Boutique Sofia" class="where-logo">
-            <iframe class="where-map" src="https://www.google.com/maps?q=San+Antonio+Texcala,+Puebla,+M%C3%A9xico&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa Boutique Sofia"></iframe>
-            <p class="where-card-text">Nos ubicamos en la Casa del Sr. Bernardo Flores (casa blanca), Av. San Antonio Nro. 3, en contra esquina del parque, San Antonio Texcala, Pue.</p>
+            <iframe class="where-map"
+              src="https://www.google.com/maps?q=San+Antonio+Texcala,+Puebla,+M%C3%A9xico&output=embed" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade" title="Mapa Boutique Sofia"></iframe>
+            <p class="where-card-text">Nos ubicamos en la Casa del Sr. Bernardo Flores (casa blanca), Av. San Antonio
+              Nro. 3, en contra esquina del parque, San Antonio Texcala, Pue.</p>
           </div>
           <div class="where-info">
             <div class="where-info-item">
@@ -1241,12 +1309,14 @@
   <div id="categoryView" style="display:none">
     <div class="contact-hero">
       <h1 id="categoryHeroTitle">Todas las Categorías</h1>
-      <div class="contact-breadcrumb"><a href="#" onclick="event.preventDefault(); goHome()">Inicio</a> / <span id="categoryHeroCrumb">Categorías</span></div>
+      <div class="contact-breadcrumb"><a href="#" onclick="event.preventDefault(); goHome()">Inicio</a> / <span
+          id="categoryHeroCrumb">Categorías</span></div>
     </div>
     <section class="catalog-section" style="padding-top:30px">
       <div class="catalog-header">
         <div>
-          <a href="#" onclick="event.preventDefault(); goHome()" class="category-back"><i class="fas fa-chevron-left"></i> Volver al inicio</a>
+          <a href="#" onclick="event.preventDefault(); goHome()" class="category-back"><i
+              class="fas fa-chevron-left"></i> Volver al inicio</a>
           <h2 class="section-title catalog-title" id="categoryTitle">Categoría</h2>
         </div>
       </div>
@@ -1265,14 +1335,16 @@
   <!-- ===== CHECKOUT VIEW ===== -->
   <div id="checkoutView" style="display:none">
     <section class="checkout-section">
-      <a href="#" class="checkout-back" onclick="showView('home')"><i class="fas fa-arrow-left"></i> Seguir comprando</a>
+      <a href="#" class="checkout-back" onclick="showView('home')"><i class="fas fa-arrow-left"></i> Seguir
+        comprando</a>
       <div class="checkout-inner">
         <div class="checkout-steps">
           <!-- PASO 1: Mis datos -->
           <div class="checkout-step">
             <div class="checkout-step-header">
               <span class="checkout-step-num">1.</span> <strong>Mis datos</strong>
-              <button class="checkout-step-change" id="checkoutChangeBtn" onclick="toggleCheckoutEdit()">Cambiar</button>
+              <button class="checkout-step-change" id="checkoutChangeBtn"
+                onclick="toggleCheckoutEdit()">Cambiar</button>
             </div>
             <div class="checkout-step-body">
               <div id="checkoutUserData">
@@ -1314,16 +1386,19 @@
           <div class="checkout-step">
             <div class="checkout-step-header">
               <span class="checkout-step-num">2.</span> <strong>Dirección de Entrega</strong>
-              <button class="checkout-step-change" id="checkoutAddressChangeBtn" style="display:none" onclick="showCheckoutAddressModal()">Cambiar</button>
+              <button class="checkout-step-change" id="checkoutAddressChangeBtn" style="display:none"
+                onclick="showCheckoutAddressModal()">Cambiar</button>
             </div>
             <div class="checkout-step-body" id="checkoutAddressBody">
               <!-- Método de entrega: Recoger en tienda / Entregar a domicilio -->
               <div class="delivery-options">
-                <button type="button" class="delivery-option" id="deliveryOptionStore" onclick="selectDeliveryMethod('store')">
+                <button type="button" class="delivery-option" id="deliveryOptionStore"
+                  onclick="selectDeliveryMethod('store')">
                   <span class="delivery-option-icon">🏪</span>
                   <span class="delivery-option-label">Recoger en tienda</span>
                 </button>
-                <button type="button" class="delivery-option" id="deliveryOptionHome" onclick="selectDeliveryMethod('home')">
+                <button type="button" class="delivery-option" id="deliveryOptionHome"
+                  onclick="selectDeliveryMethod('home')">
                   <span class="delivery-option-icon">🏠</span>
                   <span class="delivery-option-label">Entrega a domicilio</span>
                 </button>
@@ -1332,16 +1407,20 @@
               <div class="checkout-store-info" id="checkoutStoreInfo" style="display:none">
                 <span class="checkout-address-badge"><i class="fas fa-store"></i> Recoger en tienda</span>
                 <p class="checkout-address-main">Retirá tu pedido en nuestra tienda</p>
-                <p class="checkout-address-extra">Pasa a recojer tu pedido a la Casa del Sr. Bernardo Flores (Casa blanca) Av. San Antonio Nro.3 en contra esquiaa del parque, de 9:00 AM a 6:00 PM,  San Antonio Texcala, Pue.</p>
+                <p class="checkout-address-extra">Pasa a recojer tu pedido a la Casa del Sr. Bernardo Flores (Casa
+                  blanca) Av. San Antonio Nro.3 en contra esquiaa del parque, de 9:00 AM a 6:00 PM, San Antonio Texcala,
+                  Pue.</p>
               </div>
               <div id="checkoutAddressEmpty" style="display:none">
                 <p class="checkout-empty-text">No tienes direcciones guardadas.</p>
-                <button class="checkout-add-btn" onclick="showCheckoutAddressForm()"><i class="fas fa-plus"></i> Agregar dirección</button>
+                <button class="checkout-add-btn" onclick="showCheckoutAddressForm()"><i class="fas fa-plus"></i> Agregar
+                  dirección</button>
               </div>
               <div id="checkoutAddressSaved" style="display:none">
                 <div class="checkout-address-card">
                   <div class="checkout-address-card-inner">
-                    <span class="checkout-address-badge" id="checkoutAddressTypeBadge"><i class="fas fa-home"></i> Casa</span>
+                    <span class="checkout-address-badge" id="checkoutAddressTypeBadge"><i class="fas fa-home"></i>
+                      Casa</span>
                     <p class="checkout-address-main" id="checkoutAddressText">-</p>
                     <p class="checkout-address-extra" id="checkoutAddressInstructionsText" style="display:none"></p>
                     <p class="checkout-address-city" id="checkoutAddressCityText"></p>
@@ -1359,7 +1438,8 @@
             <div class="checkout-step-body">
               <div class="checkout-payment-options">
                 <label class="checkout-payment-option">
-                  <input type="radio" name="paymentMethod" value="transfer" checked onchange="togglePaymentForm('transfer')">
+                  <input type="radio" name="paymentMethod" value="transfer" checked
+                    onchange="togglePaymentForm('transfer')">
                   <span class="checkout-payment-label">Transferencia Bancaria</span>
                 </label>
                 <div class="checkout-transfer-info" id="checkoutTransferInfo">
@@ -1367,11 +1447,13 @@
                   <div class="checkout-transfer-account">
                     <p class="transfer-bank">Banco: <strong>Mercado Pago W</strong></p>
                     <p class="transfer-number">CLABE: <strong id="transferClabe">722969010878557408</strong>
-                      <button type="button" class="copy-clabe-btn" onclick="copyTransferClabe()" title="Copiar CLABE"><i class="far fa-copy"></i> Copiar</button>
+                      <button type="button" class="copy-clabe-btn" onclick="copyTransferClabe()" title="Copiar CLABE"><i
+                          class="far fa-copy"></i> Copiar</button>
                     </p>
                   </div>
                   <p>Al transferir, incluye en la descripción: nombre del titular y número de orden.</p>
-                  <p>Una vez realizado, envía tu comprobante a <strong>pagos@websofiabou.com</strong> para iniciar la validación.</p>
+                  <p>Una vez realizado, envía tu comprobante a <strong>pagos@websofiabou.com</strong> para iniciar la
+                    validación.</p>
                   <p><strong>Tu pedido será procesado una vez confirmado el pago.</strong></p>
                 </div>
 
@@ -1381,7 +1463,8 @@
                 </label>
                 <div class="checkout-cash-info" id="checkoutCashInfo" style="display:none">
                   <div class="cash-info-icon"><i class="fas fa-truck"></i></div>
-                  <p>Realiza tu pago en efectivo o con tarjeta débito/crédito al repartidor al momento de recibir tu pedido en la puerta de tu hogar u oficina.</p>
+                  <p>Realiza tu pago en efectivo o con tarjeta débito/crédito al repartidor al momento de recibir tu
+                    pedido en la puerta de tu hogar u oficina.</p>
                 </div>
               </div>
             </div>
@@ -1390,30 +1473,30 @@
 
         <div class="checkout-summary-wrapper">
           <!-- RESUMEN DEL PEDIDO -->
-        <div class="checkout-summary">
-          <h3>RESUMEN DEL PEDIDO</h3>
-          <div class="checkout-items" id="checkoutItems"></div>
-          <div class="checkout-summary-totals">
-            <div class="summary-row">
-              <span>SUBTOTAL</span>
-              <span id="checkoutSubtotal">$0.00</span>
+          <div class="checkout-summary">
+            <h3>RESUMEN DEL PEDIDO</h3>
+            <div class="checkout-items" id="checkoutItems"></div>
+            <div class="checkout-summary-totals">
+              <div class="summary-row">
+                <span>SUBTOTAL</span>
+                <span id="checkoutSubtotal">$0.00</span>
+              </div>
+              <div class="summary-row">
+                <span>ENVÍO</span>
+                <span id="checkoutShipping">GRATIS</span>
+              </div>
+              <div class="summary-row summary-total">
+                <span>TOTAL FINAL</span>
+                <span id="checkoutTotal">$0.00</span>
+              </div>
             </div>
-            <div class="summary-row">
-              <span>ENVÍO</span>
-              <span id="checkoutShipping">GRATIS</span>
-            </div>
-            <div class="summary-row summary-total">
-              <span>TOTAL FINAL</span>
-              <span id="checkoutTotal">$0.00</span>
+            <div class="checkout-secure">
+              <i class="fas fa-shield-alt"></i>
+              <p>Pago Seguro 256-bit SSL. Tus datos personales se procesan de forma privada.</p>
             </div>
           </div>
-          <div class="checkout-secure">
-            <i class="fas fa-shield-alt"></i>
-            <p>Pago Seguro 256-bit SSL. Tus datos personales se procesan de forma privada.</p>
-          </div>
+          <button class="checkout-submit-btn" onclick="submitOrder(event)">Confirmar pedido</button>
         </div>
-        <button class="checkout-submit-btn" onclick="submitOrder(event)">Confirmar pedido</button>
-      </div>
       </div>
     </section>
   </div>
@@ -1429,8 +1512,11 @@
         <div class="where-layout">
           <div class="where-card">
             <img src="/Logo-Boutique-Sofia-2.png" alt="Boutique Sofia" class="where-logo">
-            <iframe class="where-map" src="https://www.google.com/maps?q=San+Antonio+Texcala,+Puebla,+M%C3%A9xico&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa Boutique Sofia"></iframe>
-            <p class="where-card-text">Nos ubicamos en la Casa del Sr. Bernardo Flores (casa blanca), Av. San Antonio Nro. 3, en contra esquina del parque, San Antonio Texcala, Pue.</p>
+            <iframe class="where-map"
+              src="https://www.google.com/maps?q=San+Antonio+Texcala,+Puebla,+M%C3%A9xico&output=embed" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade" title="Mapa Boutique Sofia"></iframe>
+            <p class="where-card-text">Nos ubicamos en la Casa del Sr. Bernardo Flores (casa blanca), Av. San Antonio
+              Nro. 3, en contra esquina del parque, San Antonio Texcala, Pue.</p>
           </div>
           <div class="where-info">
             <div class="where-info-item">
@@ -1476,7 +1562,8 @@
   </div>
 
   <!-- ===== LOADING VIEW ===== -->
-  <div id="loadingView" style="display:flex; min-height:100vh; align-items:center; justify-content:center; flex-direction:column; background:#fff">
+  <div id="loadingView"
+    style="display:flex; min-height:100vh; align-items:center; justify-content:center; flex-direction:column; background:#fff">
     <div class="state-view">
       <div class="spinner"></div>
       <p>Cargando productos...</p>
@@ -1566,22 +1653,28 @@
   </nav>
 
   <!-- Address Selection Modal -->
-  <div class="address-modal-overlay" id="addressSelectModal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="address-modal-overlay" id="addressSelectModal" style="display:none"
+    onclick="if(event.target===this)this.style.display='none'">
     <div class="address-modal">
       <div class="address-modal-header">
         <h3>Seleccionar dirección</h3>
-        <button class="address-modal-close" onclick="document.getElementById('addressSelectModal').style.display='none'">&times;</button>
+        <button class="address-modal-close"
+          onclick="document.getElementById('addressSelectModal').style.display='none'">&times;</button>
       </div>
       <div class="address-modal-body" id="addressSelectList"></div>
       <div class="address-modal-footer">
-        <button class="address-btn-cancel" onclick="document.getElementById('addressSelectModal').style.display='none'">Cancelar</button>
-        <button class="address-btn-save" onclick="document.getElementById('addressSelectModal').style.display='none'; showCheckoutAddressForm()"><i class="fas fa-plus"></i> Nueva dirección</button>
+        <button class="address-btn-cancel"
+          onclick="document.getElementById('addressSelectModal').style.display='none'">Cancelar</button>
+        <button class="address-btn-save"
+          onclick="document.getElementById('addressSelectModal').style.display='none'; showCheckoutAddressForm()"><i
+            class="fas fa-plus"></i> Nueva dirección</button>
       </div>
     </div>
   </div>
 
   <!-- Address Modal -->
-  <div class="address-modal-overlay" id="addressModal" style="display:none" onclick="if(event.target===this)cancelCheckoutAddress()">
+  <div class="address-modal-overlay" id="addressModal" style="display:none"
+    onclick="if(event.target===this)cancelCheckoutAddress()">
     <div class="address-modal">
       <div class="address-modal-header">
         <h3>Agregar direccion de entrega</h3>
@@ -1605,7 +1698,8 @@
         </div>
         <div class="form-group">
           <label>Indicación para la entrega</label>
-          <input type="text" id="checkoutAddressInstructions" placeholder="Ej: Entre calles, Color de Casa, No tiene timbre">
+          <input type="text" id="checkoutAddressInstructions"
+            placeholder="Ej: Entre calles, Color de Casa, No tiene timbre">
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -1637,4 +1731,5 @@
 
   <script src="/js/script.js?v=20"></script>
 </body>
+
 </html>
