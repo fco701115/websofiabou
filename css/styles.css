@@ -2633,7 +2633,7 @@ button {
 .checkout-guest-notice {
   margin: 0 0 16px 0;
   padding: 12px 16px;
-  background: rgb(231 136 175 / 36%);
+  background: rgb(231 136 175 / 22%);
   border: 1px solid rgb(219, 47, 118);
   border-radius: var(--radius);
   color: rgb(219, 47, 118);
