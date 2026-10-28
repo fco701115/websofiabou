@@ -3010,6 +3010,32 @@ button {
   font-size: 0.95rem;
 }
 
+.copy-clabe-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+  padding: 4px 10px;
+  background: #fff;
+  border: 1px solid rgb(219, 47, 118);
+  border-radius: var(--radius);
+  color: rgb(219, 47, 118);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background var(--transition), color var(--transition);
+}
+
+.copy-clabe-btn:hover {
+  background: rgb(231 136 175 / 26%);
+}
+
+.copy-clabe-btn.copied {
+  background: rgb(219, 47, 118);
+  color: #fff;
+}
+
 .checkout-cash-info {
   display: flex;
   align-items: flex-start;

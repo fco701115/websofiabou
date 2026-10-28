@@ -2393,6 +2393,47 @@ function togglePaymentForm(method) {
   }
 }
 
+function copyTransferClabe() {
+  const clabeEl = document.getElementById('transferClabe');
+  const btn = document.querySelector('.copy-clabe-btn');
+  if (!clabeEl) return;
+  const clabe = clabeEl.textContent.trim();
+  const done = () => {
+    if (!btn) return;
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.classList.remove('copied');
+    }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(clabe).then(done).catch(() => {
+      fallbackCopyText(clabe);
+      done();
+    });
+  } else {
+    fallbackCopyText(clabe);
+    done();
+  }
+}
+
+function fallbackCopyText(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+  } catch (e) {
+    console.warn('No se pudo copiar al portapapeles:', e);
+  }
+  document.body.removeChild(ta);
+}
+
 function renderCheckoutSummary() {
   const container = document.getElementById('checkoutItems');
   const subtotalEl = document.getElementById('checkoutSubtotal');
