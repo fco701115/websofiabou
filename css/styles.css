@@ -6398,7 +6398,7 @@ button {
 
 .address-type-btn.active {
   border-color: rgb(219, 47, 118);
-  background: rgba(231, 136, 175, 0.45);
+  background: rgb(231 136 175 / 26%);
   color: rgb(219, 47, 118);
 }
 
