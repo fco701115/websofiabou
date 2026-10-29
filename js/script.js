@@ -2802,14 +2802,20 @@ function selectCategoryFromAccordion(category) {
 }
 
 function openWhatsApp() {
-  window.open('https://wa.me/2381505103', '_blank');
+  window.open('https://wa.me/522381621027', '_blank');
 }
 
 function askAboutProduct(id) {
-  const product = (typeof products !== 'undefined' ? products : []).find(p => p.id === id);
+  let product = null;
+  if (typeof currentDetailProduct !== 'undefined' && currentDetailProduct && (!id || currentDetailProduct.id == id)) {
+    product = currentDetailProduct;
+  }
+  if (!product && typeof products !== 'undefined') {
+    product = products.find(p => p.id == id);
+  }
   const name = product ? product.name : '';
-  const text = encodeURIComponent('Hola, quiero preguntar sobre este producto: ' + name + ' - ' + window.location.href);
-  window.open('https://wa.me/2381505103?text=' + text, '_blank');
+  const text = encodeURIComponent('Hola, quiero pedir información sobre este producto: ' + name + ' - ' + window.location.href);
+  window.open('https://wa.me/522381621027?text=' + text, '_blank');
 }
 
 function toggleLoginFromBottom() {
