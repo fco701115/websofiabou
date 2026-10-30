@@ -3841,6 +3841,7 @@ button {
     width: 165px;
     height: 311px;
     margin: 0 auto;
+    padding: 10px;
   }
 
   .detail-related .product-card {
