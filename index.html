@@ -27,6 +27,51 @@
   <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=1587746516428485&ev=PageView&noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
+  <!-- Escape del navegador interno de Facebook -->
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+      // 1. Detectar si el usuario está dentro del navegador interno de Facebook
+      var isFacebook = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1);
+
+      if (isFacebook) {
+        // Obtener la URL actual sin el protocolo (ejemplo: ://misitio.com)
+        var cleanUrl = window.location.href.replace(/^https?:\/\//, '');
+
+        // 2. Detectar el Sistema Operativo del usuario
+        var isAndroid = /Android/i.test(ua);
+        var isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+        if (isAndroid) {
+          // MÉTODO ANDROID: Forzar la apertura directa en Google Chrome usando Intents
+          var chromeIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+          window.location.href = chromeIntent;
+
+        } else if (isIOS) {
+          // MÉTODO IOS: Forzar la descarga simulada de un archivo binario.
+          // Esto obliga al navegador de Facebook a abrir Safari para "guardar" el archivo.
+          var preventBindingUrl = window.location.href + (window.location.href.indexOf('?') > -1 ? '&' : '?') + 'download=true';
+
+          // Si la URL ya contiene el parámetro de escape, no hacemos un bucle infinito
+          if (window.location.search.indexOf('download=true') === -1) {
+            // Crear un enlace invisible y simular el clic de descarga
+            var downloadLink = document.createElement('a');
+            downloadLink.href = preventBindingUrl;
+            downloadLink.download = 'visitar_sitio.html'; // Engaña al contenedor de Facebook
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+
+            // Respaldo inmediato en caso de que falle el clic automático
+            setTimeout(function () {
+              window.location.href = preventBindingUrl;
+            }, 250);
+          }
+        }
+      }
+    });
+  </script>
 </head>
 
 <body>
