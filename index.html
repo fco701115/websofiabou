@@ -27,6 +27,53 @@
   <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=1587746516428485&ev=PageView&noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
+  <!-- Escape del navegador de Facebook con confirmación nativa -->
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+      // 1. Detectar si el usuario está dentro del navegador de Facebook
+      var isFacebook = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1);
+
+      if (isFacebook) {
+        // 2. Lanzar un ÚNICO cuadro de confirmación nativo del sistema
+        var mensaje = "Estás saliendo de nuestra app. El sitio web que estás viendo está intentando abrir una app externa para ir a https://sofiaropaycalzado.com. ¿Quieres continuar?";
+
+        if (window.confirm(mensaje)) {
+          // Si el usuario presiona "Aceptar / Continuar", ejecutamos el escape
+          var cleanUrl = "sofiaropaycalzado.com" + window.location.pathname + window.location.search;
+          var isAndroid = /Android/i.test(ua);
+          var isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+          if (isAndroid) {
+            // Ejecuta la apertura en Google Chrome
+            var chromeIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+            window.location.href = chromeIntent;
+
+          } else if (isIOS) {
+            // Ejecuta la delegación a Safari en iPhone
+            var preventBindingUrl = window.location.href + (window.location.href.indexOf('?') > -1 ? '&' : '?') + 'download=true';
+
+            if (window.location.search.indexOf('download=true') === -1) {
+              var downloadLink = document.createElement('a');
+              downloadLink.href = preventBindingUrl;
+              downloadLink.download = 'abrir_navegador.html';
+              downloadLink.style.display = 'none';
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+
+              setTimeout(function () {
+                window.location.href = preventBindingUrl;
+              }, 250);
+            }
+          }
+        } else {
+          // Si el usuario presiona "Cancelar", no hace nada y se queda viendo la web en Facebook
+          console.log("El usuario decidió quedarse en la app de Facebook.");
+        }
+      }
+    });
+  </script>
 </head>
 
 <body>
@@ -1730,113 +1777,6 @@
   </div>
 
   <script src="/js/script.js?v=20"></script>
-
-  <!-- Estilos del Mensaje de Advertencia (CSS) -->
-  <style>
-    .fb-modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 99999;
-      align-items: center; justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    .fb-modal-box {
-      background: #fff;
-      padding: 24px;
-      border-radius: 12px;
-      max-width: 85%;
-      width: 360px;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    }
-    .fb-modal-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #1c1e21;
-      margin-bottom: 12px;
-    }
-    .fb-modal-text {
-      font-size: 14px;
-      color: #606770;
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
-    .fb-modal-btn {
-      background: #007bff;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-    }
-  </style>
-
-  <!-- Estructura del Mensaje (HTML) -->
-  <div id="fbAppModal" class="fb-modal-overlay">
-    <div class="fb-modal-box">
-      <div class="fb-modal-title">Aviso de navegación</div>
-      <div class="fb-modal-text">
-        Estás saliendo de nuestra app. El sitio web que estás viendo está intentando abrir una app externa para ir a <strong>https://sofiaropaycalzado.com</strong>. ¿Quieres continuar?
-      </div>
-      <button class="fb-modal-btn" id="fbContinueBtn">Continuar</button>
-    </div>
-  </div>
-
-  <!-- Lógica de Redirección Inteligente (JavaScript) -->
-  <script>
-    window.addEventListener("DOMContentLoaded", function () {
-      var ua = navigator.userAgent || navigator.vendor || window.opera;
-
-      // 1. Detectar el navegador interno de Facebook
-      var isFacebook = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1);
-
-      if (isFacebook) {
-        var modal = document.getElementById("fbAppModal");
-        var btn = document.getElementById("fbContinueBtn");
-
-        // Mostrar el modal personalizado en pantalla
-        modal.style.display = "flex";
-
-        // Configurar la acción al presionar "Continuar"
-        btn.addEventListener("click", function () {
-          var cleanUrl = "sofiaropaycalzado.com" + window.location.pathname + window.location.search;
-          var isAndroid = /Android/i.test(ua);
-          var isIOS = /iPhone|iPad|iPod/i.test(ua);
-
-          if (isAndroid) {
-            // Forzar apertura en Google Chrome (Android)
-            var chromeIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-            window.location.href = chromeIntent;
-
-          } else if (isIOS) {
-            // Forzar delegación a Safari (iOS) mediante descarga simulada
-            var preventBindingUrl = window.location.href + (window.location.href.indexOf('?') > -1 ? '&' : '?') + 'download=true';
-
-            if (window.location.search.indexOf('download=true') === -1) {
-              var downloadLink = document.createElement('a');
-              downloadLink.href = preventBindingUrl;
-              downloadLink.download = 'abrir_navegador.html';
-              downloadLink.style.display = 'none';
-              document.body.appendChild(downloadLink);
-              downloadLink.click();
-
-              setTimeout(function () {
-                window.location.href = preventBindingUrl;
-              }, 250);
-            }
-          }
-
-          // Ocultar modal tras la ejecución
-          modal.style.display = "none";
-        });
-      }
-    });
-  </script>
 </body>
 
 </html>
