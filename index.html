@@ -27,6 +27,14 @@
   <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=1587746516428485&ev=PageView&noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
+  <!-- Vincular el archivo de configuración -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Configuración e íconos para iPhone / iOS (Safari) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Boutique Sofia">
+  <link rel="apple-touch-icon" href="/icono-192.png">
   <!-- Escape automático del navegador interno de Facebook -->
   <script>
     window.addEventListener("DOMContentLoaded", function () {
@@ -1775,6 +1783,17 @@
   </div>
 
   <script src="/js/script.js?v=20"></script>
+
+  <!-- ActivarServiceWorker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('Service Worker registrado con éxito', reg))
+          .catch(err => console.error('Error al registrar el Service Worker', err));
+      });
+    }
+  </script>
 </body>
 
 </html>
