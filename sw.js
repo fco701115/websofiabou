@@ -1,7 +1,6 @@
 const CACHE_NAME = 'sofia-cache-v1';
 const urlsToCache = ['/'];
 
-// Instalar el Service Worker
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -10,11 +9,8 @@ self.addEventListener('install', event => {
   );
 });
 
-// Responder con los archivos en caché si no hay internet
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
