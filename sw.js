@@ -17,7 +17,7 @@ self.addEventListener('fetch', event => {
 
 // ========= NOTIFICACIONES PUSH =========
 self.addEventListener('push', event => {
-  let data = { title: 'Boutique Sofia', body: 'Tenemos novedades para ti 🎉', url: '/' };
+  let data = { title: 'Sofia Boutique', body: 'Tenemos novedades para ti 🎉', url: '/' };
   try {
     if (event.data) data = { ...data, ...event.data.json() };
   } catch (e) {

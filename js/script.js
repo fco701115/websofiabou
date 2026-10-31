@@ -4998,7 +4998,7 @@ function maybeShowPushBanner() {
     banner.id = 'pushSubscribeBanner';
     banner.style.cssText = 'position:fixed;bottom:20px;left:16px;z-index:9998;background:#1f1f1f;color:#fff;padding:14px 16px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.35);font-size:14px;max-width:280px;';
     banner.innerHTML = `
-      <div style="font-weight:bold;margin-bottom:6px;">🔔 Novedades de Boutique Sofia</div>
+      <div style="font-weight:bold;margin-bottom:6px;">🔔 Novedades de Sofia Boutique</div>
       <div style="font-size:12px;opacity:.85;margin-bottom:10px;line-height:1.5;">¿Querés recibir avisos de ofertas y nuevos productos?</div>
       <div style="display:flex;gap:8px;">
         <button id="pushYes" style="flex:1;background:#e91e63;color:#fff;border:none;padding:8px 0;border-radius:8px;font-weight:bold;cursor:pointer;">Sí, avisar</button>
