@@ -1837,6 +1837,18 @@
   <img src="/icono-192.png" alt="Sofia Boutique" class="temu-icon-img">
 </div>
 
+<!-- Guía de instalación para iOS (iPhone/iPad). Safari no permite el prompt
+     automático: hay que indicar al usuario cómo usar "Añadir a inicio". -->
+<div id="pwaIosGuide" style="display: none;">
+  <button class="temu-close" id="pwaIosGuideClose" aria-label="Cerrar">&times;</button>
+  <strong>Instalar app en iPhone</strong>
+  <ol>
+    <li>Toca el icono de <strong>Compartir</strong> <span class="temu-ios-share">&#8599;<small style="font-size:.6em;vertical-align:super;">+</small></span> en la barra inferior de Safari</li>
+    <li>Elige <strong>Añadir a pantalla de inicio</strong></li>
+    <li>Toca <strong>Añadir</strong></li>
+  </ol>
+</div>
+
 <script>
   // Lógica de instalación PWA - Botón flotante Sofia Boutique
   let deferredPrompt;
@@ -1845,9 +1857,16 @@
   // 1. Mostrar el botón solo si la app es instalable (Android/Chrome)
   // Si el usuario lo cerró manualmente, no volver a mostrar por 7 días
   const PWA_CLOSE_KEY = 'pwaFloatingClosedAt';
+  const PWA_IOS_GUIDE_KEY = 'pwaIosGuideClosedAt';
   function pwaClosedRecently() {
     try {
       const t = localStorage.getItem(PWA_CLOSE_KEY);
+      return t && (Date.now() - parseInt(t, 10)) < 7 * 24 * 60 * 60 * 1000;
+    } catch (e) { return false; }
+  }
+  function pwaIosGuideClosedRecently() {
+    try {
+      const t = localStorage.getItem(PWA_IOS_GUIDE_KEY);
       return t && (Date.now() - parseInt(t, 10)) < 7 * 24 * 60 * 60 * 1000;
     } catch (e) { return false; }
   }
@@ -1856,6 +1875,39 @@
     e.stopPropagation(); // que no dispare el prompt de instalación
     floatingButton.style.display = 'none';
     try { localStorage.setItem(PWA_CLOSE_KEY, Date.now().toString()); } catch (err) {}
+  });
+
+  // iOS: Safari nunca dispara beforeinstallprompt. Detectamos iPhone/iPad con
+  // Safari (no instalada aún) y mostramos el botón con una guía de instalación.
+  const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS 13+
+  const isIosSafari = isIOSDevice &&
+    /Safari/.test(navigator.userAgent) &&
+    !/CriOS|FxiOS|EdgiOS|OPiOS|Chrome/.test(navigator.userAgent);
+  const pwaIosGuide = document.getElementById('pwaIosGuide');
+  let iosGuideOpen = false;
+
+  function showIosGuide() {
+    if (!pwaIosGuide || iosGuideOpen) return;
+    pwaIosGuide.style.display = 'block';
+    iosGuideOpen = true;
+  }
+  function hideIosGuide() {
+    if (!pwaIosGuide) return;
+    pwaIosGuide.style.display = 'none';
+    iosGuideOpen = false;
+  }
+
+  document.getElementById('pwaIosGuideClose').addEventListener('click', function (e) {
+    e.stopPropagation();
+    hideIosGuide();
+    try { localStorage.setItem(PWA_IOS_GUIDE_KEY, Date.now().toString()); } catch (err) {}
+  });
+  pwaIosGuide.addEventListener('click', function (e) {
+    if (e.target === pwaIosGuide) {
+      hideIosGuide();
+      try { localStorage.setItem(PWA_IOS_GUIDE_KEY, Date.now().toString()); } catch (err) {}
+    }
   });
 
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -1867,10 +1919,20 @@
     }
   });
 
+  // Mostrar el botón flotante también en iOS (Safari no dispara beforeinstallprompt)
+  if (isIosSafari && floatingButton && !pwaClosedRecently()) {
+    floatingButton.style.display = 'flex';
+  }
+
   // 2. Acción de instalación al hacer clic
   if (floatingButton) {
     floatingButton.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
+      // iOS: mostrar la guía "Añadir a pantalla de inicio"
+      if (!deferredPrompt) {
+        if (isIosSafari && pwaIosGuideClosedRecently()) return;
+        showIosGuide();
+        return;
+      }
 
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;

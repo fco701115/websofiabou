@@ -7707,3 +7707,88 @@ button {
     top: -9px;
   }
 }
+
+/* ============================================
+   Gu\u00eda de instalaci\u00f3n PWA para iOS
+   (Safari no soporta beforeinstallprompt)
+   ============================================ */
+#pwaIosGuide {
+  position: fixed;
+  top: 50%;
+  right: 80px;
+  max-width: 300px;
+  background: #ffffff;
+  border: 2px solid #e91e63;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  padding: 14px 16px;
+  z-index: 9999;
+  font-family: inherit;
+  color: #333;
+  text-align: left;
+  display: none;
+}
+
+#pwaIosGuide strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #e91e63;
+  font-size: 14px;
+}
+
+#pwaIosGuide ol {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#pwaIosGuide li {
+  margin-bottom: 4px;
+}
+
+/* Icono "Compartir" de iOS dibujado con CSS */
+.temu-ios-share {
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 18px;
+  margin: 0 3px;
+  position: relative;
+  border: 2px solid #007aff;
+  border-radius: 4px;
+  border-top: none;
+}
+.temu-ios-share::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 2px;
+  height: 12px;
+  background: #007aff;
+  transform: translateX(-50%);
+}
+.temu-ios-share::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom: 7px solid #007aff;
+}
+
+#pwaIosGuide .temu-close {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  bottom: auto;
+}
+
+@media (max-width: 480px) {
+  #pwaIosGuide {
+    right: 66px;
+    max-width: 260px;
+  }
+}
