@@ -7596,13 +7596,13 @@ button {
   color: #db2f76;
 }
 /* ============================================
-   Botón flotante PWA - Burbuja circular
+   Botï¿½n flotante PWA - Burbuja circular
    (Boutique Sofia)
    ============================================ */
 .temu-floating-icon {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  top: 50%;
+  right: 12px;
   width: 62px;
   height: 62px;
   border-radius: 50%;
@@ -7617,7 +7617,7 @@ button {
   justify-content: center;
   opacity: 0;
   visibility: hidden;
-  transform: scale(0.6);
+  transform: translateY(-50%) scale(0.6);
   transition: transform 0.25s ease, opacity 0.25s ease, visibility 0.25s ease;
 }
 
@@ -7625,15 +7625,15 @@ button {
 .temu-floating-icon:not([style*="display: none"]) {
   opacity: 1;
   visibility: visible;
-  transform: scale(1);
+  transform: translateY(-50%) scale(1);
 }
 
 .temu-floating-icon:hover {
-  transform: scale(1.08);
+  transform: translateY(-50%) scale(1.08);
 }
 
 .temu-floating-icon:active {
-  transform: scale(0.95);
+  transform: translateY(-50%) scale(0.95);
 }
 
 /* Logo: recorte perfectamente circular y profesional */
@@ -7643,7 +7643,7 @@ button {
   border-radius: 50%;
   object-fit: cover;      /* recorta la imagen para no deformarla */
   object-position: center;/* centra el recorte */
-  aspect-ratio: 1 / 1;    /* garantiza proporción cuadrada */
+  aspect-ratio: 1 / 1;    /* garantiza proporciï¿½n cuadrada */
   overflow: hidden;
   display: block;
   background: #fff;
@@ -7667,13 +7667,13 @@ button {
   pointer-events: none;
 }
 
-/* Ajuste en pantallas pequeñas */
+/* Ajuste en pantallas pequeï¿½as */
 @media (max-width: 480px) {
   .temu-floating-icon {
     width: 54px;
     height: 54px;
-    bottom: 16px;
-    right: 16px;
+    top: 50%;
+    right: 8px;
   }
   .temu-badge {
     font-size: 10px;
