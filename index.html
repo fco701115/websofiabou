@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique Sofia - Ropa y Calzado Americano</title>
   <link rel="icon" type="image/png" href="/Logo-Boutique-Sofia-2.png">
-  <link rel="stylesheet" href="/css/styles.css?v=24">
+  <link rel="stylesheet" href="/css/styles.css?v=25">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <!-- Meta Pixel Code -->
   <script>
@@ -1794,6 +1794,59 @@
       });
     }
   </script>
+
+<!-- Botón flotante optimizado con el logo de Boutique Sofia -->
+<div id="pwaFloatingButton" class="temu-floating-icon" style="display: none;">
+  <div class="temu-badge">Instalar app</div>
+  <img src="/icono-192.png" alt="Boutique Sofia" class="temu-icon-img">
+</div>
+
+<script>
+  // Lógica de instalación PWA - Botón flotante Boutique Sofia
+  let deferredPrompt;
+  const floatingButton = document.getElementById('pwaFloatingButton');
+
+  // 1. Mostrar el botón solo si la app es instalable (Android/Chrome)
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    if (floatingButton) {
+      floatingButton.style.display = 'flex';
+    }
+  });
+
+  // 2. Acción de instalación al hacer clic
+  if (floatingButton) {
+    floatingButton.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`El usuario eligió: ${outcome}`);
+
+      deferredPrompt = null;
+
+      // Ocultar inmediatamente después de hacer clic en instalar
+      floatingButton.style.display = 'none';
+    });
+  }
+
+  // 3. SEGURO COMPLETO: Desaparecer si la app ya está instalada en el sistema
+  window.addEventListener('appinstalled', () => {
+    if (floatingButton) {
+      floatingButton.style.display = 'none';
+    }
+    console.log('PWA instalada con éxito. Botón ocultado de forma permanente.');
+  });
+
+  // 4. Ocultar si el usuario entra a la web abriéndola ya desde la App instalada
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    if (floatingButton) {
+      floatingButton.style.display = 'none';
+    }
+  }
+</script>
 </body>
 
 </html>
