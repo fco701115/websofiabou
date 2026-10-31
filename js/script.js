@@ -4983,6 +4983,13 @@ async function subscribeUserToPush() {
 // Banner discreto "Recibir novedades" en la esquina inferior izquierda
 function maybeShowPushBanner() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return;
+  // Solo mostrar el aviso dentro de la app instalada (PWA en modo standalone),
+  // nunca en el navegador antes de instalarla.
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: minimal-ui)').matches ||
+    window.navigator.standalone === true; // iOS
+  if (!isStandalone) return;
   if (localStorage.getItem('pushSubscribed')) return;
   // Si eligió "Ahora no", reintentar en 3 días
   const deferred = localStorage.getItem('pushDeferred');
@@ -5007,7 +5014,7 @@ function maybeShowPushBanner() {
     document.body.appendChild(banner);
     document.getElementById('pushYes').onclick = () => { localStorage.setItem('pushSubscribed', '1'); subscribeUserToPush(); banner.remove(); };
     document.getElementById('pushNo').onclick = () => { localStorage.setItem('pushDeferred', Date.now()); banner.remove(); };
-  }, 8000); // espera 8s para no interrumpir al usuario que recién entra
+  }, 1500); // en la app instalada, mostrar el aviso apenas se abre (espera breve para que la UI cargue)
 }
 
 document.addEventListener('DOMContentLoaded', maybeShowPushBanner);
