@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique Sofia - Ropa y Calzado Americano</title>
   <link rel="icon" type="image/png" href="/Logo-Boutique-Sofia-2.png">
-  <link rel="stylesheet" href="/css/styles.css?v=25">
+  <link rel="stylesheet" href="/css/styles.css?v=26">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <!-- Meta Pixel Code -->
   <script>
@@ -1832,6 +1832,7 @@
 
 <!-- Botón flotante optimizado con el logo de Boutique Sofia -->
 <div id="pwaFloatingButton" class="temu-floating-icon" style="display: none;">
+  <button class="temu-close" id="pwaCloseBtn" aria-label="Cerrar">&times;</button>
   <div class="temu-badge">Instalar app</div>
   <img src="/icono-192.png" alt="Boutique Sofia" class="temu-icon-img">
 </div>
@@ -1842,11 +1843,26 @@
   const floatingButton = document.getElementById('pwaFloatingButton');
 
   // 1. Mostrar el botón solo si la app es instalable (Android/Chrome)
+  // Si el usuario lo cerró manualmente, no volver a mostrar por 7 días
+  const PWA_CLOSE_KEY = 'pwaFloatingClosedAt';
+  function pwaClosedRecently() {
+    try {
+      const t = localStorage.getItem(PWA_CLOSE_KEY);
+      return t && (Date.now() - parseInt(t, 10)) < 7 * 24 * 60 * 60 * 1000;
+    } catch (e) { return false; }
+  }
+
+  document.getElementById('pwaCloseBtn').addEventListener('click', function (e) {
+    e.stopPropagation(); // que no dispare el prompt de instalación
+    floatingButton.style.display = 'none';
+    try { localStorage.setItem(PWA_CLOSE_KEY, Date.now().toString()); } catch (err) {}
+  });
+
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
 
-    if (floatingButton) {
+    if (floatingButton && !pwaClosedRecently()) {
       floatingButton.style.display = 'flex';
     }
   });
