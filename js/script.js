@@ -3814,6 +3814,7 @@ function showAdminSection(section, el) {
   else if (section === 'orders') loadAdminOrders();
   else if (section === 'users') loadAdminUsers();
   else if (section === 'reviews') loadAdminReviews();
+  else if (section === 'notifications') loadAdminNotifications();
 }
 
 async function loadAdminDashboard() {
@@ -4895,3 +4896,118 @@ document.addEventListener('click', function (e) {
 });
 
 document.addEventListener('DOMContentLoaded', initApp);
+
+// ========== NOTIFICACIONES PUSH ==========
+// ==== Panel admin: enviar notificaciones ====
+async function loadAdminNotifications() {
+  const subs = await apiGet('/push/subscribers');
+  if (subs) document.getElementById('statSubscribers').textContent = subs.count;
+}
+
+async function sendAdminNotification() {
+  const title = document.getElementById('notifTitle').value.trim();
+  const body = document.getElementById('notifBody').value.trim();
+  const url = document.getElementById('notifUrl').value.trim();
+  const result = document.getElementById('notifResult');
+  const btn = document.getElementById('sendNotifBtn');
+
+  if (!title || !body) {
+    result.style.color = '#e91e63';
+    result.textContent = '⚠️ Completá el título y el mensaje.';
+    return;
+  }
+  if (!confirm(`¿Enviar la notificación a todos los suscriptores?`)) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  result.textContent = '';
+
+  const resp = await apiPost('/push/send', { title, body, url: url || '/' });
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar a todos';
+
+  if (resp && resp.ok) {
+    result.style.color = '#2e7d32';
+    result.textContent = `✅ Enviada a ${resp.sent} de ${resp.total} suscriptores.` +
+      (resp.removed ? ` (${resp.removed} suscripciones expiradas eliminadas)` : '');
+    document.getElementById('notifTitle').value = '';
+    document.getElementById('notifBody').value = '';
+    document.getElementById('notifUrl').value = '';
+    loadAdminNotifications();
+  } else {
+    result.style.color = '#e91e63';
+    result.textContent = '❌ Error al enviar. Revisá la consola del servidor.';
+  }
+}
+
+// ==== Lado cliente: suscripción del usuario ====
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; ++i) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+async function subscribeUserToPush() {
+  try {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    if (!('Notification' in window)) return;
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+
+    const reg = await navigator.serviceWorker.ready;
+    const vapidRes = await fetch('/api/push/vapid-public');
+    const { publicKey } = await vapidRes.json();
+
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey)
+      });
+    }
+    await fetch('/api/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ endpoint: sub.endpoint, keys: sub.toJSON().keys })
+    });
+    localStorage.setItem('pushSubscribed', '1');
+  } catch (e) {
+    console.warn('No se pudo suscribir a notificaciones:', e);
+  }
+}
+
+// Banner discreto "Recibir novedades" en la esquina inferior izquierda
+function maybeShowPushBanner() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return;
+  if (localStorage.getItem('pushSubscribed')) return;
+  // Si eligió "Ahora no", reintentar en 3 días
+  const deferred = localStorage.getItem('pushDeferred');
+  if (deferred && (Date.now() - parseInt(deferred, 10)) < 3 * 24 * 60 * 60 * 1000) return;
+  if (Notification.permission === 'denied') return;
+  if (Notification.permission === 'granted') {
+    subscribeUserToPush();
+    return;
+  }
+  setTimeout(() => {
+    if (localStorage.getItem('pushSubscribed')) return;
+    const banner = document.createElement('div');
+    banner.id = 'pushSubscribeBanner';
+    banner.style.cssText = 'position:fixed;bottom:20px;left:16px;z-index:9998;background:#1f1f1f;color:#fff;padding:14px 16px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.35);font-size:14px;max-width:280px;';
+    banner.innerHTML = `
+      <div style="font-weight:bold;margin-bottom:6px;">🔔 Novedades de Boutique Sofia</div>
+      <div style="font-size:12px;opacity:.85;margin-bottom:10px;line-height:1.5;">¿Querés recibir avisos de ofertas y nuevos productos?</div>
+      <div style="display:flex;gap:8px;">
+        <button id="pushYes" style="flex:1;background:#e91e63;color:#fff;border:none;padding:8px 0;border-radius:8px;font-weight:bold;cursor:pointer;">Sí, avisar</button>
+        <button id="pushNo" style="background:transparent;color:#aaa;border:none;cursor:pointer;font-size:12px;">Ahora no</button>
+      </div>`;
+    document.body.appendChild(banner);
+    document.getElementById('pushYes').onclick = () => { localStorage.setItem('pushSubscribed', '1'); subscribeUserToPush(); banner.remove(); };
+    document.getElementById('pushNo').onclick = () => { localStorage.setItem('pushDeferred', Date.now()); banner.remove(); };
+  }, 8000); // espera 8s para no interrumpir al usuario que recién entra
+}
+
+document.addEventListener('DOMContentLoaded', maybeShowPushBanner);

@@ -284,10 +284,18 @@ async function ensureSchema() {
     local_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
+  CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id SERIAL PRIMARY KEY,
+    endpoint TEXT UNIQUE NOT NULL,
+    p256dh TEXT NOT NULL,
+    auth TEXT NOT NULL,
+    user_agent TEXT DEFAULT '',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
   `;
   try {
     await pool.query(ddl);
-    console.log('Esquema verificado: tablas products, categories, orders, slides, split_banners, reviews, users, user_addresses OK');
+    console.log('Esquema verificado: tablas products, categories, orders, slides, split_banners, reviews, users, user_addresses, push_subscriptions OK');
   } catch (err) {
     console.error('Error en ensureSchema:', err.message);
   }
@@ -1075,6 +1083,115 @@ app.get('/api/debug/tables/:name', async (req, res) => {
   } catch (err) {
     console.error('Error fetching table:', err);
     res.status(500).json({ error: 'Error al obtener estructura de tabla' });
+  }
+});
+
+// ========== WEB PUSH NOTIFICATIONS ==========
+const webpush = require('web-push');
+
+// VAPID keys: se generan una sola vez y se guardan en vapid-keys.json
+let vapidKeys;
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  vapidKeys = { publicKey: process.env.VAPID_PUBLIC_KEY, privateKey: process.env.VAPID_PRIVATE_KEY };
+} else if (fs.existsSync(path.join(__dirname, 'vapid-keys.json'))) {
+  vapidKeys = JSON.parse(fs.readFileSync(path.join(__dirname, 'vapid-keys.json'), 'utf8'));
+} else {
+  vapidKeys = webpush.generateVAPIDKeys();
+  fs.writeFileSync(path.join(__dirname, 'vapid-keys.json'), JSON.stringify(vapidKeys, null, 2));
+  console.log('VAPID keys generadas y guardadas en vapid-keys.json');
+  console.log('Public key:', vapidKeys.publicKey);
+}
+
+webpush.setVapidDetails(
+  'mailto:contacto@boutiquesofia.com',
+  vapidKeys.publicKey,
+  vapidKeys.privateKey
+);
+
+// GET public key para el frontend
+app.get('/api/push/vapid-public', (req, res) => {
+  res.json({ publicKey: vapidKeys.publicKey });
+});
+
+// GET cantidad de suscriptores (para el panel admin)
+app.get('/api/push/subscribers', async (req, res) => {
+  try {
+    const r = await pool.query('SELECT COUNT(*)::int AS count FROM push_subscriptions');
+    res.json({ count: r.rows[0].count });
+  } catch (err) {
+    console.error('Error fetching subscribers:', err);
+    res.status(500).json({ error: 'Error al obtener suscriptores' });
+  }
+});
+
+// POST guardar suscripción push
+app.post('/api/push/subscribe', async (req, res) => {
+  try {
+    const { endpoint, keys } = req.body;
+    if (!endpoint || !keys || !keys.p256dh || !keys.auth) {
+      return res.status(400).json({ error: 'Suscripción inválida' });
+    }
+    await pool.query(
+      `INSERT INTO push_subscriptions (endpoint, p256dh, auth, user_agent)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (endpoint) DO UPDATE SET p256dh = $2, auth = $3`,
+      [endpoint, keys.p256dh, keys.auth, req.headers['user-agent'] || '']
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error subscribing push:', err);
+    res.status(500).json({ error: 'Error al guardar suscripción' });
+  }
+});
+
+// POST eliminar suscripción push
+app.post('/api/push/unsubscribe', async (req, res) => {
+  try {
+    const { endpoint } = req.body;
+    if (!endpoint) return res.status(400).json({ error: 'Endpoint requerido' });
+    await pool.query('DELETE FROM push_subscriptions WHERE endpoint = $1', [endpoint]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error unsubscribing push:', err);
+    res.status(500).json({ error: 'Error al eliminar suscripción' });
+  }
+});
+
+// POST enviar notificación a todos los suscriptores { title, body, url }
+app.post('/api/push/send', async (req, res) => {
+  try {
+    const { title, body, url } = req.body;
+    if (!title || !body) {
+      return res.status(400).json({ error: 'Título y mensaje son obligatorios' });
+    }
+    const subs = await pool.query('SELECT * FROM push_subscriptions');
+    const payload = JSON.stringify({
+      title: title,
+      body: body,
+      url: url || '/',
+      icon: '/icono-192.png',
+      badge: '/icono-192.png'
+    });
+    let sent = 0, removed = 0;
+    await Promise.all(subs.rows.map(async (sub) => {
+      try {
+        await webpush.sendNotification({
+          endpoint: sub.endpoint,
+          keys: { p256dh: sub.p256dh, auth: sub.auth }
+        }, payload);
+        sent++;
+      } catch (err) {
+        // Suscripción expirada o inválida: se elimina
+        if (err.statusCode === 404 || err.statusCode === 410) {
+          await pool.query('DELETE FROM push_subscriptions WHERE endpoint = $1', [sub.endpoint]);
+          removed++;
+        }
+      }
+    }));
+    res.json({ ok: true, sent, removed, total: subs.rows.length });
+  } catch (err) {
+    console.error('Error sending push:', err);
+    res.status(500).json({ error: 'Error al enviar notificaciones' });
   }
 });
 

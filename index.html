@@ -506,6 +506,9 @@
           <a href="#" class="admin-nav-item" onclick="showAdminSection('reviews', this)">
             <i class="fas fa-star"></i> Valoraciones
           </a>
+          <a href="#" class="admin-nav-item" onclick="showAdminSection('notifications', this)">
+            <i class="fas fa-bell"></i> Notificaciones
+          </a>
           <a href="#" class="admin-nav-item logout" onclick="handleAdminLogout()">
             <i class="fas fa-sign-out-alt"></i> Cerrar sesión
           </a>
@@ -726,6 +729,38 @@
               <tbody id="adminReviewsTable"></tbody>
             </table>
           </div>
+        </div>
+
+        <!-- Notificaciones Push -->
+        <div class="admin-section" id="adminNotifications" style="display: none;">
+          <div class="admin-section-header">
+            <h2>Notificaciones</h2>
+          </div>
+          <div class="admin-notif-stats">
+            <div class="admin-stat-card">
+              <div class="admin-stat-icon orders"><i class="fas fa-bell"></i></div>
+              <div class="admin-stat-info">
+                <h3 id="statSubscribers">0</h3>
+                <p>Suscriptores</p>
+              </div>
+            </div>
+          </div>
+          <div class="admin-input-group">
+            <label>Título *</label>
+            <input type="text" id="notifTitle" maxlength="60" placeholder="Ej: 🔥 50% OFF en sandalias">
+          </div>
+          <div class="admin-input-group">
+            <label>Mensaje *</label>
+            <textarea id="notifBody" maxlength="160" rows="3" placeholder="Ej: Nueva colección de verano disponible. ¡No te lo pierdas!"></textarea>
+          </div>
+          <div class="admin-input-group">
+            <label>Enlace al abrir (opcional)</label>
+            <input type="text" id="notifUrl" placeholder="Ej: /#catalogo o url de un producto">
+          </div>
+          <button class="save-btn" id="sendNotifBtn" onclick="sendAdminNotification()">
+            <i class="fas fa-paper-plane"></i> Enviar a todos
+          </button>
+          <p id="notifResult" style="margin-top:10px;"></p>
         </div>
       </div>
     </div>
