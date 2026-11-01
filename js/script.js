@@ -1674,6 +1674,7 @@ function clearCheckoutAddressSelection() {
   const empty = document.getElementById('checkoutAddressEmpty');
   if (empty) empty.style.display = 'none';
   updateDeliveryHomeLabel();
+  renderCheckoutSummary();
 }
 
 function resetCheckoutDeliveryStep() {
@@ -1695,6 +1696,7 @@ function resetCheckoutDeliveryStep() {
   if (empty) empty.style.display = 'none';
   if (changeBtn) changeBtn.style.display = 'none';
   updateDeliveryHomeLabel();
+  renderCheckoutSummary();
 }
 
 // La leyenda e icono de "Pago al recibir" cambian según el método de entrega:
@@ -1740,6 +1742,7 @@ function selectDeliveryMethod(method, openAddressModal = true) {
     if (empty) empty.style.display = 'none';
     if (changeBtn) changeBtn.style.display = 'none';
     updateDeliveryHomeLabel();
+    renderCheckoutSummary();
   } else {
     // Entregar a domicilio
     if (homeBtn) homeBtn.classList.add('active');
@@ -1772,6 +1775,7 @@ function selectDeliveryMethod(method, openAddressModal = true) {
       }
     }
     updateDeliveryHomeLabel();
+    renderCheckoutSummary();
   }
 }
 
@@ -2218,6 +2222,7 @@ function saveCheckoutAddress() {
   // Refresh user panel addresses
   loadUserAddresses();
   updateDeliveryHomeLabel();
+  renderCheckoutSummary();
   // Conservar la dirección recién agregada como la activa del paso 2
   // (si no, al reabrir el checkout se restauraría la dirección anterior)
   saveCheckoutStep2Pref();
@@ -2426,6 +2431,52 @@ function fallbackCopyText(text) {
   document.body.removeChild(ta);
 }
 
+// ========= TARIFAS DE ENVÍO POR LOCALIDAD (entrega a domicilio) =========
+// Texcala / San Antonio Texcala → $20.00
+// Las Ventas → $30.00
+// Zapotitlán / Zapotitlan Salinas → $40.00
+// Tehuacán / Tehuacan → $40.00
+function getShippingRateForLocality(value) {
+  // Normaliza: minúsculas, sin acentos, espacios colapsados
+  const norm = (value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!norm) return null;
+  if (norm.includes('texcala')) return 20;      // cubre "Texcala" y "San Antonio Texcala"
+  if (norm.includes('ventas')) return 30;       // cubre "Las Ventas"
+  if (norm.includes('zapotitlan')) return 40;   // cubre "Zapotitlán" y "Zapotitlan Salinas"
+  if (norm.includes('tehuacan')) return 40;     // cubre "Tehuacán" y "Tehuacan"
+  return null; // localidad sin tarifa definida
+}
+
+// Calcula envío y total según método de entrega, dirección seleccionada y subtotal.
+// Regla existente: envío GRATIS con subtotal >= $130
+function computeCheckoutTotals() {
+  const subtotal = getCartTotal();
+  let shipping = 0; // store pickup o subtotal gratuito
+  let shippingUnknown = false;
+
+  if (checkoutDeliveryMethod !== 'store' && subtotal < 130) {
+    const rate = getShippingRateForLocality(selectedCheckoutAddrData ? selectedCheckoutAddrData.locality : '');
+    if (rate === null) {
+      shippingUnknown = true;
+      shipping = 0;
+    } else {
+      shipping = rate;
+    }
+  }
+
+  return {
+    subtotal,
+    shipping,
+    shippingUnknown,
+    total: subtotal + shipping
+  };
+}
+
 function renderCheckoutSummary() {
   const container = document.getElementById('checkoutItems');
   const subtotalEl = document.getElementById('checkoutSubtotal');
@@ -2452,10 +2503,16 @@ function renderCheckoutSummary() {
     </div>
   `).join('');
 
-  const subtotal = getCartTotal();
+  const { subtotal, shipping, shippingUnknown } = computeCheckoutTotals();
   if (subtotalEl) subtotalEl.textContent = `$${subtotal.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
-  if (shippingEl) shippingEl.textContent = subtotal >= 130 ? 'GRATIS' : '$999.00';
-  if (totalEl) totalEl.textContent = `$${subtotal.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+  if (shippingEl) {
+    if (checkoutDeliveryMethod !== 'store' && subtotal < 130) {
+      shippingEl.textContent = shippingUnknown ? '—' : `$${shipping.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+    } else {
+      shippingEl.textContent = 'GRATIS';
+    }
+  }
+  if (totalEl) totalEl.textContent = `$${(subtotal + shipping).toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 }
 
 let checkoutFromCart = false;
@@ -2529,7 +2586,7 @@ async function submitOrder(e) {
     zip_code: '',
     payment_method: payment ? payment.value : 'transfer',
     items: cart.map(item => ({ id: item.id, name: item.name, price: item.price, qty: item.qty, image: item.image || '' })),
-    total: getCartTotal()
+    total: computeCheckoutTotals().total
   };
 
   // Botón verde al presionar "Confirmar pedido", mientras se envía
