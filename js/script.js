@@ -2453,13 +2453,13 @@ function getShippingRateForLocality(value) {
 }
 
 // Calcula envío y total según método de entrega, dirección seleccionada y subtotal.
-// Regla existente: envío GRATIS con subtotal >= $130
+// Regla: envío GRATIS con subtotal >= $350
 function computeCheckoutTotals() {
   const subtotal = getCartTotal();
   let shipping = 0; // store pickup o subtotal gratuito
   let shippingUnknown = false;
 
-  if (checkoutDeliveryMethod !== 'store' && subtotal < 130) {
+  if (checkoutDeliveryMethod !== 'store' && subtotal < 350) {
     const rate = getShippingRateForLocality(selectedCheckoutAddrData ? selectedCheckoutAddrData.locality : '');
     if (rate === null) {
       shippingUnknown = true;
@@ -2506,7 +2506,7 @@ function renderCheckoutSummary() {
   const { subtotal, shipping, shippingUnknown } = computeCheckoutTotals();
   if (subtotalEl) subtotalEl.textContent = `$${subtotal.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
   if (shippingEl) {
-    if (checkoutDeliveryMethod !== 'store' && subtotal < 130) {
+    if (checkoutDeliveryMethod !== 'store' && subtotal < 350) {
       shippingEl.textContent = shippingUnknown ? '—' : `$${shipping.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
     } else {
       shippingEl.textContent = 'GRATIS';
