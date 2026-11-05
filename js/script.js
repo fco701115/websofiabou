@@ -3686,7 +3686,12 @@ function hydrateFromCache() {
     if (!cachedProducts || !cachedProducts.length) return false;
 
     products.length = 0;
-    cachedProducts.forEach(p => products.push(p));
+    cachedProducts.forEach(p => {
+      // Los productos no publicados no se hidratan en la tienda
+      if (p.published === false) return;
+      products.push(p);
+    });
+    if (!products.length) return false;
 
     categories.length = 0;
     categories.push('Todas');
@@ -3743,7 +3748,11 @@ async function initApp() {
   const apiProducts = await apiGet('/products');
   if (apiProducts && apiProducts.length > 0) {
     products.length = 0;
-    apiProducts.forEach(p => products.push(normalizeProduct(p)));
+    apiProducts.forEach(p => {
+      // Los productos no publicados solo se ven desde el panel admin, no en la tienda
+      if (p.published === false || p.published === 'false' || p.published === 0) return;
+      products.push(normalizeProduct(p));
+    });
     localStorage.setItem('cachedProducts', JSON.stringify(products));
 
     // Si el detalle se abrió con datos de caché (sin stock), se repinta con los datos reales
@@ -4165,10 +4174,12 @@ async function loadAdminProducts() {
   const products = await apiGet('/products');
   const tbody = document.getElementById('adminProductsTable');
   if (!products || products.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="admin-empty-text">No hay productos.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="admin-empty-text">No hay productos.</td></tr>';
     return;
   }
-  tbody.innerHTML = products.map(p => `
+  tbody.innerHTML = products.map(p => {
+    const published = p.published !== false && p.published !== 'false' && p.published !== 0;
+    return `
     <tr>
       <td>${p.id}</td>
       <td><img src="${Array.isArray(p.images) ? p.images[0] : p.image}" class="product-img" onerror="this.src='https://placehold.co/50'"></td>
@@ -4177,11 +4188,45 @@ async function loadAdminProducts() {
       <td>$${p.price}</td>
       <td>${p.stock || 0}</td>
       <td>
+        <span class="admin-switch-wrap admin-table-switch" title="${published ? 'Publicado (visible en la tienda)' : 'No publicado (oculto en la tienda)'}">
+          <label class="admin-switch">
+            <input type="checkbox" ${published ? 'checked' : ''} onchange="toggleProductPublished(${p.id}, this)">
+            <span class="admin-slider"></span>
+          </label>
+        </span>
+      </td>
+      <td>
         <button class="action-btn" title="Editar" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i></button>
         <button class="action-btn delete" title="Eliminar" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button>
       </td>
     </tr>
-  `).join('');
+  `;}).join('');
+}
+
+// Publicar / despublicar un producto desde el switch de la tabla
+async function toggleProductPublished(id, checkbox) {
+  const published = checkbox.checked;
+  const result = await apiPut('/products/' + id + '/published', { published });
+  if (!result || result.error) {
+    checkbox.checked = !published;
+    alert('No se pudo actualizar la publicación del producto');
+    return;
+  }
+  // Reflejar el cambio en el catálogo de la tienda (memoria + caché local) sin re-renderizar todo
+  const index = products.findIndex(pr => pr.id === id);
+  if (index !== -1) {
+    if (!published) {
+      products.splice(index, 1);
+    } else {
+      products[index].published = true;
+    }
+    renderProducts();
+  }
+  try {
+    const cached = JSON.parse(localStorage.getItem('cachedProducts') || '[]');
+    const cachedFiltered = published ? cached : cached.filter(c => c.id !== id);
+    localStorage.setItem('cachedProducts', JSON.stringify(cachedFiltered));
+  } catch (e) { /* ignorar error de caché */ }
 }
 
 function renderProductImageSlot(slot) {
@@ -4292,6 +4337,8 @@ function showAddProductModal() {
   toggleShowColors();
   const soldSwitch = document.getElementById('productSold');
   if (soldSwitch) soldSwitch.checked = false;
+  const publishedSwitch = document.getElementById('productPublished');
+  if (publishedSwitch) publishedSwitch.checked = true;
   
   for (let i = 1; i <= 5; i++) {
     productImages[i] = null;
@@ -4335,6 +4382,8 @@ async function editProduct(id) {
   toggleShowColors();
   const soldSwitch = document.getElementById('productSold');
   if (soldSwitch) soldSwitch.checked = product.sold === true || product.sold === 'true' || product.sold === 1;
+  const publishedSwitch = document.getElementById('productPublished');
+  if (publishedSwitch) publishedSwitch.checked = product.published !== false && product.published !== 'false' && product.published !== 0;
   toggleSoldBadgePreview();
   
   const images = product.images || (product.image ? [product.image] : []);
@@ -4472,6 +4521,8 @@ async function saveProduct() {
   const show_sizes = document.getElementById('productShowSizes') ? document.getElementById('productShowSizes').checked : true;
   const show_colors = document.getElementById('productShowColors') ? document.getElementById('productShowColors').checked : true;
   const sold = document.getElementById('productSold') ? document.getElementById('productSold').checked : false;
+  const publishedSwitch = document.getElementById('productPublished');
+  const published = publishedSwitch ? publishedSwitch.checked : true;
   const description = document.getElementById('productDescription').value.trim();
 
   if (!name || !price || !category) {
@@ -4503,7 +4554,7 @@ async function saveProduct() {
       }
     }
 
-    const data = { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, images, description };
+    const data = { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, published, images, description };
 
     let result;
     if (id) {

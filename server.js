@@ -197,6 +197,7 @@ async function ensureSchema() {
     show_sizes BOOLEAN DEFAULT true,
     show_colors BOOLEAN DEFAULT true,
     sold BOOLEAN DEFAULT false,
+    published BOOLEAN DEFAULT true,
     image TEXT,
     images TEXT,
     description TEXT,
@@ -316,7 +317,8 @@ async function autoMigrate() {
   const productColumns = [
     ['show_sizes', 'BOOLEAN DEFAULT true'],
     ['show_colors', 'BOOLEAN DEFAULT true'],
-    ['sold', 'BOOLEAN DEFAULT false']
+    ['sold', 'BOOLEAN DEFAULT false'],
+    ['published', 'BOOLEAN DEFAULT true']
   ];
   const userColumns = [
     ['registration_status', "VARCHAR(20) DEFAULT 'Activo'"]
@@ -522,13 +524,13 @@ app.delete('/api/categories/:id', async (req, res) => {
 // POST create product
 app.post('/api/products', async (req, res) => {
   try {
-    const { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, images, description } = req.body;
+    const { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, published, images, description } = req.body;
     const imagesJson = JSON.stringify(images || []);
     const firstImage = (images && images.length > 0) ? images[0] : null;
     const result = await pool.query(
-      `INSERT INTO products (name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, image, images, description)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`,
-      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', show_sizes !== false, show_colors !== false, sold === true, firstImage, imagesJson, description]
+      `INSERT INTO products (name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, published, image, images, description)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
+      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', show_sizes !== false, show_colors !== false, sold === true, published !== false, firstImage, imagesJson, description]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -541,13 +543,19 @@ app.post('/api/products', async (req, res) => {
 app.put('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, images, description } = req.body;
+    const { name, price, original_price, discount, stock, category, sizes, colors, show_sizes, show_colors, sold, published, images, description } = req.body;
+    // Si no viene el campo published, se conserva el valor actual (no se republica accidentalmente)
+    let currentPublished = true;
+    if (published === undefined) {
+      const existing = await pool.query('SELECT published FROM products WHERE id = $1', [id]);
+      currentPublished = existing.rows.length === 0 ? true : existing.rows[0].published !== false;
+    }
     const imagesJson = JSON.stringify(images || []);
     const firstImage = (images && images.length > 0) ? images[0] : null;
     const result = await pool.query(
-      `UPDATE products SET name=$1, price=$2, original_price=$3, discount=$4, stock=$5, category=$6, sizes=$7, colors=$8, show_sizes=$9, show_colors=$10, sold=$11, image=$12, images=$13, description=$14
-       WHERE id=$15 RETURNING *`,
-      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', show_sizes !== false, show_colors !== false, sold === true, firstImage, imagesJson, description, id]
+      `UPDATE products SET name=$1, price=$2, original_price=$3, discount=$4, stock=$5, category=$6, sizes=$7, colors=$8, show_sizes=$9, show_colors=$10, sold=$11, published=$12, image=$13, images=$14, description=$15
+       WHERE id=$16 RETURNING *`,
+      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', show_sizes !== false, show_colors !== false, sold === true, published === undefined ? currentPublished : published === true, firstImage, imagesJson, description, id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Producto no encontrado' });
@@ -556,6 +564,25 @@ app.put('/api/products/:id', async (req, res) => {
   } catch (err) {
     console.error('Error updating product:', err);
     res.status(500).json({ error: 'Error al actualizar producto' });
+  }
+});
+
+// PUT toggle published (publicado / no publicado)
+app.put('/api/products/:id/published', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const published = req.body.published === true;
+    const result = await pool.query(
+      'UPDATE products SET published = $1 WHERE id = $2 RETURNING id, published',
+      [published, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error updating product published:', err);
+    res.status(500).json({ error: 'Error al actualizar publicación' });
   }
 });
 
