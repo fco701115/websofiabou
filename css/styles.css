@@ -1223,6 +1223,11 @@ body.facebook-browser .product-name {
   color: #dd3c7f;
 }
 
+/* Solo en el navegador integrado de Facebook, el precio va en 14px */
+body.facebook-browser .price-current {
+  font-size: 14px;
+}
+
 .price-original {
   font-size: 0.8rem;
   color: var(--text-light);
