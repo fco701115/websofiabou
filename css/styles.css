@@ -1759,25 +1759,6 @@ body.facebook-browser .price-original {
   padding: 0 20px;
 }
 
-.detail-breadcrumb {
-  font-size: 0.8rem;
-  color: var(--text-light);
-  margin-bottom: 20px;
-}
-
-.detail-breadcrumb a {
-  color: var(--text-light);
-  transition: color var(--transition);
-}
-
-.detail-breadcrumb a:hover {
-  color: var(--primary);
-}
-
-.detail-breadcrumb span {
-  color: var(--text);
-}
-
 .detail-main {
   display: grid;
   grid-template-columns: 1fr 1fr;

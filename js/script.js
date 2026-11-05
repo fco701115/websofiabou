@@ -1128,12 +1128,6 @@ function showDetail(id) {
   }).join('');
 
   container.innerHTML = `
-    <div class="detail-breadcrumb">
-      <a href="#" onclick="goHome()">Home</a> / 
-      <a href="#">${product.category}</a> / 
-      <span>${product.name}</span>
-    </div>
-
     <div class="detail-main">
       <div class="detail-gallery">
         <div class="detail-thumbnails">
