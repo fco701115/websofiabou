@@ -1234,6 +1234,11 @@ body.facebook-browser .price-current {
   text-decoration: line-through;
 }
 
+/* Solo en el navegador integrado de Facebook, el precio original va en 11px */
+body.facebook-browser .price-original {
+  font-size: 11px;
+}
+
 /* Hover parallax effect */
 .product-card:hover .product-buy-btn {
   opacity: 1;
