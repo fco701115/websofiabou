@@ -1183,6 +1183,11 @@ button {
   margin-top: 0;
 }
 
+/* Solo en el navegador integrado de Facebook, el nombre del producto va en 12px */
+body.facebook-browser .product-name {
+  font-size: 12px;
+}
+
 .product-rating {
   display: flex;
   align-items: center;
