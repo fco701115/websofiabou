@@ -1,15 +1,17 @@
-const CACHE_NAME = 'sofia-cache-v2';
+const CACHE_NAME = 'sofia-cache-v3';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
-  '/css/styles.css?v=28',
-  '/js/script.js?v=20',
+  '/css/styles.css?v=29',
+  '/js/script.js?v=21',
   '/Logo-Boutique-Sofia-2.png',
   '/icono-192.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
 ];
 
 self.addEventListener('install', event => {
+  // Activar la versión nueva inmediatamente (sin esperar a cierre de pestañas)
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE_URLS))
   );

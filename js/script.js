@@ -3659,6 +3659,7 @@ function normalizeProduct(p) {
     image: images[0] || p.image,
     images: images,
     sold: p.sold === true || p.sold === 'true' || p.sold === 1,
+    published: !(p.published === false || p.published === 'false' || p.published === 0),
     stock: toStock(p.stock),
     features: [
       "Tejido de alta calidad",
