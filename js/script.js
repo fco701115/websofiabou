@@ -3879,14 +3879,16 @@ function showAdminSection(section, el) {
 }
 
 async function loadAdminDashboard() {
-  const [products, orders, users] = await Promise.all([
+  const [products, orders, users, subscribers] = await Promise.all([
     apiGet('/products'),
     apiGet('/orders'),
-    apiGet('/users')
+    apiGet('/users'),
+    apiGet('/push/subscribers')
   ]);
   document.getElementById('statProducts').textContent = products?.length || 0;
   document.getElementById('statOrders').textContent = orders?.length || 0;
   document.getElementById('statUsers').textContent = users?.length || 0;
+  document.getElementById('statSubscribersDash').textContent = subscribers?.count || 0;
   const revenue = (orders || []).reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
   document.getElementById('statRevenue').textContent = '$' + revenue.toLocaleString('es-AR');
 }

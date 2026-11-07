@@ -5710,6 +5710,10 @@ body.facebook-browser .price-original {
   background: var(--primary);
 }
 
+.admin-stat-icon.notifications {
+  background: #8e44ad;
+}
+
 .admin-stat-info h3 {
   font-size: 24px;
   margin-bottom: 2px;

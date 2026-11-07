@@ -485,6 +485,14 @@
           <h2>Dashboard</h2>
           <div class="admin-stats">
             <div class="admin-stat-card" style="cursor:pointer"
+              onclick="showAdminSection('notifications', document.querySelector('.admin-nav-item[onclick*=notifications]'))">
+              <div class="admin-stat-icon notifications"><i class="fas fa-bell"></i></div>
+              <div class="admin-stat-info">
+                <h3 id="statSubscribersDash">0</h3>
+                <p>Suscriptores a notificaciones</p>
+              </div>
+            </div>
+            <div class="admin-stat-card" style="cursor:pointer"
               onclick="showAdminSection('products', document.querySelector('.admin-nav-item[onclick*=products]'))">
               <div class="admin-stat-icon products"><i class="fas fa-box"></i></div>
               <div class="admin-stat-info">
