@@ -5022,7 +5022,7 @@ async function loadAdminNotifications() {
   const subs = await apiGet('/push/subscribers');
   if (!subs) return;
   document.getElementById('statSubscribers').textContent = subs.count;
-  const list = document.getElementById('subscriberList');
+  const list = document.getElementById('subscriberDetails');
   if (!list) return;
   if (!subs.list || subs.list.length === 0) {
     list.innerHTML = '<p style="color:#888;font-size:13px;">Todavía no hay suscriptores.</p>';
@@ -5046,6 +5046,24 @@ async function loadAdminNotifications() {
           </tr>`).join('')}
       </tbody>
     </table>`;
+  // Resumen en el acordeón (contraído por defecto)
+  const resumen = document.getElementById('subscriberList');
+  if (resumen) {
+    resumen.innerHTML = `
+      <a href="#" onclick="toggleSubscriberDetails(); return false;"
+         style="text-decoration:none;color:#333;font-size:13px;font-weight:bold;">
+        <span id="subscriberToggleIcon">▼</span> ${subs.count} dispositivo${subs.count === 1 ? '' : 's'} con notificaciones activas
+      </a>`;
+  }
+}
+
+// Muestra/oculta la lista de dispositivos (acordeón)
+function toggleSubscriberDetails() {
+  const det = document.getElementById('subscriberDetails');
+  const icon = document.getElementById('subscriberToggleIcon');
+  const abierto = det.style.display !== 'none';
+  det.style.display = abierto ? 'none' : 'block';
+  if (icon) icon.textContent = abierto ? '▼' : '▲';
 }
 
 async function sendAdminNotification() {
