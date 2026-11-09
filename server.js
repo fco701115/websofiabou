@@ -1185,7 +1185,16 @@ app.post('/api/push/unsubscribe', async (req, res) => {
 });
 
 // POST enviar notificación a todos los suscriptores { title, body, url }
+// Protegido: requiere header 'x-admin-key' con el valor de ADMIN_API_KEY (env var de Dokploy)
 app.post('/api/push/send', async (req, res) => {
+  const adminKey = process.env.ADMIN_API_KEY;
+  if (!adminKey) {
+    console.error('ADMIN_API_KEY no está configurada: el envío de notificaciones está bloqueado');
+    return res.status(503).json({ error: 'Envío de notificaciones deshabilitado: falta configurar ADMIN_API_KEY en el servidor' });
+  }
+  if (req.headers['x-admin-key'] !== adminKey) {
+    return res.status(401).json({ error: 'Clave de administrador incorrecta' });
+  }
   try {
     const { title, body, url } = req.body;
     if (!title || !body) {

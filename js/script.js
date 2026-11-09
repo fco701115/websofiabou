@@ -12,11 +12,11 @@ async function apiGet(endpoint) {
   }
 }
 
-async function apiPost(endpoint, data) {
+async function apiPost(endpoint, data, extraHeaders) {
   try {
     const res = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(extraHeaders || {}) },
       body: JSON.stringify(data)
     });
     const json = await res.json();
@@ -5004,6 +5004,20 @@ document.addEventListener('DOMContentLoaded', initApp);
 
 // ========== NOTIFICACIONES PUSH ==========
 // ==== Panel admin: enviar notificaciones ====
+// Clave de administrador para el envío de notificaciones (se pide una vez)
+function getAdminNotifyKey() {
+  let key = localStorage.getItem('adminNotifyKey');
+  if (!key) {
+    key = prompt('Clave de administrador para enviar notificaciones:');
+    if (!key) return '';
+    localStorage.setItem('adminNotifyKey', key);
+  }
+  return key;
+}
+function resetAdminNotifyKey() {
+  localStorage.removeItem('adminNotifyKey');
+}
+
 async function loadAdminNotifications() {
   const subs = await apiGet('/push/subscribers');
   if (subs) document.getElementById('statSubscribers').textContent = subs.count;
@@ -5027,7 +5041,7 @@ async function sendAdminNotification() {
   btn.textContent = 'Enviando...';
   result.textContent = '';
 
-  const resp = await apiPost('/push/send', { title, body, url: url || '/' });
+  const resp = await apiPost('/push/send', { title, body, url: url || '/' }, { 'x-admin-key': getAdminNotifyKey() });
   btn.disabled = false;
   btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar a todos';
 
@@ -5041,7 +5055,8 @@ async function sendAdminNotification() {
     loadAdminNotifications();
   } else {
     result.style.color = '#e91e63';
-    result.textContent = '❌ Error al enviar. Revisá la consola del servidor.';
+    result.textContent = '❌ ' + (resp.error || 'Error al enviar. Revisá la consola del servidor.');
+    if (resp.error && resp.error.toLowerCase().includes('clave')) resetAdminNotifyKey();
   }
 }
 
