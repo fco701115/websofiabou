@@ -5099,7 +5099,8 @@ async function sendAdminNotification() {
   } else {
     result.style.color = '#e91e63';
     result.textContent = '❌ ' + (resp.error || 'Error al enviar. Revisá la consola del servidor.');
-    if (resp.error && resp.error.toLowerCase().includes('clave')) resetAdminNotifyKey();
+    // Ante cualquier fallo, se borra la clave para que se vuelva a pedir en el próximo intento
+    resetAdminNotifyKey();
   }
 }
 
