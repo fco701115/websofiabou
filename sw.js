@@ -1,9 +1,9 @@
-const CACHE_NAME = 'sofia-cache-v3';
+const CACHE_NAME = 'sofia-cache-v4';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/css/styles.css?v=29',
-  '/js/script.js?v=21',
+  '/js/script.js?v=25',
   '/Logo-Boutique-Sofia-2.png',
   '/icono-192.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
@@ -82,20 +82,29 @@ self.addEventListener('push', event => {
   );
 });
 
-// Abrir la app al hacer clic en la notificación
+// Abrir la app al hacer clic en la notificación (prioriza la PWA instalada)
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const url = (event.notification.data && event.notification.data.url) || '/';
+  // Convertir a URL absoluta para evitar ambigüedades de scope
+  const urlToOpen = new URL(
+    (event.notification.data && event.notification.data.url) || '/',
+    self.location.origin
+  ).href;
+
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(winClients => {
-      // Si la app ya está abierta, enfocarla; si no, abrirla
-      for (const client of winClients) {
-        if ('focus' in client) {
-          client.navigate(url);
-          return client.focus();
-        }
+    (async () => {
+      const winClients = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+      // Solo reutilizar clients de la PWA real (la app instalada no es "auxiliary")
+      const appClients = winClients.filter(c => c.frameType !== 'auxiliary');
+      if (appClients.length > 0) {
+        // La app ya está abierta: navegar y enfocar
+        const client = appClients[0];
+        try { await client.navigate(urlToOpen); } catch (e) { /* algunos clients no permiten navigate */ }
+        return client.focus();
       }
-      return clients.openWindow(url);
-    })
+      // No hay clients de la app: abrir la URL (si la PWA está instalada,
+      // Chrome/Android la abre en modo standalone)
+      return clients.openWindow(urlToOpen);
+    })()
   );
 });
