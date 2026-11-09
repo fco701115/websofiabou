@@ -1212,6 +1212,8 @@ app.post('/api/push/send', async (req, res) => {
         if (err.statusCode === 404 || err.statusCode === 410) {
           await pool.query('DELETE FROM push_subscriptions WHERE endpoint = $1', [sub.endpoint]);
           removed++;
+        } else {
+          console.error('Push a', sub.endpoint.slice(-20), 'falló:', err.statusCode, err.body || err.message);
         }
       }
     }));

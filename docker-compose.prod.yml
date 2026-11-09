@@ -20,15 +20,22 @@ services:
     container_name: webapptiens
     restart: always
     ports:
-      - "3001:3001"
+      - "3003:3003"
     environment:
       - NODE_ENV=production
-      - PORT=3001
+      - PORT=3003
       - DB_HOST=db
       - DB_NAME=bd-webapptiens
       - DB_USER=fco-webapptiens
       - DB_PASSWORD=t9AWyMXGauynSI4B58I6
       - DB_PORT=5432
+      # Las claves VAPID deben fijarse manualmente después del primer arranque
+      # (cat vapid-keys.json dentro del contenedor) para que las suscripciones
+      # no se invaliden al reconstruir el contenedor.
+      # - VAPID_PUBLIC_KEY=xxxxx
+      # - VAPID_PRIVATE_KEY=xxxxx
+    volumes:
+      - ./vapid-keys.json:/app/vapid-keys.json
     depends_on:
       - db
     networks:
