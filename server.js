@@ -1140,16 +1140,42 @@ app.get('/api/push/vapid-public', (req, res) => {
   res.json({ publicKey: vapidKeys.publicKey });
 });
 
-// GET cantidad de suscriptores (para el panel admin)
+// GET suscriptores (para el panel admin): cantidad + detalle con fecha y dispositivo
 app.get('/api/push/subscribers', async (req, res) => {
   try {
-    const r = await pool.query('SELECT COUNT(*)::int AS count FROM push_subscriptions');
-    res.json({ count: r.rows[0].count });
+    const r = await pool.query(
+      `SELECT id, RIGHT(endpoint, 12) AS endpoint_last, user_agent, created_at
+       FROM push_subscriptions ORDER BY created_at DESC`);
+    res.json({
+      count: r.rows.length,
+      list: r.rows.map(row => ({
+        id: row.id,
+        device: parseDevice(row.user_agent),
+        created_at: row.created_at,
+        endpoint_last: row.endpoint_last
+      }))
+    });
   } catch (err) {
     console.error('Error fetching subscribers:', err);
     res.status(500).json({ error: 'Error al obtener suscriptores' });
   }
 });
+
+// Detecta el dispositivo a partir del user agent
+function parseDevice(ua) {
+  ua = ua || '';
+  const os = /Android/i.test(ua) ? 'Android'
+    : /iPhone|iPad|iPod/i.test(ua) ? 'iPhone/ iPad'
+    : /Windows/i.test(ua) ? 'Windows'
+    : /Mac OS/i.test(ua) ? 'Mac'
+    : /Linux/i.test(ua) ? 'Linux' : 'Otro';
+  const browser = /Edg\//i.test(ua) ? 'Edge'
+    : /OPR\/|Opera/i.test(ua) ? 'Opera'
+    : /CriOS|Chrome\//i.test(ua) ? 'Chrome'
+    : /Firefox/i.test(ua) ? 'Firefox'
+    : /Safari/i.test(ua) ? 'Safari' : 'Navegador';
+  return `${os} · ${browser}`;
+}
 
 // POST guardar suscripción push
 app.post('/api/push/subscribe', async (req, res) => {
@@ -1217,8 +1243,9 @@ app.post('/api/push/send', async (req, res) => {
         }, payload);
         sent++;
       } catch (err) {
-        // Suscripción expirada o inválida: se elimina
-        if (err.statusCode === 404 || err.statusCode === 410) {
+        // Suscripción expirada o inválida: se elimina. 401/403 = suscripción
+        // hecha con otras claves VAPID: irrecuperable, se elimina también.
+        if ([401, 403, 404, 410].includes(err.statusCode)) {
           await pool.query('DELETE FROM push_subscriptions WHERE endpoint = $1', [sub.endpoint]);
           removed++;
         } else {

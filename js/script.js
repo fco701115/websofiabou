@@ -5020,7 +5020,32 @@ function resetAdminNotifyKey() {
 
 async function loadAdminNotifications() {
   const subs = await apiGet('/push/subscribers');
-  if (subs) document.getElementById('statSubscribers').textContent = subs.count;
+  if (!subs) return;
+  document.getElementById('statSubscribers').textContent = subs.count;
+  const list = document.getElementById('subscriberList');
+  if (!list) return;
+  if (!subs.list || subs.list.length === 0) {
+    list.innerHTML = '<p style="color:#888;font-size:13px;">Todavía no hay suscriptores.</p>';
+    return;
+  }
+  list.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="text-align:left;color:#666;border-bottom:2px solid #eee;">
+          <th style="padding:8px 6px;">Dispositivo</th>
+          <th style="padding:8px 6px;">Fecha</th>
+          <th style="padding:8px 6px;">Endpoint</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${subs.list.map(s => `
+          <tr style="border-bottom:1px solid #f2f2f2;">
+            <td style="padding:8px 6px;"><i class="fas fa-mobile-alt"></i> ${s.device}</td>
+            <td style="padding:8px 6px;">${new Date(s.created_at).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' })}</td>
+            <td style="padding:8px 6px;color:#999;font-family:monospace;font-size:11px;">…${s.endpoint_last}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
 }
 
 async function sendAdminNotification() {
