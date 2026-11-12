@@ -708,15 +708,15 @@ button {
 .benefit-text h3 {
   font-size: 0.95rem;
   font-weight: 700;
-  margin-bottom: 0;
-  line-height: 1;
+  margin-bottom: 6px;
+  line-height: 1.5;
   color: var(--text);
 }
 
 .benefit-text p {
   font-size: 0.8rem;
-  line-height: 1;
-  margin: 0;
+  line-height: 1.5;
+  margin: 0 0 10px 0;
   color: var(--text-light);
 }
 
