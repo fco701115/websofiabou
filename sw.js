@@ -1,8 +1,8 @@
-const CACHE_NAME = 'sofia-cache-v4';
+const CACHE_NAME = 'sofia-cache-v5';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
-  '/css/styles.css?v=29',
+  '/css/styles.css?v=30',
   '/js/script.js?v=25',
   '/Logo-Boutique-Sofia-2.png',
   '/icono-192.png',

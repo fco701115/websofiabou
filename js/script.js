@@ -3596,12 +3596,14 @@ function renderSplitBanners(banners) {
   items.forEach((b, i) => {
     const container = containers[i];
     if (!container) return;
+    const rawBtn = (b.button_text || 'Ver más').trim();
+    const btnLabel = rawBtn.endsWith('→') ? rawBtn : `${rawBtn} →`;
     container.innerHTML = `
       <img src="${b.image || 'https://placehold.co/860x540'}" alt="${b.title}">
       <div class="side-banner-content">
         <h2>${b.title}</h2>
         <p>${b.subtitle || ''}</p>
-        <a href="${b.link || '#catalogo'}" class="side-banner-btn">${b.button_text || 'Ver más'} →</a>
+        <a href="${b.link || '#catalogo'}" class="side-banner-btn">${btnLabel}</a>
       </div>
     `;
   });

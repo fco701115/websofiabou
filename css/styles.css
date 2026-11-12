@@ -23,6 +23,10 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -31,6 +35,10 @@ body {
   color: var(--text);
   line-height: 1.5;
   padding-top: 60px;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body.admin-mode {
@@ -578,8 +586,10 @@ button {
   transition: transform 0.5s ease;
 }
 
-.side-banner:hover img {
-  transform: scale(1.05);
+@media (hover: hover) {
+  .side-banner:hover img {
+    transform: scale(1.05);
+  }
 }
 
 /* ========== SIDE-BANNER-CONTENT: PC (vista escritorio) ========== */
@@ -1237,6 +1247,119 @@ body.facebook-browser .price-current {
 /* Solo en el navegador integrado de Facebook, el precio original va en 11px */
 body.facebook-browser .price-original {
   font-size: 11px;
+}
+
+/* ========== NAVEGADOR INTEGRADO DE FACEBOOK / META (IN-APP BROWSER) ========== */
+/* Prevenir font boosting y distorsión de escala en WebView */
+html.facebook-browser,
+body.facebook-browser {
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+/* Mantener slides laterales estables sin distorsión */
+html.facebook-browser .side-banner,
+body.facebook-browser .side-banner {
+  overflow: hidden !important;
+  contain: paint;
+}
+
+html.facebook-browser .side-banner img,
+body.facebook-browser .side-banner img {
+  transform: none !important;
+}
+
+@media (max-width: 768px) {
+  html.facebook-browser .side-banner-content,
+  body.facebook-browser .side-banner-content {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: 100% !important;
+    width: 78% !important;
+    max-width: 165px !important;
+    padding: 10px 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    max-height: 999999px !important;
+  }
+
+  html.facebook-browser .side-banner-content h2,
+  body.facebook-browser .side-banner-content h2 {
+    font-size: 13px !important;
+    line-height: 1.15 !important;
+    margin: 0 0 3px 0 !important;
+    max-height: 999999px !important;
+    -webkit-text-size-adjust: 100% !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  html.facebook-browser .side-banner-content p,
+  body.facebook-browser .side-banner-content p {
+    font-size: 10.5px !important;
+    line-height: 1.2 !important;
+    margin: 0 0 6px 0 !important;
+    max-height: 999999px !important;
+    -webkit-text-size-adjust: 100% !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  html.facebook-browser .side-banner-btn,
+  body.facebook-browser .side-banner-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 4px 10px !important;
+    font-size: 10.5px !important;
+    line-height: 1.15 !important;
+    border-radius: 4px !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 480px) {
+  html.facebook-browser .side-banner-content,
+  body.facebook-browser .side-banner-content {
+    width: 78% !important;
+    max-width: 145px !important;
+    padding: 6px 8px !important;
+  }
+
+  html.facebook-browser .side-banner-content h2,
+  body.facebook-browser .side-banner-content h2 {
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+    margin: 0 0 2px 0 !important;
+  }
+
+  html.facebook-browser .side-banner-content p,
+  body.facebook-browser .side-banner-content p {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    margin: 0 0 5px 0 !important;
+  }
+
+  html.facebook-browser .side-banner-btn,
+  body.facebook-browser .side-banner-btn {
+    padding: 3.5px 8px !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+  }
 }
 
 /* Hover parallax effect */
@@ -3968,23 +4091,61 @@ body.facebook-browser .price-original {
   /* ========== SIDE-BANNER-CONTENT: MOVIL (vista <=768px) ========== */
   .side-banner-content {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
-    width: 153px;
-    height: 140px;
-    padding: 10px;
+    bottom: 0;
+    width: 78%;
+    max-width: 170px;
+    height: 100%;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     overflow: hidden;
     box-sizing: border-box;
     background: none;
     color: #302727;
+    z-index: 2;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    max-height: 999999px;
   }
 
   .side-banner-content h2 {
     font-size: 1rem;
+    line-height: 1.2;
+    margin: 0 0 3px 0;
+    max-height: 999999px;
+    -webkit-text-size-adjust: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .side-banner-content p {
-    font-size: 12px;
+    font-size: 11.5px;
+    line-height: 1.25;
+    margin: 0 0 8px 0;
+    opacity: 0.9;
+    max-height: 999999px;
+    -webkit-text-size-adjust: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .side-banner-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    line-height: 1.2;
+    border-radius: 5px;
+    white-space: nowrap;
   }
 
   .catalog-section {
@@ -4290,8 +4451,63 @@ body.facebook-browser .price-original {
     height: 140px;
   }
 
+  .side-banner-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 78%;
+    max-width: 145px;
+    height: 100%;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    box-sizing: border-box;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    max-height: 999999px;
+  }
+
+  .side-banner-content h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 3px 0;
+    max-height: 999999px;
+    -webkit-text-size-adjust: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .side-banner-content p {
+    font-size: 10.5px;
+    line-height: 1.2;
+    margin: 0 0 6px 0;
+    opacity: 0.95;
+    max-height: 999999px;
+    -webkit-text-size-adjust: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   .side-banner-btn {
-    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    font-size: 10.5px;
+    line-height: 1.15;
+    border-radius: 4px;
+    white-space: nowrap;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .catalog-section {
