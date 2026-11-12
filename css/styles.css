@@ -613,6 +613,17 @@ button {
   color: #ffffff;
 }
 
+/* Side-banner-content: solo vista PC (min-width: 769px) */
+@media (min-width: 769px) {
+  .side-banner-content h2 {
+    font-size: 32px;
+  }
+
+  .side-banner-content p {
+    font-size: 15px;
+  }
+}
+
 .side-banner-content h2 {
   font-size: 1.3rem;
   font-weight: 700;
