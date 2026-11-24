@@ -537,9 +537,9 @@ button {
   max-width: 400px;
 }
 
-/* Solo el primer slide del banner lleva el título en blanco */
+/* Solo el primer slide del banner lleva el título en oscuro */
 .banner-slide:first-child .banner-title {
-  color: #ffffff;
+  color: #1a1a1a;
 }
 
 .banner-subtitle {
